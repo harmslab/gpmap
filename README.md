@@ -1,6 +1,16 @@
 # GPM -- Python mapping utilities for constructing genotype-phenotype maps 
 
-This module provides a mapping object/datastructures for genotype-phenotype maps. Easily converts these maps into Networkx objects and JSON datastructures. 
+This module provides mapping object/data-structures for managing genotype-phenotype data. 
+
+1. Easily construct sequence spaces from lists of genotypes
+2. Convert any set of sequences into binary representations for modeling.
+3. Flexible framework for managing the type of mutations that occur in map.
+4. Paired with LatticeGPM, can easily construct lattice protein sequence spaces.
+5. Uses the power of [NetworkX](https://networkx.github.io) for network construction, enabling the use of their network algorithms.
+6. Easily convert between Networkx objects and JSON data-structures.
+7. Visualize networks with [NetworkViewer](https://github.com/harmslab/NetworkViewer) application. 
+
+**NOTE**: Currently, these maps only work with complete spaces. We'll soon be working to make this more general.
 
 ## Installation 
 
@@ -11,16 +21,16 @@ Git must be installed to clone and contribute to this project.
 1. Fork this repository on Github
 2. Clone that repository locally
 ```
-git clone <repo-url>
+git clone https://github.com/Zsailer/gpm
 ```
 3. Navigate to this directory, and install (softly) this python package with 
 ```
-cd <repo-name>
+cd gpm
 python setup.py develop
 ```
 4. Add another remote link to the master version, call it `upstream`.
 ```
-git remote add upstream <master-url-on-github>
+git remote add upstream https://github.com/Zsailer/gpm
 ```
 5. Start a branch locally from local master
 ```
@@ -40,7 +50,7 @@ git push upstream <branch-name>
 Clone this repo locally:
 
 ```
-git clone <master-url>
+git clone https://github.com/Zsailer/gpm
 ```
 
 Navigate to this directory, and install this python package with 

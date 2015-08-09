@@ -6,7 +6,7 @@
 # Local imports
 # ----------------------------------------------------------
 
-from base import BaseMap
+from gpm.base import BaseMap
 
 class BinaryMap(BaseMap):
     """

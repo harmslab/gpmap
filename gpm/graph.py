@@ -37,7 +37,6 @@ class Graph(DiGraph):
     def __init__(self, gpm):
         """ Construct a DiGraph network from gpm. """
         
-        # grab
         nodes = gpm.genotypes
         phenotypes = gpm.phenotypes
         reference = gpm.wildtype

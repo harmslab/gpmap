@@ -202,7 +202,7 @@ def encode_mutations(wildtype, site_alphabet):
     return encoding
 
 
-def construct_genotypes(mutation_encoding):
+def construct_genotypes(encoding):
     """ Constructs binary representation of genotype map given a specific alphabet
         for each site.
         
@@ -231,19 +231,19 @@ def construct_genotypes(mutation_encoding):
     
     binary = [""]
     genotypes = [""]
-    for site in mutation_encoding:
-        if type(mutation_encoding[site]) is str:
+    for site in encoding:
+        if type(encoding[site]) is str:
             # Parameters that are needed for looping
             n_genotypes = len(genotypes)
 
             # Enumerate all possible configurations to append
             # wildtype site to genotypes. Binary sequences stay the same.
             for i in range(n_genotypes):
-                genotypes[i] += mutation_encoding[site]            
+                genotypes[i] += encoding[site]            
         else:
             # Parameters that are needed for looping
             n_genotypes = len(genotypes)
-            n_copies = len(mutation_encoding[site])
+            n_copies = len(encoding[site])
             copy_genotypes = list(genotypes)
             copy_binary = list(binary)
 
@@ -256,7 +256,7 @@ def construct_genotypes(mutation_encoding):
             # Enumerate all possible configurations to append
             # next sites binary combinations to old
             skips = 0
-            for key, val in mutation_encoding[site].items():
+            for key, val in encoding[site].items():
                 for i in range(n_genotypes):
                     genotypes[skips*n_genotypes + i] += key            
                     binary[skips*n_genotypes + i] += val

@@ -12,12 +12,57 @@ import numpy as np
 # Local imports
 # ----------------------------------------------------------
 
-from base import BaseMap
-from binary import BinaryMap
-from utils import hamming_distance, encode_mutations, construct_genotypes
-from graph import Graph
+from gpm.base import BaseMap
+from gpm.binary import BinaryMap
+from gpm.utils import hamming_distance, binary_mutations_map, farthest_genotype, encode_mutations, construct_genotypes
+from gpm.graph import Graph
 
-class GPM(BaseMap):
+class GenoPhenoMap(BaseMap):
+    
+    def __init__(self, wildtype, genotypes, phenotypes, errors=None, log_transform=False, mutations=None):
+        """
+            Construct a full genotype phenotype mapping object.
+            
+            Things included:
+            ---------------
+            1. Binary representation of all genotypes mapped to proper phenotypes
+            2. Mutations mapped to their binary encoding
+            3. NetworkX graph representation.
+            
+            Args:
+            ----
+            genotypes: array-like 
+                list of all genotypes in system. Must be a complete system.
+            phenotypes: array-like
+                List of phenotypes in the same order as genotypes. 
+            log_transform: boolean (default = False)
+                Set to True to log tranform the phenotypes.
+            mutations: dict
+                Dictionary that maps each site indice to their possible substitution alphabet.
+                
+            Returns:
+            -------
+            GenoPhenoMap object
+            
+            
+            GenoPhenoMap.Mutations --> includes all mutational mapping
+            GenoPhenoMap.Binary --> genotypes mapped to their binary representations of the space. 
+        
+        """
+        
+        # Set initial properties fo GPM
+        self.wildtype = wildtype
+        self.genotypes = genotypes
+        self.phenotypes = phenotypes
+        self.log_transform = log_transform
+        
+        # Set mutations; if not given, assume binary space.
+        if mutations is not None:
+            self.mutations = mutations
+        else:
+            mutant = farthest_genotype(wildtype, genotypes)
+            self.mutations = binary_mutations_map(wildtype, mutant)
+        
     
     @property
     def length(self):
@@ -129,6 +174,7 @@ class GPM(BaseMap):
         if type(mutations) != dict:
             raise TypeError("mutations must be a dict")
         self._mutations = mutations
+        self.Mutations = Mutations()
         self.Mutations.mutations = mutations
         self.Mutations.n = len(mutations)
 
@@ -192,10 +238,9 @@ class GPM(BaseMap):
     # ------------------------------------------------------------
     
     def build_graph(self):
-        """"""
+        """ Add a networkx DiGraph object representation of this space"""
         # Initialize network
         self.Graph = Graph(self)
-        # Construct objects
          
     
     # ------------------------------------------------------------
