@@ -15,6 +15,7 @@ import numpy as np
 from base import BaseMap
 from binary import BinaryMap
 from utils import hamming_distance, encode_mutations, construct_genotypes
+from graph import Graph
 
 class GPM(BaseMap):
     
@@ -184,10 +185,21 @@ class GPM(BaseMap):
         else:
             self._errors = errors
             self.Binary._errors = np.array([errors[i] for i in self.Binary.indices])
-        
+            
+            
+    # ------------------------------------------------------------
+    # Displayed methods for mapping object
+    # ------------------------------------------------------------
+    
+    def build_graph(self):
+        """"""
+        # Initialize network
+        self.Graph = Graph(self)
+        # Construct objects
+         
     
     # ------------------------------------------------------------
-    # Useful methods for mapping object
+    # Hidden methods for mapping object
     # ------------------------------------------------------------
 
     def _construct_binary(self):
@@ -198,8 +210,8 @@ class GPM(BaseMap):
             relative to the 'wildtype' sequence.
         """
         self.Binary = BinaryMap()
-        self.Binary.mutations = encode_mutations(self.wildtype, self.mutations)
-        genotypes, self.Binary.genotypes = construct_genotypes(self.Binary.mutations)
+        self.Binary.encoding = encode_mutations(self.wildtype, self.mutations)
+        genotypes, self.Binary.genotypes = construct_genotypes(self.Binary.encoding)
         self.Binary.indices = np.array([self.geno2index[genotypes[i]] for i in range(len(self.Binary.genotypes))])
         
         # Grab phenotypes if they exist. Otherwise, pass.
@@ -207,3 +219,5 @@ class GPM(BaseMap):
             self.Binary.phenotypes = np.array([self.geno2pheno[genotypes[i]] for i in range(len(self.Binary.genotypes))])
         except:
             pass
+            
+            

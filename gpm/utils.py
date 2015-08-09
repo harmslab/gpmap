@@ -72,8 +72,8 @@ def binary_mutations_map(wildtype, mutant):
         
         ex.
              mutations = {
-                 1: [wildtype[0], mutant[0],
-                 2: [wildtype[1], mutant[1]
+                 1: [wildtype[0], mutant[0]],
+                 2: [wildtype[1], mutant[1]]
                  ...
              }
     """

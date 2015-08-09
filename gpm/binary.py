@@ -29,9 +29,9 @@ class BinaryMap(BaseMap):
         return self._phenotypes
         
     @property
-    def mutations(self):
+    def encoding(self):
         """ Return a binary representation of each site-mutation in the genotype-phenotype map"""
-        return self._mutations
+        return self._encoding
          
     @property
     def errors(self):
@@ -61,10 +61,10 @@ class BinaryMap(BaseMap):
         """ Set indices of genotypes in self.genotypes that mapped to their binary representation. """
         self._indices = indices
 
-    @mutations.setter
-    def mutations(self, mutations):
+    @encoding.setter
+    def encoding(self, encoding):
         """ Set the mapping for site-to-mutation-to-binary-representation."""
-        self._mutations = mutations
+        self._encoding = encoding
 
     @phenotypes.setter
     def phenotypes(self, phenotypes):
