@@ -46,16 +46,21 @@ class Graph(DiGraph):
         phenotypes = gpm.phenotypes
         reference = gpm.wildtype
         mutations = gpm.mutations
-        errors = gpm.errors
         geno2binary = gpm.geno2binary
         
         for i in range(len(nodes)):
+            # If no error is present, store None
+            try:
+                error = gpm.errors[i]
+            except AttributeError:
+                error = None
+            
             # Add node to DiGraph
             self.add_node(
                 nodes[i], 
                 phenotype=phenotypes[i], 
                 binary=geno2binary[nodes[i]], 
-                errors=errors[i]
+                errors=error
             )
                    
             # Add edges from this node to Digraph
