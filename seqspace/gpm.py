@@ -13,13 +13,13 @@ import numpy as np
 # ----------------------------------------------------------
 
 # import different maps into this module
-from gpm.base import BaseMap
-from gpm.binary import BinaryMap
-from gpm.mutations import MutationMap
-from gpm.graph import Graph
+from seqspace.base import BaseMap
+from seqspace.binary import BinaryMap
+from seqspace.mutations import MutationMap
+from seqspace.graph import Graph
 
 # import utils used into module.
-from gpm.utils import hamming_distance, binary_mutations_map, farthest_genotype, encode_mutations, construct_genotypes
+from seqspace.utils import hamming_distance, binary_mutations_map, farthest_genotype, encode_mutations, construct_genotypes
 
 
 class GenoPhenoMap(BaseMap):

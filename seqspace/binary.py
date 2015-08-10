@@ -6,7 +6,7 @@
 # Local imports
 # ----------------------------------------------------------
 
-from gpm.base import BaseMap
+from seqspace.base import BaseMap
 
 class BinaryMap(BaseMap):
     """
