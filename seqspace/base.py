@@ -28,3 +28,22 @@ class BaseMap:
         for i in range(self._n):
             elements[i] = dictionary[self._genotypes[i]]
         return elements
+        
+    def get_map(self, attr1, attr2):
+        """ Return a mapping dictionary between two attributes in map.
+            
+            Args: 
+            ----
+            attr1: str
+                __name__ of attribute that will be keys of dictionary
+            attr2: str
+                __name__ of attribute that will the values of dictionary
+            
+            Return:
+            ------
+             { attr1 : attr2 }
+
+        """
+        key = getattr(self, attr1)
+        value = getattr(self, attr2)
+        return dict(zip(key, value))
