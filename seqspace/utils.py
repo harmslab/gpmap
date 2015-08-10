@@ -152,14 +152,14 @@ def enumerate_space(wildtype, mutant, binary=True):
         return sequence_spaces
 
 
-def encode_mutations(wildtype, site_alphabet):
+def encode_mutations(wildtype, mutations):
     """ Encoding map for genotype-to-binary
     
         Args:
         ----
         wildtype: str
             Wildtype sequence.
-        site_alphabet: dict
+        mutations: dict
             Mapping of each site's mutation alphabet.
             {site-number: [alphabet]}
         
@@ -178,20 +178,23 @@ def encode_mutations(wildtype, site_alphabet):
     
     """
     encoding = OrderedDict()
-    alphabet_copy = site_alphabet.copy()
     
-    for site_number, alphabet in alphabet_copy.items():
+    for site_number, alphabet in mutations.items():
+        
         # Handle sites that don't mutate.
         if alphabet is None:
             encoding[site_number] = wildtype[site_number-1]
+            
         # All sites that mutate, give a mapping dictionary.
         else:
-            n = len(alphabet)-1 # number of mutation neighbors
-            wt_site = wildtype[site_number-1] # wildtype letter
+            # copy alphabet to avoid removing items in main object.
+            alphabet_cp = alphabet[:]
+            n = len(alphabet_cp)-1 # number of mutation neighbors
+            wt_site = wildtype[site_number] # wildtype letter
 
             # Build a binary representation of mutation alphabet
             indiv_encode = OrderedDict({wt_site: "0"*n})
-            alphabet_ = list(alphabet)
+            alphabet_ = alphabet_cp[:]
             alphabet_.remove(wt_site)
 
             for i in range(n):
