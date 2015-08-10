@@ -14,15 +14,16 @@ def binary_neighbors(reference, mutations, mutation_label=False):
     
     for i in range(n_sites):
         n_sub = len(mutations[i])
-        for j in range(n_sub):
-            # Get copy of reference string
-            neighbor = str(reference[i])
-            # Swap site for new string
-            neighbor[i] = mutations[i][j]
-            # Create a tuple of pair and append to list
+        possible = list(mutations[i])
+        possible.remove(reference[i])
+        # Create a tuple of pair and append to list
+        for j in range(n_sub-1):
+            neighbor = list(reference)
+            neighbor[i] = possible[j]
+            neighbor = "".join(neighbor)
             if mutation_label:
                 # Add mutation
-                mutation = reference[i] + str(i) + mutations[i][j]
+                mutation = reference[i] + str(i) + possible[j]
                 neighbor_pairs.append((reference, neighbor, {"mutation":mutation}))
             else:    
                 neighbor_pairs.append((reference, neighbor))
@@ -37,6 +38,10 @@ class Graph(DiGraph):
     def __init__(self, gpm):
         """ Construct a DiGraph network from gpm. """
         
+        # initialize the DiGraph object
+        super(Graph, self).__init__()
+        
+        # Grab properties of parentmapping object
         nodes = gpm.genotypes
         phenotypes = gpm.phenotypes
         reference = gpm.wildtype
@@ -49,7 +54,7 @@ class Graph(DiGraph):
             self.add_node(
                 nodes[i], 
                 phenotype=phenotypes[i], 
-                binary=geno2binary[genotypes[i]], 
+                binary=geno2binary[nodes[i]], 
                 errors=errors[i]
             )
                    

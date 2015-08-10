@@ -12,10 +12,15 @@ import numpy as np
 # Local imports
 # ----------------------------------------------------------
 
+# import different maps into this module
 from gpm.base import BaseMap
 from gpm.binary import BinaryMap
-from gpm.utils import hamming_distance, binary_mutations_map, farthest_genotype, encode_mutations, construct_genotypes
+from gpm.mutations import MutationMap
 from gpm.graph import Graph
+
+# import utils used into module.
+from gpm.utils import hamming_distance, binary_mutations_map, farthest_genotype, encode_mutations, construct_genotypes
+
 
 class GenoPhenoMap(BaseMap):
     
@@ -50,12 +55,6 @@ class GenoPhenoMap(BaseMap):
         
         """
         
-        # Set initial properties fo GPM
-        self.wildtype = wildtype
-        self.genotypes = genotypes
-        self.phenotypes = phenotypes
-        self.log_transform = log_transform
-        
         # Set mutations; if not given, assume binary space.
         if mutations is not None:
             self.mutations = mutations
@@ -63,6 +62,18 @@ class GenoPhenoMap(BaseMap):
             mutant = farthest_genotype(wildtype, genotypes)
             self.mutations = binary_mutations_map(wildtype, mutant)
         
+        # Set initial properties fo GPM
+        self.wildtype = wildtype
+        self.genotypes = genotypes
+        self.log_transform = log_transform
+        self.phenotypes = phenotypes
+        
+        # Built the binary representation
+        self._construct_binary()
+        
+        # If given errors, add them to map.
+        if errors is not None:
+            self.errors = errors
     
     @property
     def length(self):
@@ -174,7 +185,7 @@ class GenoPhenoMap(BaseMap):
         if type(mutations) != dict:
             raise TypeError("mutations must be a dict")
         self._mutations = mutations
-        self.Mutations = Mutations()
+        self.Mutations = MutationMap()
         self.Mutations.mutations = mutations
         self.Mutations.n = len(mutations)
 
@@ -242,7 +253,6 @@ class GenoPhenoMap(BaseMap):
         # Initialize network
         self.Graph = Graph(self)
          
-    
     # ------------------------------------------------------------
     # Hidden methods for mapping object
     # ------------------------------------------------------------
@@ -257,11 +267,13 @@ class GenoPhenoMap(BaseMap):
         self.Binary = BinaryMap()
         self.Binary.encoding = encode_mutations(self.wildtype, self.mutations)
         genotypes, self.Binary.genotypes = construct_genotypes(self.Binary.encoding)
-        self.Binary.indices = np.array([self.geno2index[genotypes[i]] for i in range(len(self.Binary.genotypes))])
+        
+        geno2index = self.geno2index
+        self.Binary.indices = np.array([geno2index[genotypes[i]] for i in range(len(self.Binary.genotypes))])
         
         # Grab phenotypes if they exist. Otherwise, pass.
         try:
-            self.Binary.phenotypes = np.array([self.geno2pheno[genotypes[i]] for i in range(len(self.Binary.genotypes))])
+            self.Binary.phenotypes = np.array([geno2pheno[genotypes[i]] for i in range(len(self.Binary.genotypes))])
         except:
             pass
             

@@ -178,8 +178,9 @@ def encode_mutations(wildtype, site_alphabet):
     
     """
     encoding = OrderedDict()
-
-    for site_number, alphabet in site_alphabet.items():
+    alphabet_copy = site_alphabet.copy()
+    
+    for site_number, alphabet in alphabet_copy.items():
         # Handle sites that don't mutate.
         if alphabet is None:
             encoding[site_number] = wildtype[site_number-1]
