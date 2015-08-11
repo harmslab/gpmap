@@ -6,7 +6,7 @@
 # Local imports
 # ----------------------------------------------------------
 
-from seqspace.base import BaseMap
+from seqspaceen.base import BaseMap
 
 class BinaryMap(BaseMap):
     """
@@ -20,7 +20,15 @@ class BinaryMap(BaseMap):
         
     @property
     def indices(self):
-        """ Get indices of genotypes in self.genotypes that mapped to their binary representation. """
+        """ Get indices of genotypes in self.genotypes that mapped to their binary representation. 
+        
+            **NOTE** This will probably change -- these indices describe how the non-binary
+            arrays would need to be rearrange to fit the binary array. It would make MORE sense
+            to flip this around. These indices should describe where this
+            binary representation is in the non-binary array (i.e. how should the binary array be
+            rearranged to align with non-binary). Further, these should be aligned from the start!
+        
+        """
         return self._indices
         
     @property

@@ -42,27 +42,35 @@ class Graph(DiGraph):
         super(Graph, self).__init__()
         
         # Grab properties of parentmapping object
-        nodes = gpm.genotypes
+        genotypes = gpm.genotypes
         phenotypes = gpm.phenotypes
         reference = gpm.wildtype
         mutations = gpm.mutations
         geno2binary = gpm.geno2binary
+        geno2index = gpm.get_map("genotypes", "indices")
         
-        for i in range(len(nodes)):
+        for i in range(len(genotypes)):
             # If no error is present, store None
             try:
-                error = gpm.errors[i]
+                error = float(gpm.errors[i])
             except AttributeError:
                 error = None
             
             # Add node to DiGraph
             self.add_node(
-                nodes[i], 
-                phenotype=phenotypes[i], 
-                binary=geno2binary[nodes[i]], 
-                errors=error
+                int(geno2index[genotypes[i]]),           # genotype index
+                genotype=str(genotypes[i]),              # genotype
+                binary=str(geno2binary[genotypes[i]]),   # binary representation
+                phenotype=float(phenotypes[i]),            # phenotype
+                value=float(phenotypes[i]),                    # same as phenotype
+                errors=error                        # error in phenotype
             )
                    
             # Add edges from this node to Digraph
-            edges = binary_neighbors(nodes[i], mutations, mutation_label=True)
-            self.add_edges_from(edges)
+            mutation_label = True
+            edges = binary_neighbors(genotypes[i], mutations, mutation_label=mutation_label)
+            
+            if mutation_label is True:
+                edges_ = [(int(geno2index[e[0]]), int(geno2index[e[1]]), e[2]) for e in edges]
+
+            self.add_edges_from(edges_)
