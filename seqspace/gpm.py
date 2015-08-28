@@ -21,7 +21,6 @@ from seqspace.graph import Graph
 # import utils used into module.
 from seqspace.utils import hamming_distance, binary_mutations_map, farthest_genotype, encode_mutations, construct_genotypes
 
-
 class GenoPhenoMap(BaseMap):
     
     def __init__(self, wildtype, genotypes, phenotypes, errors=None, log_transform=False, mutations=None):
@@ -119,29 +118,7 @@ class GenoPhenoMap(BaseMap):
     def indices(self):
         """ Return numpy array of genotypes position. """
         return self._indices
-        
-    # ----------------------------------------------------------
-    # Getter methods for mapping objects
-    # ----------------------------------------------------------   
-    
-    @property
-    def geno2pheno(self):
-        """ Return dict of genotypes mapped to phenotypes. """
-        return self._map(self.genotypes, self.phenotypes)
 
-    @property
-    def geno2index(self):
-        """ Return dict of genotypes mapped to their indices in transition matrix. """
-        return self._map(self.genotypes, self.indices)
-        
-    @property
-    def geno2binary(self):
-        """ Return dictionary of genotypes mapped to their binary representation. """
-        mapping = dict()
-        for i in range(self.n):
-            mapping[self.genotypes[self.Binary.indices[i]]] = self.Binary.genotypes[i] 
-        return mapping
-        
     # ----------------------------------------------------------
     # Setter methods
     # ----------------------------------------------------------
@@ -264,17 +241,37 @@ class GenoPhenoMap(BaseMap):
             This method maps each genotype to their binary representation
             relative to the 'wildtype' sequence.
         """
+        # Initialize Binary representation of genotype-phenotype map
         self.Binary = BinaryMap()
+        
+        # Encode mutations as individual binary representation
         self.Binary.encoding = encode_mutations(self.wildtype, self.mutations)
-        genotypes, self.Binary.genotypes = construct_genotypes(self.Binary.encoding)
         
-        geno2index = self.geno2index
-        self.Binary.indices = np.array([geno2index[genotypes[i]] for i in range(len(self.Binary.genotypes))])
+        # Use encoding map to construct binary presentation for any type of alphabet
+        unsorted_genotypes, unsorted_binary = construct_genotypes(self.Binary.encoding)
         
+        # length of binary strings
+        length = len(unsorted_binary[0])
+        
+        # Sort binary representation to match genotypes
+        geno2index = self.get_map("genotypes", "indices") 
+        binary = np.empty(self.n, dtype=">U" + str(length))
+        for i in range(len(unsorted_genotypes)):
+            # Keep and sort genotype if it exists in data.
+            try
+                index = geno2index[unsorted_genotypes[i]]
+                binary[index] = unsorted_binary[i]
+            except KeyError:
+                pass
+        
+        # Set binary attributes to sorted genotypes
+        self.Binary.genotypes = binary
+        self.Binary.indices = self.indices[:]
+
         # Grab phenotypes if they exist. Otherwise, pass.
         try:
-            self.Binary.phenotypes = np.array([geno2pheno[genotypes[i]] for i in range(len(self.Binary.genotypes))])
-        except:
+            self.Binary.phenotypes = self.phenotypes[:]
+        except AttributeError:
             pass
             
             

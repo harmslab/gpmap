@@ -14,6 +14,11 @@ class BinaryMap(BaseMap):
     """
     
     @property
+    def length(self):
+        """ Get length of binary strings in space. """
+        return self._length
+    
+    @property
     def genotypes(self):
         """ Get Binary representation of genotypes. """
         return self._genotypes
@@ -45,15 +50,6 @@ class BinaryMap(BaseMap):
     def errors(self):
         """ Get the phenotype values in an array orderd same as binary reprentation."""
         return self._errors
-
-    # ----------------------------------------------------------
-    # Getter methods for mapping objects
-    # ----------------------------------------------------------
-    
-    @property
-    def geno2pheno(self):
-        """ Return dict of genotypes mapped to phenotypes. """
-        return self._map(self.genotypes, self.phenotypes)
         
     # ----------------------------------------------------------
     # Setter methods
@@ -62,6 +58,7 @@ class BinaryMap(BaseMap):
     @genotypes.setter
     def genotypes(self, genotypes):
         """ Set Binary representation of genotypes. """
+        self._length = len(genotypes[0])
         self._genotypes = genotypes
         
     @indices.setter

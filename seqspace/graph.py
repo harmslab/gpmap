@@ -46,7 +46,7 @@ class Graph(DiGraph):
         phenotypes = gpm.phenotypes
         reference = gpm.wildtype
         mutations = gpm.mutations
-        geno2binary = gpm.geno2binary
+        geno2binary = gpm.get_map("genotypes", "Binary.genotypes")
         geno2index = gpm.get_map("genotypes", "indices")
         
         for i in range(len(genotypes)):
