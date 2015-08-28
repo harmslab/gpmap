@@ -44,6 +44,35 @@ class BaseMap:
              { attr1 : attr2 }
 
         """
-        key = getattr(self, attr1)
-        value = getattr(self, attr2)
-        return dict(zip(key, value))
+        
+        # For handling nested object attributes
+
+        def nested_attr(main_obj, attr):
+            """ Get attributes in nested objects.
+
+                Returns the children object that is the parent object
+                of the attribute of interest.
+
+                Also returns the attribute as a string
+            """ 
+            levels = attr.split(".")
+            subclasses = levels[:-1]
+            attr = levels[-1] 
+
+            obj = main_obj
+            for sub_obj in subclasses:
+                obj = obj.__getattribute__(sub_obj)
+
+            return obj, attr
+
+        # Get keys
+        obj, attr = nested_attr(self, attr1)
+        keys = getattr(obj, attr)
+        
+        obj, attr = nested_attr(self, attr2)
+        values = getattr(obj, attr)
+        
+        # Construct map
+        mapping = dict(zip(keys, values))
+        
+        return mapping
