@@ -59,13 +59,19 @@ class GenoPhenoMap(BaseMap):
             self.mutations = mutations
         else:
             mutant = farthest_genotype(wildtype, genotypes)
-            self.mutations = binary_mutations_map(wildtype, mutant)
+            mutations = binary_mutations_map(wildtype, mutant)
+            self.mutations = mutations
         
         # Set initial properties fo GPM
         self.wildtype = wildtype
         self.genotypes = genotypes
         self.log_transform = log_transform
         self.phenotypes = phenotypes
+        
+        # Initialize Mutational mapping
+        self.Mutations = MutationMap()
+        self.Mutations.mutations = mutations
+        self.Mutations.wildtype = wildtype
         
         # Built the binary representation
         self._construct_binary()
