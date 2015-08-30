@@ -264,7 +264,7 @@ class GenoPhenoMap(BaseMap):
         binary = np.empty(self.n, dtype=">U" + str(length))
         for i in range(len(unsorted_genotypes)):
             # Keep and sort genotype if it exists in data.
-            try
+            try:
                 index = geno2index[unsorted_genotypes[i]]
                 binary[index] = unsorted_binary[i]
             except KeyError:
