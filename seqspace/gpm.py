@@ -195,6 +195,11 @@ class GenoPhenoMap(BaseMap):
         if self.log_transform is True:
             self._untransformed_phenotypes = self._phenotypes
             self._phenotypes = np.log10(self._phenotypes)
+            
+        # Set binary phenotypes if binary exists... assumes
+        # that binary sequences are sorted to match raw genotypes.
+        if hasattr(self, "Binary"):
+            self.Binary.phenotypes = phenotypes
 
         
     @errors.setter

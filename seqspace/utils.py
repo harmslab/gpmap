@@ -178,7 +178,6 @@ def encode_mutations(wildtype, mutations):
     
     """
     encoding = OrderedDict()
-    
     for site_number, alphabet in mutations.items():
         
         # Handle sites that don't mutate.
@@ -189,7 +188,7 @@ def encode_mutations(wildtype, mutations):
         else:
             # copy alphabet to avoid removing items in main object.
             alphabet_cp = alphabet[:]
-            n = len(alphabet_cp)-1 # number of mutation neighbors
+            n = len(alphabet_cp)-1 # number of mutation neighbors            
             wt_site = wildtype[site_number] # wildtype letter
 
             # Build a binary representation of mutation alphabet
