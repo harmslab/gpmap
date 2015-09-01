@@ -79,7 +79,10 @@ def binary_mutations_map(wildtype, mutant):
     """
     mutations = dict()
     for i in range(len(wildtype)):
-        mutations[i] = [wildtype[i], mutant[i]]
+        if wildtype[i] == mutant[i]:
+            mutations[i] = None
+        else:
+            mutations[i] = [wildtype[i], mutant[i]]
     return mutations
 
 
@@ -178,11 +181,12 @@ def encode_mutations(wildtype, mutations):
     
     """
     encoding = OrderedDict()
+    
     for site_number, alphabet in mutations.items():
         
         # Handle sites that don't mutate.
         if alphabet is None:
-            encoding[site_number] = wildtype[site_number-1]
+            encoding[site_number] = wildtype[site_number]
             
         # All sites that mutate, give a mapping dictionary.
         else:
@@ -235,6 +239,7 @@ def construct_genotypes(encoding):
     binary = [""]
     genotypes = [""]
     for site in encoding:
+        # If the site is not mutating, just add wildtype encoding
         if type(encoding[site]) is str:
             # Parameters that are needed for looping
             n_genotypes = len(genotypes)
@@ -243,6 +248,8 @@ def construct_genotypes(encoding):
             # wildtype site to genotypes. Binary sequences stay the same.
             for i in range(n_genotypes):
                 genotypes[i] += encoding[site]            
+        
+        # else, apply binary encoding scheme for that mutation.
         else:
             # Parameters that are needed for looping
             n_genotypes = len(genotypes)

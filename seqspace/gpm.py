@@ -260,13 +260,15 @@ class GenoPhenoMap(BaseMap):
         
         # Use encoding map to construct binary presentation for any type of alphabet
         unsorted_genotypes, unsorted_binary = construct_genotypes(self.Binary.encoding)
-        
+
         # length of binary strings
         length = len(unsorted_binary[0])
         
         # Sort binary representation to match genotypes
         geno2index = self.get_map("genotypes", "indices") 
         binary = np.empty(self.n, dtype=">U" + str(length))
+
+
         for i in range(len(unsorted_genotypes)):
             # Keep and sort genotype if it exists in data.
             try:
