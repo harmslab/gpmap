@@ -1,4 +1,7 @@
-from setuptools import setup
+try:
+    from setuptools import setup
+except:
+    from distutils.core import setup
 
 setup(name='seqspace',
       version='0.1',
