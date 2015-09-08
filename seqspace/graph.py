@@ -13,9 +13,12 @@ def binary_neighbors(reference, mutations, mutation_label=False):
     n_sites = len(reference)
     
     for i in range(n_sites):
-        n_sub = len(mutations[i])
-        possible = list(mutations[i])
-        possible.remove(reference[i])
+        if mutations[i] == None:
+            n_sub = 1
+        else:
+            n_sub = len(mutations[i])
+            possible = list(mutations[i])
+            possible.remove(reference[i])
         # Create a tuple of pair and append to list
         for j in range(n_sub-1):
             neighbor = list(reference)
