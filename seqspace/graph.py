@@ -11,7 +11,7 @@ def binary_neighbors(reference, mutations, mutation_label=False):
     """
     neighbor_pairs = list()
     n_sites = len(reference)
-    
+
     for i in range(n_sites):
         if mutations[i] == None:
             n_sub = 1
@@ -28,7 +28,7 @@ def binary_neighbors(reference, mutations, mutation_label=False):
                 # Add mutation
                 mutation = reference[i] + str(i) + possible[j]
                 neighbor_pairs.append((reference, neighbor, {"mutation":mutation}))
-            else:    
+            else:
                 neighbor_pairs.append((reference, neighbor))
     return neighbor_pairs
 
@@ -37,13 +37,13 @@ def binary_neighbors(reference, mutations, mutation_label=False):
 # --------------------------------------------------------
 
 class Graph(DiGraph):
-    
+
     def __init__(self, gpm):
         """ Construct a DiGraph network from gpm. """
-        
+
         # initialize the DiGraph object
         super(Graph, self).__init__()
-        
+
         # Grab properties of parentmapping object
         genotypes = gpm.genotypes
         phenotypes = gpm.phenotypes
@@ -51,15 +51,15 @@ class Graph(DiGraph):
         mutations = gpm.mutations
         geno2binary = gpm.get_map("genotypes", "Binary.genotypes")
         geno2index = gpm.get_map("genotypes", "indices")
-        
+
         for i in range(len(genotypes)):
             # If no error is present, store None
             try:
                 error = float(gpm.errors[i])
             except AttributeError:
                 error = None
-            
-            # Add node to DiGraph
+
+            # Add node to DiGraph with attributes
             self.add_node(
                 int(geno2index[genotypes[i]]),           # genotype index
                 genotype=str(genotypes[i]),              # genotype
@@ -68,11 +68,11 @@ class Graph(DiGraph):
                 value=float(phenotypes[i]),                    # same as phenotype
                 errors=error                        # error in phenotype
             )
-                   
+
             # Add edges from this node to Digraph
             mutation_label = True
             edges = binary_neighbors(genotypes[i], mutations, mutation_label=mutation_label)
-            
+
             if mutation_label is True:
                 edges_ = [(int(geno2index[e[0]]), int(geno2index[e[1]]), e[2]) for e in edges]
 

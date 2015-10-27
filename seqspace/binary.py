@@ -12,55 +12,60 @@ class BinaryMap(BaseMap):
     """
         Map for holding a binary representation of an epistasis map.
     """
-    
+
     @property
     def length(self):
         """ Get length of binary strings in space. """
         return self._length
-    
+
     @property
     def genotypes(self):
         """ Get Binary representation of genotypes. """
         return self._genotypes
-        
+
+    @property
+    def missing_genotypes(self):
+        """ Binary genotypes missing in the dataset """
+        return self._missing_genotypes
+
     @property
     def indices(self):
-        """ Get indices of genotypes in self.genotypes that mapped to their binary representation. 
-        
+        """ Get indices of genotypes in self.genotypes that mapped to their binary representation.
+
             **NOTE** This will probably change -- these indices describe how the non-binary
             arrays would need to be rearrange to fit the binary array. It would make MORE sense
             to flip this around. These indices should describe where this
             binary representation is in the non-binary array (i.e. how should the binary array be
             rearranged to align with non-binary). Further, these should be aligned from the start!
-        
+
         """
         return self._indices
-        
+
     @property
     def phenotypes(self):
         """ Get the phenotype values in an array orderd same as binary reprentation."""
         return self._phenotypes
-        
+
     @property
     def encoding(self):
         """ Return a binary representation of each site-mutation in the genotype-phenotype map"""
         return self._encoding
-         
+
     @property
     def errors(self):
         """ Get the phenotype values in an array orderd same as binary reprentation."""
         return self._errors
-        
+
     # ----------------------------------------------------------
     # Setter methods
     # ----------------------------------------------------------
-    
+
     @genotypes.setter
     def genotypes(self, genotypes):
         """ Set Binary representation of genotypes. """
         self._length = len(genotypes[0])
         self._genotypes = genotypes
-        
+
     @indices.setter
     def indices(self, indices):
         """ Set indices of genotypes in self.genotypes that mapped to their binary representation. """
@@ -75,7 +80,7 @@ class BinaryMap(BaseMap):
     def phenotypes(self, phenotypes):
         """ Set the phenotype values in an array orderd same as binary reprentation."""
         self._phenotypes = phenotypes
-        
+
     @errors.setter
     def errors(self, errors):
         """ Set the phenotype values in an array orderd same as binary reprentation."""
