@@ -115,8 +115,12 @@ class GenotypePhenotypeMap(BaseMap):
     @property
     def missing_genotypes(self):
         """ Genotypes that are missing from the complete genotype-to-phenotype map."""
-
         return self._missing_genotypes
+
+    @property
+    def complete_genotypes(self):
+        """ All possible genotypes in the complete genotype space"""
+        return np.concatenate((self.genotypes, self.missing_genotypes))
 
     @property
     def phenotypes(self):
@@ -274,7 +278,7 @@ class GenotypePhenotypeMap(BaseMap):
 
         # Sort binary representation to match genotypes
         geno2index = self.get_map("genotypes", "indices")
-        binary = np.empty(self.n, dtype=">U" + str(self.Binary.length))
+        binary = np.empty(self.n, dtype="<U" + str(self.Binary.length))
 
         # Sort the genotypes by looking for them in the data.
         # Sort the missing genotypes into a separate object

@@ -5,6 +5,7 @@
 # ----------------------------------------------------------
 # Local imports
 # ----------------------------------------------------------
+import numpy as np
 
 from seqspace.base import BaseMap
 
@@ -27,6 +28,11 @@ class BinaryMap(BaseMap):
     def missing_genotypes(self):
         """ Binary genotypes missing in the dataset """
         return self._missing_genotypes
+
+    @property
+    def complete_genotypes(self):
+        """ All possible genotypes in the complete genotype space"""
+        return np.concatenate((self.genotypes, self.missing_genotypes))
 
     @property
     def indices(self):
