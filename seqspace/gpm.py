@@ -56,7 +56,8 @@ class GenotypePhenotypeMap(BaseMap):
 
         # Set mutations; if not given, assume binary space.
         if mutations is not None:
-            self.mutations = mutations
+            # Make sure the keys in the mutations dict are integers, not strings.
+            self.mutations = dict([(int(key), val) for key, val in mutations.items()])
         else:
             mutant = farthest_genotype(wildtype, genotypes)
             mutations = binary_mutations_map(wildtype, mutant)
