@@ -5,7 +5,6 @@
 import itertools as it
 import numpy as np
 from scipy.misc import comb
-from sklearn.metrics import mean_squared_error
 from collections import OrderedDict
 
 # -------------------------------------------------------

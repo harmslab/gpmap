@@ -6,6 +6,7 @@
 # Outside imports
 # ----------------------------------------------------------
 
+import json
 import numpy as np
 
 # ----------------------------------------------------------
@@ -20,6 +21,17 @@ from seqspace.graph import Graph
 
 # import utils used into module.
 from seqspace.utils import hamming_distance, binary_mutations_map, farthest_genotype, encode_mutations, construct_genotypes
+
+# ----------------------------------------------------------
+# Exceptions
+# ----------------------------------------------------------
+
+class LoadingException(Exception):
+    """ Error when loading Genotype Phenotype map data. """
+    
+# ----------------------------------------------------------
+# Base class for constructing a genotype-phenotype map
+# ----------------------------------------------------------
 
 class GenotypePhenotypeMap(BaseMap):
 
@@ -65,9 +77,9 @@ class GenotypePhenotypeMap(BaseMap):
 
         # Set initial properties fo GPM
         self.wildtype = wildtype
-        self.genotypes = genotypes
-        self.log_transform = log_transform
-        self.phenotypes = phenotypes
+        self.genotypes = np.array(genotypes)
+        self.log_transform = np.array(log_transform)
+        self.phenotypes = np.array(phenotypes)
 
         # Initialize Mutational mapping
         self.Mutations = MutationMap()
@@ -81,7 +93,59 @@ class GenotypePhenotypeMap(BaseMap):
 
         # If given errors, add them to map.
         if errors is not None:
-            self.errors = errors
+            self.errors = np.array(errors)
+
+    # ----------------------------------------------------------
+    # Class method to load from source
+    # ----------------------------------------------------------
+
+    @classmethod
+    def from_json(cls, filename, **kwargs):
+        """ Load a genotype-phenotype map directly from a json file. 
+        
+            The JSON metadata must include the following attributes
+        """
+        # Open, json load, and close a json file
+        f = open(filename, "r")
+        data = json.load(f)
+        f.close()
+        
+        # Grab all properties from data-structure
+        args = ["wildtype", "genotypes", "phenotypes"]
+        options = {
+            "errors": None, 
+            "log_transform": False, 
+            "mutations": None
+        }
+        
+        # Grab all arguments and order them
+        for i in range(len(args)):
+            # Get all args
+            try: 
+                args[i] = data[args[i]]
+            except KeyError:
+                raise LoadingException("""No `%s` property in json data. Must have %s for GPM construction. """ % (args[i], args[i]) )
+        
+        # Get all options for map and order them
+        for key in options:
+            # See if options are in json data
+            try:
+                options[key] = data[key]
+            except:
+                pass
+        
+        # Override any properties with specified kwargs passed directly into method
+        options.update(kwargs)
+        print(options)
+        
+        # Create an instance
+        gpm = cls(args[0], args[1], args[2], **options)
+        return gpm
+    
+    # ----------------------------------------------------------
+    # Properties of the map
+    # ----------------------------------------------------------
+
 
     @property
     def length(self):
