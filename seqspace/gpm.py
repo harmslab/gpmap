@@ -136,7 +136,6 @@ class GenotypePhenotypeMap(BaseMap):
         
         # Override any properties with specified kwargs passed directly into method
         options.update(kwargs)
-        print(options)
         
         # Create an instance
         gpm = cls(args[0], args[1], args[2], **options)
