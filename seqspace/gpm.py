@@ -78,7 +78,7 @@ class GenotypePhenotypeMap(BaseMap):
         # Set initial properties fo GPM
         self.wildtype = wildtype
         self.genotypes = np.array(genotypes)
-        self.log_transform = np.array(log_transform)
+        self.log_transform = log_transform
         self.phenotypes = np.array(phenotypes)
 
         # Initialize Mutational mapping
