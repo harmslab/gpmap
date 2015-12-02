@@ -17,6 +17,11 @@ class RawMap:
         return self._phenotypes
         
     @property
+    def stdevs(self):
+        """"""
+        return self._stdevs
+        
+    @property
     def errors(self):
         """"""
         return self._errors
@@ -25,6 +30,11 @@ class RawMap:
     def phenotypes(self, phenotypes):
         """"""
         self._phenotypes = phenotypes
+        
+    @stdevs.setter
+    def stdevs(self, stdevs):
+        """"""
+        self._stdevs = stdevs
         
     @errors.setter
     def errors(self, errors):

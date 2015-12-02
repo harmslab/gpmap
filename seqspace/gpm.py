@@ -37,7 +37,7 @@ class LoadingException(Exception):
 
 class GenotypePhenotypeMap(BaseMap):
 
-    def __init__(self, wildtype, genotypes, phenotypes, errors=None, log_transform=False, mutations=None, n_replicates=1):
+    def __init__(self, wildtype, genotypes, phenotypes, stdevs=None, log_transform=False, mutations=None, n_replicates=1):
         """
             Construct a full genotype phenotype mapping object.
 
@@ -95,8 +95,8 @@ class GenotypePhenotypeMap(BaseMap):
         self._construct_binary()
 
         # If given errors, add them to map.
-        if errors is not None:
-            self.errors = np.array(errors)
+        if stdevs is not None:
+            self.stdevs = np.array(stdevs)
 
     # ----------------------------------------------------------
     # Class method to load from source
@@ -116,7 +116,7 @@ class GenotypePhenotypeMap(BaseMap):
         # Grab all properties from data-structure
         args = ["wildtype", "genotypes", "phenotypes"]
         options = {
-            "errors": None, 
+            "stdevs": None, 
             "log_transform": False, 
             "mutations": None,
             "n_replicates": 1,
@@ -197,8 +197,13 @@ class GenotypePhenotypeMap(BaseMap):
 
     @property
     def errors(self):
-        """ Get the phenotypes' errors in the system. """
+        """ Get the standard error of the phenotypes (=stdev/sqrt(n_replicates))"""
         return self._errors
+    
+    @property
+    def stdevs(self):
+        """ Get the phenotypes' errors in the system. """
+        return self._stdevs
     
     @property
     def n_replicates(self):
@@ -296,8 +301,8 @@ class GenotypePhenotypeMap(BaseMap):
         """Set the number of replicate measurements taken of phenotypes"""
         self._n_replicates = n_replicates
 
-    @errors.setter
-    def errors(self, errors):
+    @stdevs.setter
+    def stdevs(self, stdevs):
         """ Set error from ordered list of phenotype error.
 
             Args:
@@ -310,12 +315,15 @@ class GenotypePhenotypeMap(BaseMap):
         # Initialize an error map
         self._errors = ErrorMap()
         
-        # Order phenotype errors from geno2pheno_err dictionary
-        if type(errors) is dict:
-            errors = self._if_dict(errors)
+        # Order phenotype stdevs from geno2pheno_err dictionary
+        if type(stdevs) is dict:
+            stdevs = self._if_dict(stdevs)
 
         # Make sure there errors are numpy arrays
-        _errors = np.array(errors)
+        _stdevs = np.array(stdevs)
+        
+        # Calculate standard errors from measurements
+        _errors = stdevs/np.sqrt(self.n_replicates)
         
         # For log-transformations of error, errors center around 1
         if self.log_transform is True:
@@ -323,21 +331,20 @@ class GenotypePhenotypeMap(BaseMap):
             # Add errors to the Raw map
             try:
                 # Add to the Raw map
+                self.Raw.stdevs = _stdevs
                 self.Raw.errors = _errors
+                
             except AttributeError:
                 raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
-            
-            # Divide the errors by root(number of replicate measurements)
-            _errors = _errors/np.sqrt(self.n_replicates)
-            
+                        
             # Log transform the errors
             self._errors.upper = np.log10(1+_errors/self.Raw.phenotypes)
             self._errors.lower = np.log10(1-_errors/self.Raw.phenotypes)
 
-        else:
-            # Divide the errors by root(number of replicate measurements
-            _errors = _errors/np.sqrt(self.n_replicates)
-            
+        else:    
+            # Set the standard deviations
+            self._stdevs = _stdevs
+                    
             # Set the scaled errors
             self._errors.upper = _errors
             self._errors.lower = _errors
