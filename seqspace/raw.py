@@ -7,6 +7,7 @@
 # ----------------------------------------------------------
 
 from seqspace.base import BaseMap
+from seqspace.errors import ErrorMap
 
 class RawMap:
     
@@ -28,4 +29,6 @@ class RawMap:
     @errors.setter
     def errors(self, errors):
         """"""
-        self._errors = errors
+        self._errors = ErrorMap()
+        self._errors.upper = errors
+        self._errors.lower = -1*errors

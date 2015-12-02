@@ -269,11 +269,13 @@ class GenotypePhenotypeMap(BaseMap):
             else:
                 _phenotypes = phenotypes
 
-        # log transform if log_transform = True
+        # log transform if log_transform = True. Raw phenotypes are stored in an separate object
         if self.log_transform is True:
             self.Raw = RawMap()
             self.Raw.phenotypes = _phenotypes
-            self._phenotypes = np.log10(_phenotypes)
+            _phenotypes = np.log10(_phenotypes)
+            
+        self._phenotypes = _phenotypes
 
         # Set binary phenotypes if binary exists... assumes
         # that binary sequences are sorted to match raw genotypes.
@@ -292,32 +294,37 @@ class GenotypePhenotypeMap(BaseMap):
                 this method automatically orders the errors into numpy
                 array.
         """
+        # Initialize an error map
         self._errors = ErrorMap()
+        
         # Order phenotype errors from geno2pheno_err dictionary
         if type(errors) is dict:
             errors = self._if_dict(errors)
 
-        # For log-transformations of error, need to translate errors to center around 1,
-        # then take the log.
         _errors = np.array(errors)
         
+        # For log-transformations of error, errors center around 1
         if self.log_transform is True:
-            # Reference = http://onlinelibrary.wiley.com/doi/10.1002/sim.1525/epdf
-            # \sigma_{log(f)}^{2} = log(1 + \sigma_{f}6{2}/mean(f)^{2})
-            #self._errors = np.sqrt(np.log10(1 + (errors**2)/self._untransformed_phenotypes**2))
             
-            self.Raw.errors = _errors
-            self._errors.upper = np.log10(1+_errors)
-            self._errors.lower = np.1og10(1-_errors)
-            
-            #self.Binary.errors
-            self.Binary._errors.upper = self._errors.upper[self.Binary.indices]
-            self.Binary._errors.lower = self._errors.lower[self.Binary.indices]
+            # Add errors to the Raw map
+            try:
+                # Add to the Raw map
+                self.Raw.errors = _errors
+            except AttributeError:
+                raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
+                
+            # Log transform the errors
+            self._errors.upper = np.log10(1+_errors/self.Raw.phenotypes)
+            self._errors.lower = np.log10(1-_errors/self.Raw.phenotypes)
 
         else:
+            
             self._errors.upper = _errors
             self._errors.lower = -1*_errors
-            
+        
+        # If a binary map exists
+        if hasattr(self, "Binary"):
+            # Pass errors in binary map as well
             self.Binary._errors.upper = self._errors.upper[self.Binary.indices]
             self.Binary._errors.lower = self._errors.lower[self.Binary.indices]
 
@@ -358,15 +365,21 @@ class GenotypePhenotypeMap(BaseMap):
         binary = np.empty(self.n, dtype="<U" + str(self.Binary.length))
 
         # Sort the genotypes by looking for them in the data.
+        
         # Sort the missing genotypes into a separate object
         missing_genotypes = list()
         missing_binary = list()
+        
         for i in range(len(unsorted_genotypes)):
+            
             # Keep and sort genotype if it exists in data.
             try:
+                
                 index = geno2index[unsorted_genotypes[i]]
                 binary[index] = unsorted_binary[i]
+            
             except KeyError:
+                
                 missing_genotypes.append(unsorted_genotypes[i])
                 missing_binary.append(unsorted_binary[i])
 
@@ -380,6 +393,9 @@ class GenotypePhenotypeMap(BaseMap):
 
         # Grab phenotypes if given by user. Otherwise, pass.
         try:
+            
             self.Binary.phenotypes = self.phenotypes[:]
+        
         except AttributeError:
+            
             pass
