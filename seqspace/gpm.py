@@ -37,7 +37,7 @@ class LoadingException(Exception):
 
 class GenotypePhenotypeMap(BaseMap):
 
-    def __init__(self, wildtype, genotypes, phenotypes, errors=None, log_transform=False, mutations=None):
+    def __init__(self, wildtype, genotypes, phenotypes, errors=None, log_transform=False, mutations=None, n_replicates=1):
         """
             Construct a full genotype phenotype mapping object.
 
@@ -82,6 +82,7 @@ class GenotypePhenotypeMap(BaseMap):
         self.genotypes = np.array(genotypes)
         self.log_transform = log_transform
         self.phenotypes = np.array(phenotypes)
+        self.n_replicates = n_replicates
 
         # Initialize Mutational mapping
         self.Mutations = MutationMap()
@@ -117,7 +118,8 @@ class GenotypePhenotypeMap(BaseMap):
         options = {
             "errors": None, 
             "log_transform": False, 
-            "mutations": None
+            "mutations": None,
+            "n_replicates": 1,
         }
         
         # Grab all arguments and order them
@@ -197,11 +199,17 @@ class GenotypePhenotypeMap(BaseMap):
     def errors(self):
         """ Get the phenotypes' errors in the system. """
         return self._errors
+    
+    @property
+    def n_replicates(self):
+        """Return the number of replicate measurements made of the phenotype"""
+        return self._n_replicates
 
     @property
     def indices(self):
         """ Return numpy array of genotypes position. """
         return self._indices
+        
 
     # ----------------------------------------------------------
     # Setter methods
@@ -283,6 +291,11 @@ class GenotypePhenotypeMap(BaseMap):
             self.Binary.phenotypes = phenotypes
 
 
+    @n_replicates.setter
+    def n_replicates(self, n_replicates):
+        """Set the number of replicate measurements taken of phenotypes"""
+        self._n_replicates = n_replicates
+
     @errors.setter
     def errors(self, errors):
         """ Set error from ordered list of phenotype error.
@@ -301,7 +314,7 @@ class GenotypePhenotypeMap(BaseMap):
         if type(errors) is dict:
             errors = self._if_dict(errors)
 
-        _errors = np.array(errors)
+        _errors = np.array(errors)/np.sqrt(self.n_replicates)
         
         # For log-transformations of error, errors center around 1
         if self.log_transform is True:
@@ -320,7 +333,7 @@ class GenotypePhenotypeMap(BaseMap):
         else:
             
             self._errors.upper = _errors
-            self._errors.lower = 1*_errors
+            self._errors.lower = _errors
         
         # If a binary map exists
         if hasattr(self, "Binary"):
