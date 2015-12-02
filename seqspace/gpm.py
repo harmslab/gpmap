@@ -314,7 +314,8 @@ class GenotypePhenotypeMap(BaseMap):
         if type(errors) is dict:
             errors = self._if_dict(errors)
 
-        _errors = np.array(errors)/np.sqrt(self.n_replicates)
+        # Make sure there errors are numpy arrays
+        _errors = np.array(errors)
         
         # For log-transformations of error, errors center around 1
         if self.log_transform is True:
@@ -325,13 +326,19 @@ class GenotypePhenotypeMap(BaseMap):
                 self.Raw.errors = _errors
             except AttributeError:
                 raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
-                
+            
+            # Divide the errors by root(number of replicate measurements)
+            _errors = _errors/np.sqrt(self.n_replicates)
+            
             # Log transform the errors
             self._errors.upper = np.log10(1+_errors/self.Raw.phenotypes)
             self._errors.lower = np.log10(1-_errors/self.Raw.phenotypes)
 
         else:
+            # Divide the errors by root(number of replicate measurements
+            _errors = _errors/np.sqrt(self.n_replicates)
             
+            # Set the scaled errors
             self._errors.upper = _errors
             self._errors.lower = _errors
         
