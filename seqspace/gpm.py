@@ -17,6 +17,8 @@ import numpy as np
 from seqspace.base import BaseMap
 from seqspace.binary import BinaryMap
 from seqspace.mutations import MutationMap
+from seqspace.raw import RawMap
+from seqspace.errors import ErrorMap
 from seqspace.graph import Graph
 
 # import utils used into module.
@@ -260,17 +262,18 @@ class GenotypePhenotypeMap(BaseMap):
                 array.
         """
         if type(phenotypes) is dict:
-            self._phenotypes = self._if_dict(phenotypes)
+            _phenotypes = self._if_dict(phenotypes)
         else:
             if len(phenotypes) != len(self._genotypes):
                 raise ValueError("Number of phenotypes does not equal number of genotypes.")
             else:
-                self._phenotypes = phenotypes
+                _phenotypes = phenotypes
 
         # log transform if log_transform = True
         if self.log_transform is True:
-            self._untransformed_phenotypes = self._phenotypes
-            self._phenotypes = np.log10(self._phenotypes)
+            self.Raw = RawMap()
+            self.Raw.phenotypes = _phenotypes
+            self._phenotypes = np.log10(_phenotypes)
 
         # Set binary phenotypes if binary exists... assumes
         # that binary sequences are sorted to match raw genotypes.
@@ -289,24 +292,34 @@ class GenotypePhenotypeMap(BaseMap):
                 this method automatically orders the errors into numpy
                 array.
         """
+        self._errors = ErrorMap()
         # Order phenotype errors from geno2pheno_err dictionary
         if type(errors) is dict:
             errors = self._if_dict(errors)
 
         # For log-transformations of error, need to translate errors to center around 1,
         # then take the log.
+        _errors = np.array(errors)
+        
         if self.log_transform is True:
             # Reference = http://onlinelibrary.wiley.com/doi/10.1002/sim.1525/epdf
             # \sigma_{log(f)}^{2} = log(1 + \sigma_{f}6{2}/mean(f)^{2})
+            #self._errors = np.sqrt(np.log10(1 + (errors**2)/self._untransformed_phenotypes**2))
+            
+            self.Raw.errors = _errors
+            self._errors.upper = np.log10(1+_errors)
+            self._errors.lower = np.1og10(1-_errors)
+            
+            #self.Binary.errors
+            self.Binary._errors.upper = self._errors.upper[self.Binary.indices]
+            self.Binary._errors.lower = self._errors.lower[self.Binary.indices]
 
-            self._errors = np.array((-np.sqrt(np.log10(1 + (errors**2)/self._untransformed_phenotypes**2)),
-                                    np.sqrt(np.log10(1 + (errors**2)/self._untransformed_phenotypes**2))))
-
-            self.Binary._errors = np.array([self._errors[:,i] for i in self.Binary.indices]).T
         else:
-            self._errors = errors
-            self.Binary._errors = np.array([errors[i] for i in self.Binary.indices])
-
+            self._errors.upper = _errors
+            self._errors.lower = -1*_errors
+            
+            self.Binary._errors.upper = self._errors.upper[self.Binary.indices]
+            self.Binary._errors.lower = self._errors.lower[self.Binary.indices]
 
     # ------------------------------------------------------------
     # Displayed methods for mapping object

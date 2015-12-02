@@ -1,4 +1,4 @@
-# GPM -- Python mapping utilities for constructing genotype-phenotype maps 
+# Python mapping objects for analyzing genotype-phenotype maps 
 
 This module provides mapping object/data-structures for managing genotype-phenotype data. 
 

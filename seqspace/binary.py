@@ -8,11 +8,15 @@
 import numpy as np
 
 from seqspace.base import BaseMap
+from seqspace.errors import ErrorMap
 
 class BinaryMap(BaseMap):
     """
         Map for holding a binary representation of an epistasis map.
     """
+    
+    def __init__(self):
+        self._errors = ErrorMap()
 
     @property
     def length(self):
@@ -86,8 +90,3 @@ class BinaryMap(BaseMap):
     def phenotypes(self, phenotypes):
         """ Set the phenotype values in an array orderd same as binary reprentation."""
         self._phenotypes = phenotypes
-
-    @errors.setter
-    def errors(self, errors):
-        """ Set the phenotype values in an array orderd same as binary reprentation."""
-        self._errors = errors
