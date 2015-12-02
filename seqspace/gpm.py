@@ -320,10 +320,11 @@ class GenotypePhenotypeMap(BaseMap):
         else:
             
             self._errors.upper = _errors
-            self._errors.lower = -1*_errors
+            self._errors.lower = 1*_errors
         
         # If a binary map exists
         if hasattr(self, "Binary"):
+            
             # Pass errors in binary map as well
             self.Binary._errors.upper = self._errors.upper[self.Binary.indices]
             self.Binary._errors.lower = self._errors.lower[self.Binary.indices]

@@ -31,4 +31,4 @@ class RawMap:
         """"""
         self._errors = ErrorMap()
         self._errors.upper = errors
-        self._errors.lower = -1*errors
+        self._errors.lower = errors
