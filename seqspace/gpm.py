@@ -95,7 +95,7 @@ class GenotypePhenotypeMap(BaseMap):
         self._construct_binary()
 
         # If given errors, add them to map.
-        self.stdevs = np.array(stdevs)
+        self.stdevs = stdevs
 
     # ----------------------------------------------------------
     # Class method to load from source
