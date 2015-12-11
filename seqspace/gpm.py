@@ -18,11 +18,20 @@ from seqspace.base import BaseMap
 from seqspace.binary import BinaryMap
 from seqspace.mutations import MutationMap
 from seqspace.raw import RawMap
-from seqspace.errors import ErrorMap
 from seqspace.graph import Graph
+from seqspace.errors import (VarianceMap, 
+                            StandardDeviationMap, 
+                            StandardErrorMap)
+
+from seqspace.stats import corrected_sterror
 
 # import utils used into module.
-from seqspace.utils import hamming_distance, binary_mutations_map, farthest_genotype, encode_mutations, construct_genotypes
+from seqspace.utils import (hamming_distance, 
+                            binary_mutations_map, 
+                            farthest_genotype, 
+                            encode_mutations, 
+                            construct_genotypes)
+
 
 # ----------------------------------------------------------
 # Exceptions
@@ -37,7 +46,12 @@ class LoadingException(Exception):
 
 class GenotypePhenotypeMap(BaseMap):
 
-    def __init__(self, wildtype, genotypes, phenotypes, stdevs=None, log_transform=False, mutations=None, n_replicates=1):
+    def __init__(self, wildtype, genotypes, phenotypes, 
+                    stdeviations=None, 
+                    variances=None, 
+                    log_transform=False, 
+                    mutations=None, 
+                    n_replicates=1):
         """
             Construct a full genotype phenotype mapping object.
 
@@ -95,7 +109,13 @@ class GenotypePhenotypeMap(BaseMap):
         self._construct_binary()
 
         # If given errors, add them to map.
-        self.stdevs = stdevs
+        if variances is None:
+            if stdeviations is not None:
+                self.variances = np.square(np.array(stdeviations))
+        else:
+            self.variances = variances                
+            
+
 
     # ----------------------------------------------------------
     # Class method to load from source
@@ -193,16 +213,6 @@ class GenotypePhenotypeMap(BaseMap):
     def phenotypes(self):
         """ Get the phenotypes of the system. """
         return self._phenotypes
-
-    @property
-    def errors(self):
-        """ Get the standard error of the phenotypes (=stdev/sqrt(n_replicates))"""
-        return self._errors
-    
-    @property
-    def stdevs(self):
-        """ Get the phenotypes' errors in the system. """
-        return self._stdevs
     
     @property
     def n_replicates(self):
@@ -214,6 +224,10 @@ class GenotypePhenotypeMap(BaseMap):
         """ Return numpy array of genotypes position. """
         return self._indices
         
+    @property
+    def variances(self):
+        """ Get user defined standard deviations. """
+        return self._variances
 
     # ----------------------------------------------------------
     # Setter methods
@@ -294,69 +308,51 @@ class GenotypePhenotypeMap(BaseMap):
         if hasattr(self, "Binary"):
             self.Binary.phenotypes = phenotypes
 
+    @variances.setter
+    def variances(self, variances):
+        """ Set standard deviations and initialize all other error handling"""
+          
+        if self.log_transform is True:
+        
+            # Add errors to the Raw map
+            try:
+                # Add to the Raw map
+                self.Raw.variances = variances
+            
+            except AttributeError:
+                raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
+                    
+            # Log transform the errors
+            _upper = np.log10(1+variances/self.Raw.phenotypes)
+            _lower = np.log10(1-variances/self.Raw.phenotypes)
+        else:
+            _upper = variances
+            _lower = variances
+
+        # Set variances in class
+        self._variances = variances
+        
+        # Set up all statistics for error.
+        self.var = VarianceMap(_upper, _lower)
+        self.std = StandardDeviationMap(_upper, _lower, n_replicates=self.n_replicates)
+        self.err = StandardErrorMap(_upper, _lower, n_replicates=self.n_replicates)
+        
+        # If a binary map exists
+        if hasattr(self, "Binary"):
+            # Set binary standard deviations
+            self.Binary._variances = self._variances[self.Binary.indices]
+        
+            # Set up all statistics for error.
+            self.Binary.var = VarianceMap(_upper, _lower)
+            self.Binary.std = StandardDeviationMap(_upper, _lower, n_replicates=self.n_replicates)
+            self.Binary.err = StandardErrorMap(_upper, _lower, n_replicates=self.n_replicates)
+
 
     @n_replicates.setter
     def n_replicates(self, n_replicates):
         """Set the number of replicate measurements taken of phenotypes"""
         self._n_replicates = n_replicates
 
-    @stdevs.setter
-    def stdevs(self, stdevs):
-        """ Set error from ordered list of phenotype error.
-
-            Args:
-            -----
-            error: array-like or dict
-                if array-like, it musted be ordered by genotype; if dict,
-                this method automatically orders the errors into numpy
-                array.
-        """
-        if stdevs is not None: 
-            # Initialize an error map
-            self._errors = ErrorMap()
-        
-            # Order phenotype stdevs from geno2pheno_err dictionary
-            if type(stdevs) is dict:
-                stdevs = self._if_dict(stdevs)
-
-            # Make sure there errors are numpy arrays
-            _stdevs = np.array(stdevs)
-        
-            # Calculate standard errors from measurements
-            _errors = stdevs/np.sqrt(self.n_replicates)
-        
-            # For log-transformations of error, errors center around 1
-            if self.log_transform is True:
-            
-                # Add errors to the Raw map
-                try:
-                    # Add to the Raw map
-                    self.Raw.stdevs = _stdevs
-                    self.Raw.errors = _errors
-                
-                except AttributeError:
-                    raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
-                        
-                # Log transform the errors
-                self._errors.upper = np.log10(1+_errors/self.Raw.phenotypes)
-                self._errors.lower = np.log10(1-_errors/self.Raw.phenotypes)
-
-            else:    
-                # Set the standard deviations
-                self._stdevs = _stdevs
-                    
-                # Set the scaled errors
-                self._errors.upper = _errors
-                self._errors.lower = _errors
-        
-            # If a binary map exists
-            if hasattr(self, "Binary"):
-            
-                # Pass errors in binary map as well
-                self.Binary._errors.upper = self._errors.upper[self.Binary.indices]
-                self.Binary._errors.lower = self._errors.lower[self.Binary.indices]
-        else:
-            self._stdevs = None
 
     # ------------------------------------------------------------
     # Displayed methods for mapping object

@@ -7,7 +7,6 @@
 # ----------------------------------------------------------
 
 from seqspace.base import BaseMap
-from seqspace.errors import ErrorMap
 
 class RawMap:
     
@@ -17,7 +16,7 @@ class RawMap:
         return self._phenotypes
         
     @property
-    def stdevs(self):
+    def variances(self):
         """"""
         return self._stdevs
         
@@ -31,14 +30,7 @@ class RawMap:
         """"""
         self._phenotypes = phenotypes
         
-    @stdevs.setter
-    def stdevs(self, stdevs):
+    @variances.setter
+    def variances(self, variances):
         """"""
-        self._stdevs = stdevs
-        
-    @errors.setter
-    def errors(self, errors):
-        """"""
-        self._errors = ErrorMap()
-        self._errors.upper = errors
-        self._errors.lower = errors
+        self._variances = variances
