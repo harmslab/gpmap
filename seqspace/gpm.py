@@ -112,6 +112,8 @@ class GenotypePhenotypeMap(BaseMap):
         if variances is None:
             if stdeviations is not None:
                 self.variances = np.square(np.array(stdeviations))
+            else:
+                self.variances = None
         else:
             self.variances = variances                
             
@@ -312,41 +314,49 @@ class GenotypePhenotypeMap(BaseMap):
     @variances.setter
     def variances(self, variances):
         """ Set standard deviations and initialize all other error handling"""
-          
-        if self.log_transform is True:
         
-            # Add errors to the Raw map
-            try:
-                # Add to the Raw map
-                self.Raw.variances = variances
+        # If variances is not None, create the internal error mapping
+        if variances is not None:
             
-            except AttributeError:
-                raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
+            if self.log_transform is True:
+        
+                # Add errors to the Raw map
+                try:
+                    # Add to the Raw map
+                    self.Raw.variances = variances
+            
+                except AttributeError:
+                    raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
                     
-            # Log transform the errors
-            _upper = np.log10(1+variances/self.Raw.phenotypes)
-            _lower = np.log10(1-variances/self.Raw.phenotypes)
-        else:
-            _upper = variances
-            _lower = variances
+                # Log transform the errors
+                _upper = np.log10(1+variances/self.Raw.phenotypes)
+                _lower = np.log10(1-variances/self.Raw.phenotypes)
+            else:
+                _upper = variances
+                _lower = variances
 
-        # Set variances in class
-        self._variances = variances
-        
-        # Set up all statistics for error.
-        self.var = VarianceMap(_upper, _lower)
-        self.std = StandardDeviationMap(_upper, _lower, n_replicates=self.n_replicates)
-        self.err = StandardErrorMap(_upper, _lower, n_replicates=self.n_replicates)
-        
-        # If a binary map exists
-        if hasattr(self, "Binary"):
-            # Set binary standard deviations
-            self.Binary._variances = self._variances[self.Binary.indices]
+            # Set variances in class
+            self._variances = variances
         
             # Set up all statistics for error.
-            self.Binary.var = VarianceMap(_upper, _lower)
-            self.Binary.std = StandardDeviationMap(_upper, _lower, n_replicates=self.n_replicates)
-            self.Binary.err = StandardErrorMap(_upper, _lower, n_replicates=self.n_replicates)
+            self.var = VarianceMap(_upper, _lower)
+            self.std = StandardDeviationMap(_upper, _lower, n_replicates=self.n_replicates)
+            self.err = StandardErrorMap(_upper, _lower, n_replicates=self.n_replicates)
+        
+            # If a binary map exists
+            if hasattr(self, "Binary"):
+                # Set binary standard deviations
+                self.Binary._variances = self._variances[self.Binary.indices]
+        
+                # Set up all statistics for error.
+                self.Binary.var = VarianceMap(_upper, _lower)
+                self.Binary.std = StandardDeviationMap(_upper, _lower, n_replicates=self.n_replicates)
+                self.Binary.err = StandardErrorMap(_upper, _lower, n_replicates=self.n_replicates)
+        
+        else:
+            
+            self._variances = None
+            self.Binary._variances = None
 
 
     @n_replicates.setter

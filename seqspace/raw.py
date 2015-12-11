@@ -18,7 +18,7 @@ class RawMap:
     @property
     def variances(self):
         """"""
-        return self._stdevs
+        return self._variances
         
     @property
     def errors(self):
