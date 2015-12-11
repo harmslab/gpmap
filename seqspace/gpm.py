@@ -135,7 +135,8 @@ class GenotypePhenotypeMap(BaseMap):
         # Grab all properties from data-structure
         args = ["wildtype", "genotypes", "phenotypes"]
         options = {
-            "stdevs": None, 
+            "stdeviations": None,
+            "variances": None, 
             "log_transform": False, 
             "mutations": None,
             "n_replicates": 1,
