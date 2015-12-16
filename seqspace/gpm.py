@@ -329,8 +329,8 @@ class GenotypePhenotypeMap(BaseMap):
                     raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
                     
                 # Log transform the errors
-                _upper = np.log10(1+variances/self.Raw.phenotypes**2)
-                _lower = abs(np.log10(1-variances/self.Raw.phenotypes**2))
+                _upper = np.log10(1+variances/self.Raw.phenotypes)
+                _lower = abs(np.log10(1-variances/self.Raw.phenotypes))
             else:
                 _upper = variances
                 _lower = variances
