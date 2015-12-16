@@ -330,7 +330,7 @@ class GenotypePhenotypeMap(BaseMap):
                     
                 # Log transform the errors
                 _upper = np.log10(1+variances/self.Raw.phenotypes)
-                _lower = np.log10(1-variances/self.Raw.phenotypes)
+                _lower = abs(np.log10(1-variances/self.Raw.phenotypes))
             else:
                 _upper = variances
                 _lower = variances
