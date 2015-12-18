@@ -19,8 +19,7 @@ from seqspace.binary import BinaryMap
 from seqspace.mutations import MutationMap
 from seqspace.raw import RawMap
 from seqspace.graph import GenotypePhenotypeGraph
-from seqspace.errors import (VarianceMap, 
-                            StandardDeviationMap, 
+from seqspace.errors import (StandardDeviationMap, 
                             StandardErrorMap)
 
 from seqspace.stats import corrected_sterror
@@ -48,7 +47,6 @@ class GenotypePhenotypeMap(BaseMap):
 
     def __init__(self, wildtype, genotypes, phenotypes, 
                     stdeviations=None, 
-                    variances=None, 
                     log_transform=False, 
                     mutations=None, 
                     n_replicates=1):
@@ -107,15 +105,37 @@ class GenotypePhenotypeMap(BaseMap):
         # Constructs a complete sequence space and stores genotypes missing in the
         # data as an attribute, `missing_genotypes`.
         self._construct_binary()
-
-        # If given errors, add them to map.
-        if variances is None:
-            if stdeviations is not None:
-                self.variances = np.square(np.array(stdeviations))
-            else:
-                self.variances = None
+  
+  
+        # Set up the error mapping
+        if stdeviations is not None:
+            
+            self.stdeviations = np.array(stdeviations)
+        
+            if self.log_transform is True:
+    
+                # Add errors to the Raw map
+                try:
+                    # Add to the Raw map
+                    self.Raw.stdeviations = self.stdeviations
+                    self.Raw.std = StandardDeviationMap(self.phenotypes, self.stdeviations, log_transform=False)
+                    self.Raw.err = StandardErrorMap(self.phenotypes, self.stdeviations, log_transform=False, n_replicates=self.n_replicates)
+                    
+                except AttributeError:
+                    raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
+    
+            # Set up all statistics for error.
+            self.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform)
+            self.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
+    
+            # If a binary map exists
+            if hasattr(self, "Binary"):    
+                # Set up all statistics for error.
+                self.Binary.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform)
+                self.Binary.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
+        
         else:
-            self.variances = variances                
+            self.stdeviations = None
         
         # Add a networkx graph object
         self.Graph = GenotypePhenotypeGraph(self)
@@ -140,7 +160,6 @@ class GenotypePhenotypeMap(BaseMap):
         args = ["wildtype", "genotypes", "phenotypes"]
         options = {
             "stdeviations": None,
-            "variances": None, 
             "log_transform": False, 
             "mutations": None,
             "n_replicates": 1,
@@ -228,11 +247,6 @@ class GenotypePhenotypeMap(BaseMap):
     def indices(self):
         """ Return numpy array of genotypes position. """
         return self._indices
-        
-    @property
-    def variances(self):
-        """ Get user defined standard deviations. """
-        return self._variances
 
     # ----------------------------------------------------------
     # Setter methods
@@ -312,50 +326,6 @@ class GenotypePhenotypeMap(BaseMap):
         # that binary sequences are sorted to match raw genotypes.
         if hasattr(self, "Binary"):
             self.Binary.phenotypes = phenotypes
-
-    @variances.setter
-    def variances(self, variances):
-        """ Set standard deviations and initialize all other error handling"""
-        
-        # If variances is not None, create the internal error mapping
-        if variances is not None:
-            
-            if self.log_transform is True:
-        
-                # Add errors to the Raw map
-                try:
-                    # Add to the Raw map
-                    self.Raw.variances = variances
-                    self.Raw.var = VarianceMap(self.phenotypes, variances)
-                    self.Raw.std = StandardDeviationMap(self.phenotypes, variances)
-                    self.Raw.err = StandardErrorMap(self.phenotypes, variances, n_replicates=self.n_replicates)            
-                
-                except AttributeError:
-                    raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
-
-
-            # Set variances in class
-            self._variances = variances
-        
-            # Set up all statistics for error.
-            self.var = VarianceMap(self.phenotypes, variances, log_transform=self.log_transform)
-            self.std = StandardDeviationMap(self.phenotypes, variances, log_transform=self.log_transform)
-            self.err = StandardErrorMap(self.phenotypes, variances, log_transform=self.log_transform, n_replicates=self.n_replicates)
-        
-            # If a binary map exists
-            if hasattr(self, "Binary"):
-                # Set binary standard deviations
-                self.Binary._variances = self._variances[self.Binary.indices]
-        
-                # Set up all statistics for error.
-                self.Binary.var = VarianceMap(self.phenotypes, variances, log_transform=self.log_transform)
-                self.Binary.std = StandardDeviationMap(self.phenotypes, variances, log_transform=self.log_transform)
-                self.Binary.err = StandardErrorMap(self.phenotypes, variances, log_transform=self.log_transform, n_replicates=self.n_replicates)
-        
-        else:
-            
-            self._variances = None
-            self.Binary._variances = None
 
 
     @n_replicates.setter

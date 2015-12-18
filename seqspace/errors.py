@@ -13,18 +13,17 @@ from seqspace.base import BaseMap
 
 class BaseErrorMap(BaseMap):
     
-    def __init__(self, phenotypes, variances, log_transform=False, lower=None):
+    def __init__(self, phenotypes, stdeviations, log_transform=False, lower=None):
         """ If a lower bound is given, use it instead of -variances. """
         
         self.phenotypes = phenotypes
-        self.variances = variances
+        self.stdeviations = stdeviations
         self.log_transform = log_transform
     
         # Set a lower bound -- if None, just use upper bound.
-        self.variances_ = variances
-        if lower is None:
-            self.variances_ = variances
-        
+        self.stdeviations_ = lower
+        if lower == None:
+            self.steviations_ = self.stdeviations   
         
     
     @staticmethod
@@ -55,50 +54,38 @@ class BaseErrorMap(BaseMap):
     def upper(self):
         """"""
         if self.log_transform:
-            return self.transform(self.wrapper(self.variances), self.phenotypes)
+            return self.transform(self.wrapper(self.stdeviations), self.phenotypes)
         else:
-            return self.wrapper(self.variances)
+            return self.wrapper(self.stdeviations)
         
     @property
     def lower(self):
         """"""
         if self.log_transform:
-            return self.transform(-self.wrapper(self.variances), self.phenotypes)
+            return self.transform(-self.wrapper(self.stdeviations), self.phenotypes)
         else:
-            return self.wrapper(self.variances_) 
-        
-        
-class VarianceMap(BaseErrorMap):
-    
-    def __init__(self, phenotypes, variances, log_transform=False, lower=None):
-        """ Initialize a variance map object """
-        super(VarianceMap, self).__init__(phenotypes, variances, log_transform=log_transform, lower=None)
-    
-    @staticmethod
-    def wrapper(bounds, **kwargs):
-        """ Wrapper function to convert Variances if necessary"""
-        return bounds
+            return self.wrapper(self.stdeviations_) 
             
 
 class StandardDeviationMap(BaseErrorMap):
     
-    def __init__(self, phenotypes, variances, log_transform=False, lower=None):
+    def __init__(self, phenotypes, stdeviations, log_transform=False, lower=None):
         """ Initialize a standard deviations map. """
-        super(StandardDeviationMap, self).__init__(phenotypes, variances, log_transform=log_transform, lower=None)
+        super(StandardDeviationMap, self).__init__(phenotypes, stdeviations, log_transform=log_transform, lower=lower)
 
     @staticmethod
     def wrapper(bounds, **kwargs):
         """ Wrapper function to convert Variances if necessary"""
-        return np.sqrt(bounds)
+        return bounds
 
 class StandardErrorMap(BaseErrorMap):
     
     def __init__(self, phenotypes, variances, log_transform=False, n_replicates=2, lower=None):
         """ Initialize a standard error map object """
-        super(StandardErrorMap, self).__init__(phenotypes, variances, log_transform=log_transform, lower=None)
+        super(StandardErrorMap, self).__init__(phenotypes, variances, log_transform=log_transform, lower=lower)
         self.n_replicates = n_replicates
         
     @staticmethod
     def wrapper(bounds, n_replicates=2):
         """ Wrapper function to convert Variances if necessary"""
-        return np.sqrt(bounds)/np.sqrt(n_replicates)
+        return bounds/np.sqrt(n_replicates)

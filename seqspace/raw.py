@@ -16,9 +16,9 @@ class RawMap:
         return self._phenotypes
         
     @property
-    def variances(self):
+    def stdeviations(self):
         """"""
-        return self._variances
+        return self._stdeviations
         
     @property
     def errors(self):
@@ -30,7 +30,7 @@ class RawMap:
         """"""
         self._phenotypes = phenotypes
         
-    @variances.setter
-    def variances(self, variances):
+    @stdeviations.setter
+    def stdeviations(self, stdeviations):
         """"""
-        self._variances = variances
+        self._stdeviations = stdeviations
