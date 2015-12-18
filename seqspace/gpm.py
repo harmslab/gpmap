@@ -18,7 +18,7 @@ from seqspace.base import BaseMap
 from seqspace.binary import BinaryMap
 from seqspace.mutations import MutationMap
 from seqspace.raw import RawMap
-from seqspace.graph import Graph
+from seqspace.graph import GenotypePhenotypeGraph
 from seqspace.errors import (VarianceMap, 
                             StandardDeviationMap, 
                             StandardErrorMap)
@@ -116,7 +116,9 @@ class GenotypePhenotypeMap(BaseMap):
                 self.variances = None
         else:
             self.variances = variances                
-            
+        
+        # Add a networkx graph object
+        self.Graph = GenotypePhenotypeGraph(self)
 
 
     # ----------------------------------------------------------
@@ -324,24 +326,21 @@ class GenotypePhenotypeMap(BaseMap):
                 try:
                     # Add to the Raw map
                     self.Raw.variances = variances
-            
+                    self.Raw.var = VarianceMap(self.phenotypes, variances)
+                    self.Raw.std = StandardDeviationMap(self.phenotypes, variances)
+                    self.Raw.err = StandardErrorMap(self.phenotypes, variances, n_replicates=self.n_replicates)            
+                
                 except AttributeError:
                     raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
-                    
-                # Log transform the errors
-                _upper = np.log10(1+variances/self.Raw.phenotypes)
-                _lower = abs(np.log10(1-variances/self.Raw.phenotypes))
-            else:
-                _upper = variances
-                _lower = variances
+
 
             # Set variances in class
             self._variances = variances
         
             # Set up all statistics for error.
-            self.var = VarianceMap(_upper, _lower)
-            self.std = StandardDeviationMap(_upper, _lower, n_replicates=self.n_replicates)
-            self.err = StandardErrorMap(_upper, _lower, n_replicates=self.n_replicates)
+            self.var = VarianceMap(self.phenotypes, variances, log_transform=self.log_transform)
+            self.std = StandardDeviationMap(self.phenotypes, variances, log_transform=self.log_transform)
+            self.err = StandardErrorMap(self.phenotypes, variances, log_transform=self.log_transform, n_replicates=self.n_replicates)
         
             # If a binary map exists
             if hasattr(self, "Binary"):
@@ -349,9 +348,9 @@ class GenotypePhenotypeMap(BaseMap):
                 self.Binary._variances = self._variances[self.Binary.indices]
         
                 # Set up all statistics for error.
-                self.Binary.var = VarianceMap(_upper, _lower)
-                self.Binary.std = StandardDeviationMap(_upper, _lower, n_replicates=self.n_replicates)
-                self.Binary.err = StandardErrorMap(_upper, _lower, n_replicates=self.n_replicates)
+                self.Binary.var = VarianceMap(self.phenotypes, variances, log_transform=self.log_transform)
+                self.Binary.std = StandardDeviationMap(self.phenotypes, variances, log_transform=self.log_transform)
+                self.Binary.err = StandardErrorMap(self.phenotypes, variances, log_transform=self.log_transform, n_replicates=self.n_replicates)
         
         else:
             
@@ -364,15 +363,6 @@ class GenotypePhenotypeMap(BaseMap):
         """Set the number of replicate measurements taken of phenotypes"""
         self._n_replicates = n_replicates
 
-
-    # ------------------------------------------------------------
-    # Displayed methods for mapping object
-    # ------------------------------------------------------------
-
-    def build_graph(self):
-        """ Add a networkx DiGraph object representation of this space"""
-        # Initialize network
-        self.Graph = Graph(self)
 
     # ------------------------------------------------------------
     # Hidden methods for mapping object
