@@ -22,7 +22,7 @@ class BaseErrorMap(BaseMap):
     
         # Set a lower bound -- if None, just use upper bound.
         self.stdeviations_ = lower
-        if lower == None:
+        if lower is None:
             self.steviations_ = self.stdeviations   
         
     
@@ -45,8 +45,7 @@ class BaseErrorMap(BaseMap):
         """
         return abs(np.log10(1 + bounds/phenotypes))
         
-    @staticmethod
-    def wrapper(bound, **kwargs):
+    def wrapper(self, bound, **kwargs):
         """ Wrapper function that changes variances to whatever bound desired. """
         raise Exception(""" Must be implemented in a subclass """)
     
@@ -73,8 +72,7 @@ class StandardDeviationMap(BaseErrorMap):
         """ Initialize a standard deviations map. """
         super(StandardDeviationMap, self).__init__(phenotypes, stdeviations, log_transform=log_transform, lower=lower)
 
-    @staticmethod
-    def wrapper(bounds, **kwargs):
+    def wrapper(self, bounds, **kwargs):
         """ Wrapper function to convert Variances if necessary"""
         return bounds
 
@@ -85,7 +83,6 @@ class StandardErrorMap(BaseErrorMap):
         super(StandardErrorMap, self).__init__(phenotypes, stdeviations, log_transform=log_transform, lower=lower)
         self.n_replicates = n_replicates
         
-    @staticmethod
-    def wrapper(bounds, n_replicates=2):
+    def wrapper(self, bounds):
         """ Wrapper function to convert Variances if necessary"""
-        return bounds/np.sqrt(n_replicates)
+        return bounds/np.sqrt(self.n_replicates)
