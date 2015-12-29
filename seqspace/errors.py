@@ -80,9 +80,9 @@ class StandardDeviationMap(BaseErrorMap):
 
 class StandardErrorMap(BaseErrorMap):
     
-    def __init__(self, phenotypes, variances, log_transform=False, n_replicates=2, lower=None):
+    def __init__(self, phenotypes, stdeviations, log_transform=False, n_replicates=2, lower=None):
         """ Initialize a standard error map object """
-        super(StandardErrorMap, self).__init__(phenotypes, variances, log_transform=log_transform, lower=lower)
+        super(StandardErrorMap, self).__init__(phenotypes, stdeviations, log_transform=log_transform, lower=lower)
         self.n_replicates = n_replicates
         
     @staticmethod

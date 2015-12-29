@@ -106,36 +106,8 @@ class GenotypePhenotypeMap(BaseMap):
         # data as an attribute, `missing_genotypes`.
         self._construct_binary()
   
-  
-        # Set up the error mapping
-        if stdeviations is not None:
-            
-            self.stdeviations = np.array(stdeviations)
-        
-            if self.log_transform is True:
-    
-                # Add errors to the Raw map
-                try:
-                    # Add to the Raw map
-                    self.Raw.stdeviations = self.stdeviations
-                    self.Raw.std = StandardDeviationMap(self.phenotypes, self.stdeviations, log_transform=False)
-                    self.Raw.err = StandardErrorMap(self.phenotypes, self.stdeviations, log_transform=False, n_replicates=self.n_replicates)
-                    
-                except AttributeError:
-                    raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
-    
-            # Set up all statistics for error.
-            self.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform)
-            self.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
-    
-            # If a binary map exists
-            if hasattr(self, "Binary"):    
-                # Set up all statistics for error.
-                self.Binary.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform)
-                self.Binary.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
-        
-        else:
-            self.stdeviations = None
+        # Construct the error maps
+        self._construct_errors(stdeviations)
         
         # Add a networkx graph object
         self.Graph = GenotypePhenotypeGraph(self)
@@ -396,3 +368,48 @@ class GenotypePhenotypeMap(BaseMap):
         except AttributeError:
             
             pass
+            
+    
+    def _construct_errors(self, stdeviations):
+        """ 
+            Construct and attach a set of standard deviation and errormaps
+        """
+        # Set up the error mapping
+        if stdeviations is not None:
+            
+            self.stdeviations = np.array(stdeviations)
+        
+            if self.log_transform is True:
+    
+                # Add errors to the Raw map
+                try:
+                    # Add to the Raw map
+                    self.Raw.stdeviations = self.stdeviations
+                    self.Raw.std = StandardDeviationMap(self.phenotypes, self.stdeviations, log_transform=False)
+                    self.Raw.err = StandardErrorMap(self.phenotypes, self.stdeviations, log_transform=False, n_replicates=self.n_replicates)
+
+                    self.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform)
+                    self.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
+                    
+                    # If a binary map exists
+                    if hasattr(self, "Binary"):    
+                        # Set up all statistics for error.
+                        self.Binary.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform)
+                        self.Binary.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
+                    
+                except AttributeError:
+                    raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
+    
+            else:
+                # Set up all statistics for error.
+                self.std = StandardDeviationMap(self.phenotypes, self.stdeviations, log_transform=self.log_transform)
+                self.err = StandardErrorMap(self.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
+    
+                # If a binary map exists
+                if hasattr(self, "Binary"):    
+                    # Set up all statistics for error.
+                    self.Binary.std = StandardDeviationMap(self.phenotypes, self.stdeviations, log_transform=self.log_transform)
+                    self.Binary.err = StandardErrorMap(self.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
+                
+        else:
+            self.stdeviations = None
