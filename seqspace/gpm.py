@@ -40,7 +40,7 @@ class LoadingException(Exception):
     """ Error when loading Genotype Phenotype map data. """
     
 # ----------------------------------------------------------
-# Base class for constructing a genotype-phenotype map
+# Sampling from Genotype-phenotype
 # ----------------------------------------------------------
 
 class Sample:
@@ -53,6 +53,11 @@ class Sample:
         self.phenotypes = np.mean(self.replicate_phenotypes, axis=1)
         self.stdeviations = np.std(self.replicate_phenotypes, ddof=1, axis=1)
         self.indices = indices
+
+# ----------------------------------------------------------
+# Base class for constructing a genotype-phenotype map
+# ----------------------------------------------------------
+
 
 class GenotypePhenotypeMap(BaseMap):
 
@@ -458,7 +463,6 @@ class GenotypePhenotypeMap(BaseMap):
         if derived:
             random_indices[-1] = self.n-1
             
-
         # initialize arrays
         phenotypes = np.empty((frac_length, n_samples), dtype=float)
         genotypes = np.empty((frac_length, n_samples), dtype='<U'+str(self.length))
@@ -470,7 +474,12 @@ class GenotypePhenotypeMap(BaseMap):
                 index = random_indices[i]
                 seq = self.genotypes[index]
                 genotypes[i] = np.array([seq for j in range(n_samples)])
-                phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.phenotypes[index]
+                
+                # If the phenotypes are log transformed, make sure to sample from untransformed...
+                if self.log_transform:
+                    phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.Raw.phenotypes[index]
+                else:
+                    phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.phenotypes[index]
 
         except:
             # Can't sample if no error distribution is given.
@@ -480,5 +489,6 @@ class GenotypePhenotypeMap(BaseMap):
             genotypes = np.array([self.genotypes[i] for i in random_indices])
             phenotypes = np.array([self.phenotypes[i] for i in random_indices])
         
+        # Create a sample object
         samples = Sample(genotypes, phenotypes, random_indices)
         return samples
