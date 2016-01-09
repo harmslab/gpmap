@@ -27,7 +27,7 @@ class BaseErrorMap(BaseMap):
         
     
     @staticmethod
-    def transform(bounds, phenotypes):
+    def transform_upper(bounds, phenotypes):
         """ Log transformation scaling. 
         
             Untransformed data looks as so:
@@ -43,7 +43,28 @@ class BaseErrorMap(BaseMap):
             so log(bound) = log(1 + bound/Ymean)
                log(bound) = log(1 - bound/Ymean)
         """
-        return abs(np.log10(1 + bounds/phenotypes))
+        return abs(np.log10((phenotypes + bounds) /phenotypes))
+        
+        
+    @staticmethod
+    def transform_lower(bounds, phenotypes):
+        """ Log transformation scaling. 
+        
+            Untransformed data looks as so:
+                
+                Yupper = Ymean + bound
+                Ylower = Ymean - bound
+                
+            We want log(bounds)
+                ie.
+                    log(Yupper) - log(Ymean)
+                    log(Ylower) + log(Ymean)
+                
+            so log(bound) = log(1 + bound/Ymean)
+               log(bound) = log(1 - bound/Ymean)
+        """
+        return abs(np.log10((phenotypes - bounds) / phenotypes ))
+        
         
     def wrapper(self, bound, **kwargs):
         """ Wrapper function that changes variances to whatever bound desired. """
@@ -53,7 +74,7 @@ class BaseErrorMap(BaseMap):
     def upper(self):
         """"""
         if self.log_transform:
-            return self.transform(self.wrapper(self.stdeviations), self.phenotypes)
+            return self.transform_upper(self.wrapper(self.stdeviations), self.phenotypes)
         else:
             return self.wrapper(self.stdeviations)
         
@@ -61,7 +82,7 @@ class BaseErrorMap(BaseMap):
     def lower(self):
         """"""
         if self.log_transform:
-            return self.transform(-self.wrapper(self.stdeviations), self.phenotypes)
+            return self.transform_lower(-self.wrapper(self.stdeviations), self.phenotypes)
         else:
             return self.wrapper(self.stdeviations_) 
             
