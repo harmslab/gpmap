@@ -1,7 +1,53 @@
 import numpy as np
 import networkx as nx
+from scipy.misc import comb
 from matplotlib.cm import gray, spring 
 import matplotlib.pyplot as plt
+
+
+def flattened_positions(space):
+    """
+        Draw a flattened representation of the genotype-phenotype graph.
+        
+        Input:
+        -----
+        space: GenotypePhenotypeMap object
+        
+        Returns:
+        -------
+        positions: dict
+            positions of all nodes in network (i.e. {index: [x,y]})
+    """
+    
+    # Get the binary genotypes from GPM 
+    nodes = space.Binary.genotypes
+    
+    # Get mapping of binary genotypes to their graph indices
+    mapping = space.Binary.get_map("genotypes", "indices")
+
+    # Build an offset dictionary as we go...
+    offsets = dict([(j, 0) for j in range(space.length+1)])
+    
+    # Init main positions dict
+    positions = {}
+
+    for i in range(space.n):
+        # count the number of mutations for horizontal axis
+        x = nodes[i].count("1")
+        
+        # Number of vertical positions
+        pascal = comb(space.length, x)
+        
+        # Calculate the y position
+        y = -(pascal-1) / 2 + offsets[x]
+        
+        # Add new position
+        positions[mapping[nodes[i]]] = [x,y]
+        
+        # Iterate offset for that index on horizontal axis
+        offsets[x] += 1.0
+        
+    return positions
 
 
 def draw_trajectories(G, trajectories, pos=None):

@@ -26,7 +26,7 @@ def binary_neighbors(reference, mutations, mutation_labels=False):
         
         else:
             n_sub = len(mutations[i])
-            
+
             # Remove the reference mutation
             possible = list(mutations[i])
             possible.remove(reference[i])
