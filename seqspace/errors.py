@@ -63,7 +63,7 @@ class BaseErrorMap(BaseMap):
             so log(bound) = log(1 + bound/Ymean)
                log(bound) = log(1 - bound/Ymean)
         """
-        return abs(np.log10((phenotypes - bounds) / phenotypes ))
+        return abs(np.log10( phenotypes / (phenotypes - bounds) ))
         
         
     def wrapper(self, bound, **kwargs):
@@ -82,7 +82,7 @@ class BaseErrorMap(BaseMap):
     def lower(self):
         """"""
         if self.log_transform:
-            return self.transform_lower(-self.wrapper(self.stdeviations), self.phenotypes)
+            return self.transform_lower(self.wrapper(self.stdeviations), self.phenotypes)
         else:
             return self.wrapper(self.stdeviations_) 
             

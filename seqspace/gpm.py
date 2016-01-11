@@ -58,7 +58,6 @@ class Sample:
 # Base class for constructing a genotype-phenotype map
 # ----------------------------------------------------------
 
-
 class GenotypePhenotypeMap(BaseMap):
 
     def __init__(self, wildtype, genotypes, phenotypes, 
