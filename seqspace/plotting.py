@@ -31,7 +31,7 @@ def phenotypes_barh(genotypes, phenotypes, wildtype=None, error=None, xlabel=Non
     """
        Plot phenotypes as horizontal bars. 
     """
-    fig, ax = plt.subplots(figsize=[5,16])
+    fig, ax = mpl.pyplot.subplots(figsize=[5,16])
 
     genotypes = space.genotypes
     phenotypes = space.phenotypes
