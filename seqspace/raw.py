@@ -11,6 +11,11 @@ from seqspace.base import BaseMap
 class RawMap:
     
     @property
+    def genotypes(self):
+        """"""
+        return self._genotypes
+    
+    @property
     def phenotypes(self):
         """"""
         return self._phenotypes
@@ -24,6 +29,11 @@ class RawMap:
     def errors(self):
         """"""
         return self._errors
+        
+    @genotypes.setter
+    def genotypes(self, genotypes):
+        """"""
+        self._genotypes = genotypes
         
     @phenotypes.setter
     def phenotypes(self, phenotypes):

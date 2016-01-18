@@ -307,6 +307,7 @@ class GenotypePhenotypeMap(BaseMap):
         # log transform if log_transform = True. Raw phenotypes are stored in an separate object
         if self.log_transform is True:
             self.Raw = RawMap()
+            self.Raw.genotypes = self._genotypes
             self.Raw.phenotypes = _phenotypes
             _phenotypes = np.log10(_phenotypes)
             

@@ -3,9 +3,7 @@
 import matplotlib as mpl
 import numpy as np
     
-
 class PlottingContainer(object):
-    
     
     def __init__(self, gpm):
         """ 
@@ -19,11 +17,20 @@ class PlottingContainer(object):
             raise Warning(""" Horizontal plot not implemented yet. """)
         else:
             # construct plot
-            fig, ax = phenotypes_barh(self.gpm.genotypes, 
-                self.gpm.phenotypes, 
-                wildtype=self.gpm.wildtype,
-                errors=[self.gpm.err.upper, self.gpm.err.lower],
-            )
+            if self.gpm.log_transform:
+                # Get the non-transformed data
+                
+                fig, ax = phenotypes_barh(self.gpm.genotypes, 
+                    self.gpm.Raw.phenotypes, 
+                    wildtype=self.gpm.wildtype,
+                    errors=[self.gpm.Raw.err.upper, self.gpm.Raw.err.lower],
+                )
+            else:
+                fig, ax = phenotypes_barh(self.gpm.genotypes, 
+                    self.gpm.phenotypes, 
+                    wildtype=self.gpm.wildtype,
+                    errors=[self.gpm.err.upper, self.gpm.err.lower],
+                )
         return fig, ax
         
         
