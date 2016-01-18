@@ -1,0 +1,100 @@
+# Plotting API for genotype-phenotype maps
+
+import matplotlib as mpl
+import numpy as np
+    
+
+class PlottingContainer(object):
+    
+    
+    def __init__(self, gpm):
+        """ 
+            A class for quickly building plots from genotype-phenotype maps
+        """
+        self.gpm = gpm
+        
+    def phenotypes(self, horizontal=False):
+        """ Plot the phenotypes of a genotype phenotype map"""
+        if horizontal:
+            raise Warning(""" Horizontal plot not implemented yet. """)
+        else:
+            # construct plot
+            fig, ax = phenotypes_barh(self.gpm.genotypes, 
+                self.gpm.phenotypes, 
+                wildtype=self.gpm.wildtype,
+                error=[self.gpm.err.upper, self.gpm.err.lower],
+            )
+        return fig, ax
+        
+        
+def phenotypes_barh(genotypes, phenotypes, wildtype=None, error=None, xlabel=None, title=None, **kwargs):
+    """
+       Plot phenotypes as horizontal bars. 
+    """
+    fig, ax = plt.subplots(figsize=[5,16])
+
+    genotypes = space.genotypes
+    phenotypes = space.phenotypes
+    errors = space.err.upper
+
+    n_genotypes = len(genotypes)
+
+    # default graph styling
+    graph_properties = {'color':"k", 'alpha':0.5, 'error_kw':{'ecolor': '0.3'}}
+
+    # Add user defined 
+    for key in kwargs:
+        graph_properties[key] = kwargs[key]
+
+    # plot
+    ax.barh(range(n_genotypes), phenotypes, 1, xerr=errors, align='center', **graph_properties)
+
+    # -------------------------
+    # Prettify graph
+    # -------------------------
+
+    xlimits = list(ax.get_xlim())
+
+    ax.axis('tight')
+    # Get current axis limits
+    extra_limit_frac = 0.02
+
+    xlimits = list(ax.get_xlim())
+    ylimits = list(ax.get_ylim())
+    xticks = list(ax.get_xticks())
+    yticks = list(ax.get_yticks())
+
+    # Extend the graph by 5 percent on all sides
+    xextra = extra_limit_frac*(xlimits[1] - xlimits[0])
+    yextra = extra_limit_frac*(ylimits[1] - ylimits[0])
+
+    # set ticks and tick labels
+    ax.set_xlim(xlimits[0] - xextra, xlimits[1] + xextra)
+    ax.set_ylim(ylimits[0] - yextra, ylimits[1] + yextra)
+
+    # Remove right and top spines
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+
+    # Set the bounds for visible axes
+    ax.spines['bottom'].set_bounds(xticks[1], xticks[-2])
+    ax.spines['left'].set_bounds(ylimits[0], ylimits[1])
+
+    # Only show ticks on the left and bottom spines
+    ax.yaxis.set_ticks_position('none')
+    ax.xaxis.set_ticks_position('bottom')
+
+    # Make ticks face outward and thicken them
+    ax.tick_params(direction='out')#, width=spine_widths)
+
+    fontProperties = {'family':'monospace'}
+
+    ax.set_yticks(range(n_genotypes))
+    ax.set_yticklabels(genotypes, fontProperties)
+    
+    # Label axis and title
+    ax.set_xlabel(xlabel)
+    ax.set_title(title)
+
+    return fig, ax

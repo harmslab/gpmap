@@ -31,6 +31,7 @@ from seqspace.utils import (hamming_distance,
                             encode_mutations, 
                             construct_genotypes)
 
+from seqspace.plotting import PlottingContainer
 
 # ----------------------------------------------------------
 # Exceptions
@@ -126,7 +127,9 @@ class GenotypePhenotypeMap(BaseMap):
         
         # Add a networkx graph object
         self.Graph = GenotypePhenotypeGraph(self)
-
+        
+        # Set up plotting subclass
+        self.plot = PlottingContainer(self)
 
     # ----------------------------------------------------------
     # Class method to load from source
