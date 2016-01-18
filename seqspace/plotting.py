@@ -33,10 +33,6 @@ def phenotypes_barh(genotypes, phenotypes, wildtype=None, error=None, xlabel=Non
     """
     fig, ax = mpl.pyplot.subplots(figsize=[5,16])
 
-    genotypes = space.genotypes
-    phenotypes = space.phenotypes
-    errors = space.err.upper
-
     n_genotypes = len(genotypes)
 
     # default graph styling
