@@ -6,7 +6,7 @@
 import numpy as np
 from collections import Counter
 
-class MaxIteractionError(Exception):
+class MaxIterationsError(Exception):
     """ Max number of iterations reached"""
 
 class MonteCarloSimulation(object):
@@ -78,8 +78,9 @@ class MonteCarloSimulation(object):
             new = -1                        # Trial moves (throwaway) for each monte carlo stel 
             
             # Monte Carlo sample the next move!
-            while next_position == -1:
+            while next_position == -1 and new + 1 < len(cumulative_prob_regions):
                 new += 1
+
                 if mc_number < cumulative_prob_regions[new]:
                     next_position = new
                     visited += (next_position,)

@@ -5,7 +5,7 @@ from matplotlib.cm import gray, spring
 import matplotlib.pyplot as plt
 
 
-def flattened_positions(space):
+def flattened_positions(space, xscale=1):
     """
         Draw a flattened representation of the genotype-phenotype graph.
         
@@ -42,7 +42,7 @@ def flattened_positions(space):
         y = -(pascal-1) / 2 + offsets[x]
         
         # Add new position
-        positions[mapping[nodes[i]]] = [x,y]
+        positions[mapping[nodes[i]]] = [x*xscale,y]
         
         # Iterate offset for that index on horizontal axis
         offsets[x] += 1.0
@@ -62,8 +62,8 @@ def edge_arrows(pos, edges):
     arrows = list()
     for e in edges:
         arrows.append((pos[e[0]][0], pos[e[0]][1], 
-                       .8*(pos[e[1]][0]-pos[e[0]][0]), 
-                       .8*(pos[e[1]][1]- pos[e[0]][1]), 
+                       .9*(pos[e[1]][0]-pos[e[0]][0]), 
+                       .9*(pos[e[1]][1]- pos[e[0]][1]), 
                        edges[e]))
     return arrows
 
