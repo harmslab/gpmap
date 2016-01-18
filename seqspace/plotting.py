@@ -22,7 +22,7 @@ class PlottingContainer(object):
             fig, ax = phenotypes_barh(self.gpm.genotypes, 
                 self.gpm.phenotypes, 
                 wildtype=self.gpm.wildtype,
-                error=[self.gpm.err.upper, self.gpm.err.lower],
+                errors=[self.gpm.err.upper, self.gpm.err.lower],
             )
         return fig, ax
         
