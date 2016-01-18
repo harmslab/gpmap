@@ -43,7 +43,7 @@ def phenotypes_barh(genotypes, phenotypes, wildtype=None, errors=None, xlabel=No
     if figsize == ():
         figsize = (5, n_genotypes/5.0)
         
-    fig, ax = mpl.pyplot.subplots(figsize=[5,16])
+    fig, ax = mpl.pyplot.subplots(figsize=figsize)
 
 
     # default graph styling
