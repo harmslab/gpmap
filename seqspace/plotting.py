@@ -34,13 +34,17 @@ class PlottingContainer(object):
         return fig, ax
         
         
-def phenotypes_barh(genotypes, phenotypes, wildtype=None, errors=None, xlabel=None, title=None, **kwargs):
+def phenotypes_barh(genotypes, phenotypes, wildtype=None, errors=None, xlabel=None, title=None, figsize=(), **kwargs):
     """
        Plot phenotypes as horizontal bars. 
     """
+    n_genotypes = len(genotypes)
+    
+    if figsize == ():
+        figsize = (5, n_genotypes/5.0)
+        
     fig, ax = mpl.pyplot.subplots(figsize=[5,16])
 
-    n_genotypes = len(genotypes)
 
     # default graph styling
     graph_properties = {'color':"k", 'alpha':0.5, 'error_kw':{'ecolor': '0.3'}}
