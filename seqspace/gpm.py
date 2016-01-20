@@ -176,8 +176,8 @@ class GenotypePhenotypeMap(BaseMap):
         
         # Create an instance
         gpm = cls(args[0], args[1], args[2], **options)
-        return gpm
-    
+        return gpm        
+        
     # ----------------------------------------------------------
     # Properties of the map
     # ----------------------------------------------------------
@@ -495,3 +495,37 @@ class GenotypePhenotypeMap(BaseMap):
         # Create a sample object
         samples = Sample(genotypes, phenotypes, random_indices)
         return samples
+        
+
+    def subspace(self, genotype1, genotype2):
+        """ Create a genotype-phenotype map for a subspace of genotypes. """
+        
+        # Construct the mutations dictionary
+        mutations = binary_mutations_map(genotype1, genotype2)
+        
+        # Construct binary encoding
+        encoding = encode_mutations(genotype1, mutations)
+        
+        # Get old genotype-phenotype mapping
+        if self.log_transform:
+            mapping = self.get_map("genotypes", "Raw.phenotypes")
+            stdeviations = self.Raw.stdeviations
+        else:
+            mapping = self.get_map("genotypes", "phenotypes")
+            stdeviations = self.stdeviations
+            
+        # Construct the subspace
+        wildtype = genotype1
+        genotypes, binary = construct_genotypes(encoding)
+        phenotypes = [mapping[g] for g in genotypes]
+        
+        # Create GenotypePhenotypeMap object
+        return GenotypePhenotypeMap(wildtype, 
+            genotypes, 
+            phenotypes,
+            stdeviations=stdeviations, 
+            log_transform=self.log_transform, 
+            mutations=mutations, 
+            n_replicates=self.n_replicates)
+        
+        

@@ -34,7 +34,7 @@ class PlottingContainer(object):
         return fig, ax
         
         
-def phenotypes_barh(genotypes, phenotypes, wildtype=None, errors=None, xlabel=None, title=None, figsize=(), **kwargs):
+def phenotypes_barh(genotypes, phenotypes, wildtype=None, errors=None, xlabel="", title="", figsize=(), **kwargs):
     """
        Plot phenotypes as horizontal bars. 
     """
