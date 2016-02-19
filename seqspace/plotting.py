@@ -2,16 +2,34 @@
 
 import matplotlib as mpl
 import numpy as np
+import warnings
+
+
+def mpl_missing(function):
+    """ Function wrapper to check that matplotlib is install. """
     
+    def wrapper(*args, **kwargs):
+        try:
+            import matplotlib 
+            return function(*args, **kwargs)
+
+        except ImportError:
+            warnings.filterwarnings("once")
+            warnings.warn("""Looks like `matplotlib` is not installed, so plots can't be constructed. 
+                        Install matplotlib before trying to use this method.""", ImportWarning)
+            
+    return wrapper 
+
 class PlottingContainer(object):
     
+    @mpl_missing
     def __init__(self, gpm):
         """ 
             A class for quickly building plots from genotype-phenotype maps
         """
         self.gpm = gpm
-        
-    def phenotypes(self, horizontal=False):
+    
+    def phenotypes(self, with_err=False, horizontal=False):
         """ Plot the phenotypes of a genotype phenotype map"""
         if horizontal:
             raise Warning(""" Horizontal plot not implemented yet. """)
@@ -20,12 +38,25 @@ class PlottingContainer(object):
             if self.gpm.log_transform:
                 # Get the non-transformed data
                 
+                # Plot error? 
+                if with_err:
+                    err = self.gpm.Raw.err.upper
+                else:
+                    err = None
+                
                 fig, ax = phenotypes_barh(self.gpm.genotypes, 
                     self.gpm.Raw.phenotypes, 
                     wildtype=self.gpm.wildtype,
-                    errors=[self.gpm.Raw.err.upper, self.gpm.Raw.err.lower],
+                    errors=err,
                 )
             else:
+                
+                # Plot error? 
+                if with_err:
+                    err = self.gpm.Raw.err.upper
+                else:
+                    err = None
+                    
                 fig, ax = phenotypes_barh(self.gpm.genotypes, 
                     self.gpm.phenotypes, 
                     wildtype=self.gpm.wildtype,
@@ -33,7 +64,7 @@ class PlottingContainer(object):
                 )
         return fig, ax
         
-        
+@mpl_missing
 def phenotypes_barh(genotypes, phenotypes, wildtype=None, errors=None, xlabel="", title="", figsize=(), **kwargs):
     """
        Plot phenotypes as horizontal bars. 

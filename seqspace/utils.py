@@ -6,6 +6,7 @@ import itertools as it
 import numpy as np
 from scipy.misc import comb
 from collections import OrderedDict
+import warnings
 
 # -------------------------------------------------------
 # Mutation alphabets
@@ -15,6 +16,24 @@ DNA = ["A", "C", "G", "T"]
 
 AMINO_ACIDS = ["D","T", "S", "E", "P", "G", "A", "C", "V", "M", "I",
                 "L", "Y", "F", "H", "K", "R", "W", "Q", "N"]
+
+# -------------------------------------------------------
+# Wrappers for methods that use optional imports
+# -------------------------------------------------------
+
+def ipywidgets_missing(function):
+
+    def wrapper(*args, **kwargs):
+        try:
+            
+            import ipywidgets
+            return function(*args, **kwargs)
+            
+        except ImportError:
+            warnings.filterwarnings("once")
+            warnings.warn("""Looks like `ipywidgets` is not installed, so widgets can't be constructed. Install before using this method.""", ImportWarning)
+            
+    return wrapper 
 
 # -------------------------------------------------------
 # Useful methods for genotype-phenotype spaces

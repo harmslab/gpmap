@@ -46,14 +46,24 @@ class LoadingException(Exception):
 
 class Sample:
 
-    def __init__(self, replicate_genotypes, replicate_phenotypes, indices=None):
+    def __init__(self, gpm, replicate_genotypes, replicate_phenotypes, indices=None):
         """ Sample from simulated experiment """
+        self.gpm = gpm
         self.replicate_genotypes = replicate_genotypes
         self.replicate_phenotypes = replicate_phenotypes
         self.genotypes = self.replicate_genotypes[:,0]
         self.phenotypes = np.mean(self.replicate_phenotypes, axis=1)
         self.stdeviations = np.std(self.replicate_phenotypes, ddof=1, axis=1)
         self.indices = indices
+        
+    def get_gpm(self):
+        """ Return a Genotype-phenotype object from sample. """
+        return GenotypePhenotypeMap(self.gpm.wildtype, self.genotypes, self.phenotypes, 
+                stdeviations=self.stdeviations,
+                log_transform=self.gpm.log_transform,
+                mutations=self.gpm.mutations,
+                n_replicates=self.gpm.n_replicates)
+        
 
 # ----------------------------------------------------------
 # Base class for constructing a genotype-phenotype map
@@ -439,7 +449,7 @@ class GenotypePhenotypeMap(BaseMap):
     # ------------------------------------------------------------            
             
 
-    def sample(self, n_samples=1, fraction=1.0, derived=True):
+    def sample(self, n_samples=1, genotypes=None, fraction=1.0, derived=True):
         """ Generate artificial data sampled from phenotype and percent error.
 
             __Arguments__:
@@ -452,30 +462,46 @@ class GenotypePhenotypeMap(BaseMap):
 
             `samples` [Sample object]: returns this object with all stats on experiment
         """
-        # make sure fraction is float between 0 and 1
-        if fraction < 0 or fraction > 1:
-            raise Exception("fraction is invalid.")
+        if genotypes is None:
+                    
+            # make sure fraction is float between 0 and 1
+            if fraction < 0 or fraction > 1:
+                raise Exception("fraction is invalid.")
 
-        # fractional length of space.
-        frac_length = int(fraction * self.n)
+            # fractional length of space.
+            frac_length = int(fraction * self.n)
 
-        # random genotypes and phenotypes to sample
-        random_indices = np.sort(np.random.choice(range(self.n), size=frac_length, replace=False))
+            # random genotypes and phenotypes to sample
+            random_indices = np.sort(np.random.choice(range(self.n), size=frac_length, replace=False))
         
-        # If sample must include derived, set the last random_indice to self.n-1
-        if derived:
-            random_indices[-1] = self.n-1
+            # If sample must include derived, set the last random_indice to self.n-1
+            if derived:
+                random_indices[-1] = self.n-1
+                
+        else:
+            # Mapping from genotypes to indices
+            mapping = self.get_map("genotypes", "indices")
+            
+            # Construct an array of genotype indices to sample
+            random_indices = [mapping[g] for g in genotypes]
+            
             
         # initialize arrays
-        phenotypes = np.empty((frac_length, n_samples), dtype=float)
-        genotypes = np.empty((frac_length, n_samples), dtype='<U'+str(self.length))
+        phenotypes = np.empty((len(random_indices), n_samples), dtype=float)
+        genotypes = np.empty((len(random_indices), n_samples), dtype='<U'+str(self.length))
 
         # If errors are present, sample from error distribution
         try:
+            # Error distribution to sample from.
             stdevs = self.stdeviations
+            
+            # Iterate through "seen" genotypes and sample from their distributions 
             for i in range(len(random_indices)):
+                
                 index = random_indices[i]
                 seq = self.genotypes[index]
+                
+                # Build genotype array
                 genotypes[i] = np.array([seq for j in range(n_samples)])
                 
                 # If the phenotypes are log transformed, make sure to sample from untransformed...
@@ -493,7 +519,7 @@ class GenotypePhenotypeMap(BaseMap):
             phenotypes = np.array([self.phenotypes[i] for i in random_indices])
         
         # Create a sample object
-        samples = Sample(genotypes, phenotypes, random_indices)
+        samples = Sample(self, genotypes, phenotypes, random_indices)
         return samples
         
 

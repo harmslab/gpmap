@@ -52,6 +52,7 @@ def binary_neighbors(reference, mutations, mutation_labels=False):
 # --------------------------------------------------------
 # Utils for network building
 # --------------------------------------------------------
+    
 
 class GenotypePhenotypeGraph(nx.DiGraph):
 
@@ -62,7 +63,8 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         super(GenotypePhenotypeGraph, self).__init__()
 
         self.gpm = gpm
-            
+        self.built = False
+
     
     def add_gpm_node(self, index, genotype=None, binary=None, phenotype=None, value=None, errors=None, **kwargs):
         """ ADD node to networkx graph. """
