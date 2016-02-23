@@ -48,7 +48,7 @@ class Sample:
 
     def __init__(self, gpm, replicate_genotypes, replicate_phenotypes, indices=None):
         """ Sample from simulated experiment """
-        self.gpm = gpm
+        self._gpm = gpm
         self.replicate_genotypes = replicate_genotypes
         self.replicate_phenotypes = replicate_phenotypes
         self.genotypes = self.replicate_genotypes[:,0]
@@ -58,11 +58,11 @@ class Sample:
         
     def get_gpm(self):
         """ Return a Genotype-phenotype object from sample. """
-        return GenotypePhenotypeMap(self.gpm.wildtype, self.genotypes, self.phenotypes, 
+        return GenotypePhenotypeMap(self._gpm.wildtype, self.genotypes, self.phenotypes, 
                 stdeviations=self.stdeviations,
-                log_transform=self.gpm.log_transform,
-                mutations=self.gpm.mutations,
-                n_replicates=self.gpm.n_replicates)
+                log_transform=self._gpm.log_transform,
+                mutations=self._gpm.mutations,
+                n_replicates=self._gpm.n_replicates)
         
 
 # ----------------------------------------------------------

@@ -27,7 +27,7 @@ class PlottingContainer(object):
         """ 
             A class for quickly building plots from genotype-phenotype maps
         """
-        self.gpm = gpm
+        self._gpm = gpm
     
     def phenotypes(self, with_err=False, horizontal=False):
         """ Plot the phenotypes of a genotype phenotype map"""
@@ -35,32 +35,32 @@ class PlottingContainer(object):
             raise Warning(""" Horizontal plot not implemented yet. """)
         else:
             # construct plot
-            if self.gpm.log_transform:
+            if self._gpm.log_transform:
                 # Get the non-transformed data
                 
                 # Plot error? 
                 if with_err:
-                    err = self.gpm.Raw.err.upper
+                    err = self._gpm.Raw.err.upper
                 else:
                     err = None
                 
-                fig, ax = phenotypes_barh(self.gpm.genotypes, 
-                    self.gpm.Raw.phenotypes, 
-                    wildtype=self.gpm.wildtype,
+                fig, ax = phenotypes_barh(self._gpm.genotypes, 
+                    self._gpm.Raw.phenotypes, 
+                    wildtype=self._gpm.wildtype,
                     errors=err,
                 )
             else:
                 
                 # Plot error? 
                 if with_err:
-                    err = self.gpm.Raw.err.upper
+                    err = [self._gpm.Raw.err.upper, self._gpm.err.lower]
                 else:
                     err = None
                     
-                fig, ax = phenotypes_barh(self.gpm.genotypes, 
-                    self.gpm.phenotypes, 
-                    wildtype=self.gpm.wildtype,
-                    errors=[self.gpm.err.upper, self.gpm.err.lower],
+                fig, ax = phenotypes_barh(self._gpm.genotypes, 
+                    self._gpm.phenotypes, 
+                    wildtype=self._gpm.wildtype,
+                    errors=err,
                 )
         return fig, ax
         
