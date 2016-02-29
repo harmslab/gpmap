@@ -4,7 +4,7 @@
 # --------------------------------------------
 
 import numpy as np
-from collections import Counter
+from collections import Counter, OrderedDict
 
 class MaxIterationsError(Exception):
     """ Max number of iterations reached"""
@@ -23,7 +23,17 @@ class MonteCarloSimulation(object):
         new_trajectories = self.enumerate_trajectories(self.gpm.Graph, n)
         self._trajectories += new_trajectories
         self._n_trajectories += n 
-        
+    
+    def sorted(self, dictionary):
+        """ """
+        sorted_counts = sorted(list(dictionary.values()), reverse=True)
+        ordered = OrderedDict()
+        for s in sorted_counts:
+            for key in dictionary:
+                if dictionary[key] == s:
+                    ordered[key] = s
+        return ordered
+    
     @property
     def n_trajectories(self):
         """ Get the number of trajectories currently in the simulation. """    
@@ -32,7 +42,7 @@ class MonteCarloSimulation(object):
     @property
     def trajectories(self):
         """ Get the trajectories samples by simulation. """
-        return self._trajectories
+        return self.sorted(self._trajectories)
 
     @property
     def binary_trajectories(self):
@@ -42,13 +52,15 @@ class MonteCarloSimulation(object):
         index2binary = self.gpm.get_map("indices", "Binary.genotypes")
         
         mapping = {}
+        
         # Iterate through trajectories and convert keys to binary repr.
         for key in self._trajectories:
             indices = list(key)
             sequences = tuple([index2binary[i] for i in indices])
             mapping[sequences] = self._trajectories[key]
-            
-        return mapping
+        
+        _mapping = self.sorted(mapping)
+        return _mapping
 
     @staticmethod
     def trajectory(gpGraph, max_iter=1000):

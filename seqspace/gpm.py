@@ -441,7 +441,12 @@ class GenotypePhenotypeMap(BaseMap):
                     self.Binary.err = StandardErrorMap(self.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
                 
         else:
-            self.stdeviations = None
+            
+            if self.log_transform is True:
+                self.Raw.stdeviations = None
+                self.stdeviations = None
+            else:
+                self.stdeviations = None
             
 
     # ------------------------------------------------------------
