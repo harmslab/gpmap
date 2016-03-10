@@ -117,14 +117,19 @@ class GenotypePhenotypeGraph(nx.DiGraph):
             
             # If no error is present, store None
             geno2index = self.gpm.get_map("genotypes", "indices")
+            
+            if self.gpm.log_transform:
+                phenotype = float(self.gpm.Raw.phenotypes[i])
+            else:
+                phenotype = float(self.gpm.phenotypes[i])
 
             # Construct nodes to add to the graph
             self.add_gpm_node(
                 int(geno2index[self.gpm.genotypes[i]]),                     # genotype index
                 genotype=str(self.gpm.genotypes[i]),            # genotype
                 binary=str(self.gpm.Binary.genotypes[i]),      # binary representation
-                phenotype=float(self.gpm.phenotypes[i]),        # phenotype
-                value=float(self.gpm.phenotypes[i]),            # same as phenotype
+                phenotype=phenotype,                            # phenotype
+                value=phenotype,                                # same as phenotype
                 errors=errors[i]                                # error in phenotype
             )
         

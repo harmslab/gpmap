@@ -1,9 +1,9 @@
 # Plotting API for genotype-phenotype maps
 
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 import warnings
-
 
 def mpl_missing(function):
     """ Function wrapper to check that matplotlib is install. """
@@ -136,3 +136,57 @@ def phenotypes_barh(genotypes, phenotypes, wildtype=None, errors=None, xlabel=""
     ax.set_title(title)
 
     return fig, ax
+    
+    
+class MonteCarloSimulationPlotting(object):
+    
+    @mpl_missing
+    def __init__(self, simulation):
+        
+        self._simulation = simulation
+    
+class TrajectoriesPlotting(object):
+    
+    @mpl_missing
+    def __init__(self, trajectories):
+        """
+            An object for visualizing trajectory data.
+        """
+        self._trajectories = trajectories
+        
+    def spectrum(self, ax=None, figsize=(6,4), **kwargs):
+        """ 
+            Plots a spectrum of forward trajectories' probabilities, labeled by their index.
+        """
+        if ax is None:
+            fig, ax = plt.subplots(figsize=figsize)
+        else:
+            fig = ax.get_figure()
+        
+        # Calculate possible paths
+        possible = self._trajectories.possible
+        paths = [tuple(path) for path in possible]
+
+        indices = range(len(paths))
+        counts = self._trajectories.forward
+        N = sum(list(counts.values()))
+
+        # Iterate through trajectories to construct probabilities array.
+        probabilities = []
+        for p in paths:
+            # Try to see probability.
+            try:
+                fraction = counts[p]/N
+                probabilities.append(fraction)
+            # If path is not in counts, it has 0 probabilities
+            except KeyError:
+                probabilities.append(0)
+    
+        # Create plot
+        ax.plot(indices, probabilities)
+        ax.set_xlabel("Trajectory ID")
+        ax.set_ylabel("Probability of Trajectory") 
+               
+        return fig, ax
+        
+        
