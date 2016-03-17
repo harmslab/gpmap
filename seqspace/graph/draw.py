@@ -5,50 +5,133 @@ from matplotlib.cm import gray, spring
 import matplotlib.pyplot as plt
 
 
-def flattened_positions(space, xscale=1):
-    """
-        Draw a flattened representation of the genotype-phenotype graph.
-        
-        Input:
-        -----
-        space: GenotypePhenotypeMap object
-        
-        Returns:
-        -------
-        positions: dict
-            positions of all nodes in network (i.e. {index: [x,y]})
-    """
+class GraphDrawing(object):
     
-    # Get the binary genotypes from GPM 
-    nodes = space.Binary.genotypes
+    def __init__(self, graph, figsize=):
+        self._graph = graph
+        self._configs = DrawingConfigs(self._graph, figsize=figsize)
     
-    # Get mapping of binary genotypes to their graph indices
-    mapping = space.Binary.get_map("genotypes", "indices")
+    @property
+    def configs(self): 
+        return self._config.__dict__
+        
+    def change(self, **kwargs):
+        """ Change one of the configurations"""
+        for kw in kwargs:
+            setattr(self._config, kw, kwargs[kw])
+        
+        # Return fig, ax and config
+        try:
+            return self.fig, self.ax, config
+        except:
+            return self.configs
 
-    # Build an offset dictionary as we go...
-    offsets = dict([(j, 0) for j in range(space.length+1)])
+    def _draw_nodes(self):
+        
+        nx.draw_networkx_nodes(self._graph
+            pos=self._configs.pos,
+            node_size=self._configs.node_size,
+            node_color=self._configs.node_color,
+            node_shape=self._configs.node_shape,
+            alpha=self._configs.alpha,
+            cmap=self._configs.cmap,
+            vmin=self._configs.vmin,
+            vmax=self._configs.vmax,
+            
+        )
+
+    def flattened(self):
+        pass
     
-    # Init main positions dict
-    positions = {}
+    def spring(self):
+        pass
+        
+        
+        
+        
+class DrawingConfigs(object):
+    
+    def __init__(self, graph, **kwargs):
+        self._graph = graph
+        self.pos = None
+        self.alpha = 0.8
+        self.cmap = gray
+        self.node_color = colors
+        self.node_size = 400
+        self.arrows = False
+        self.with_labels = True
+        self.vmin = min(self._graph.gpm.phenotypes)
+        self.vmax = max(self._graph.gpm.phenotypes)
+        self.width = 0.5
+        self.alpha = 1
+        
+        # Set any attributes desired.
+        for kw in kwargs:
+            setattr(self, kw, kwargs[kw])
+    
+    def spring_positions(self):
+        """ """
+        pos = nx.spring_layout(self._graph, iterations=300)
+        return pos
+    
+    def flattened_positions(self, scale=1, vertical=False):
+        """
+            Get flattened positions for a genotype-phenotype graph.
+        
+            Input:
+            -----
+            space: GenotypePhenotypeGraph object
+        
+            Returns:
+            -------
+            positions: dict
+                positions of all nodes in network (i.e. {index: [x,y]})
+        """
+        
+        # Get the binary genotypes from GPM 
+        nodes = self.graph.gpm.Binary.genotypes
+    
+        # Get mapping of binary genotypes to their graph indices
+        mapping = self.graph.gpm.Binary.get_map("genotypes", "indices")
 
-    for i in range(space.n):
-        # count the number of mutations for horizontal axis
-        x = nodes[i].count("1")
-        
-        # Number of vertical positions
-        pascal = comb(space.length, x)
-        
-        # Calculate the y position
-        y = -(pascal-1) / 2 + offsets[x]
-        
-        # Add new position
-        positions[mapping[nodes[i]]] = [x*xscale,y]
-        
-        # Iterate offset for that index on horizontal axis
-        offsets[x] += 1.0
-        
-    return positions
+        # Build an offset dictionary as we go...
+        offsets = dict([(j, 0) for j in range(space.length+1)])
+    
+        # Init main positions dict
+        positions = {}
 
+        for i in range(space.n):
+            # count the number of mutations for horizontal axis
+            x = nodes[i].count("1")
+        
+            # Number of vertical positions
+            pascal = comb(space.length, x)
+        
+            # Calculate the y position
+            y = -(pascal-1) / 2 + offsets[x]
+        
+            # Add new position
+            if vertical:
+                positions[mapping[nodes[i]]] = [y, x*scale]
+            else:
+                positions[mapping[nodes[i]]] = [x*scale,y]
+                
+            # Iterate offset for that index on horizontal axis
+            offsets[x] += 1.0
+        
+        self.pos = positions
+        return positions
+        
+    def arrows(self):
+        """ """
+        for e in edges:
+            
+            arrows
+        
+        
+        return 
+        
+        
 
 def draw_trajectories(G, trajectories, pos=None):
     pass
