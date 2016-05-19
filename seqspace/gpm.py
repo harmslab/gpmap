@@ -72,10 +72,10 @@ class Sample:
 class GenotypePhenotypeMap(BaseMap):
 
     def __init__(self, wildtype, genotypes, phenotypes,
-                    stdeviations=None,
-                    log_transform=False,
-                    mutations=None,
-                    n_replicates=1):
+        stdeviations=None,
+        log_transform=False,
+        mutations=None,
+        n_replicates=1):
         """
             Construct a full genotype phenotype mapping object.
 
@@ -135,9 +135,6 @@ class GenotypePhenotypeMap(BaseMap):
         # Construct the error maps
         self._construct_errors(stdeviations)
 
-        # Add a networkx graph object
-        self.Graph = GenotypePhenotypeGraph(self)
-
         # Set up plotting subclass
         self.plot = PlottingContainer(self)
 
@@ -191,7 +188,6 @@ class GenotypePhenotypeMap(BaseMap):
     # ----------------------------------------------------------
     # Properties of the map
     # ----------------------------------------------------------
-
 
     @property
     def length(self):
@@ -338,6 +334,12 @@ class GenotypePhenotypeMap(BaseMap):
     # ------------------------------------------------------------
     # Hidden methods for mapping object
     # ------------------------------------------------------------
+
+    def graph(self, transition_func=None, mutation_labels=False):
+        """ Construct NetworkX graph from GenotypePhenotypeMap."""
+        # Add a networkx graph object
+        self.Graph = GenotypePhenotypeGraph(self)
+        self.Graph._build(transition_func=transition_func, mutation_labels=mutation_labels)
 
     def _construct_binary(self):
         """ Encode the genotypes an ordered binary set of genotypes with
