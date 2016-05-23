@@ -498,9 +498,6 @@ class GenotypePhenotypeMap(BaseMap):
 
         # If errors are present, sample from error distribution
         try:
-            # Error distribution to sample from.
-            stdevs = self.stdeviations
-
             # Iterate through "seen" genotypes and sample from their distributions
             for i in range(len(random_indices)):
 
@@ -512,8 +509,14 @@ class GenotypePhenotypeMap(BaseMap):
 
                 # If the phenotypes are log transformed, make sure to sample from untransformed...
                 if self.log_transform:
+                    # Error distribution to sample from.
+                    stdevs = self.Raw.err.upper
+
                     phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.Raw.phenotypes[index]
                 else:
+                    # Error distribution to sample from.
+                    stdevs = self.err.upper
+
                     phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.phenotypes[index]
 
         except:
