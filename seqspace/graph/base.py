@@ -61,7 +61,6 @@ class GenotypePhenotypeGraph(nx.DiGraph):
 
         # initialize the DiGraph object
         super(GenotypePhenotypeGraph, self).__init__()
-
         self.gpm = gpm
         self.built = False
 
@@ -101,9 +100,27 @@ class GenotypePhenotypeGraph(nx.DiGraph):
             # Run transition calculation
             if transition_func is not None:
                 # Calculate the transition function
-                attributes["transition"] = transition_func(self.gpm.phenotypes[index], self.gpm.phenotypes[index2])
+                attributes["fixation"] = transition_func(self.gpm.phenotypes[index], self.gpm.phenotypes[index2])
 
             self.add_edge(index, index2, attributes)
+
+    def add_evolutionary_model(self, model, *args, **kwargs):
+        """Add an evolutionary model to the genotype phenotype graph. The model
+        argument describes the probability of fixation model for each edge in the graph.
+
+        The main assumption of this method is that each node has an attribute named
+        values, which is the fitness of that genotype.
+        """
+        for e in self.edges():
+            # Acquire states.
+            state_i = e[0]
+            state_j = e[1]
+
+            # Calculate the fixation probability for this age.
+            fixation = model(state_i, state_j, *args, **kwargs)
+
+            # Set the edge value
+            self.edge[state_i][state_j]["fixation"] = fixation
 
 
     def _build(self, transition_func=None, mutation_labels=False):
@@ -148,7 +165,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         matrix = np.nan_to_num(
             nx.attr_matrix(
                 self,
-                edge_attr="transition",         # Get the transitions value
+                edge_attr="fixation",         # Get the transitions value
                 #normalized=True,                # Normalize the rows
                 rc_order=self.gpm.indices       # Order the matrix
                 )
