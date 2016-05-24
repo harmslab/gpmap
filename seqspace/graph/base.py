@@ -113,14 +113,16 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         """
         for e in self.edges():
             # Acquire states.
-            state_i = e[0]
-            state_j = e[1]
+            i = e[0]
+            j = e[1]
+            state_i = self.node[i]
+            state_j = self.node[j]
 
             # Calculate the fixation probability for this age.
-            fixation = model(state_i, state_j, *args, **kwargs)
+            fixation = model(state_i["value"], state_j["value"], *args, **kwargs)
 
             # Set the edge value
-            self.edge[state_i][state_j]["fixation"] = fixation
+            self.edge[i][j]["fixation"] = fixation
 
 
     def _build(self, transition_func=None, mutation_labels=False):
