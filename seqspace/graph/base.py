@@ -79,9 +79,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
 
     def add_gpm_edges(self, ebunch, transition_func=None):
         """ Method for adding edges to the graph. """
-
         # Check whether the edges are genotypes or indices --> convert to indices.
-
         if type(ebunch[0][0]) is str or type(ebunch[0][0]) is np.str_:
             geno2index = self.gpm.get_map("genotypes", "indices")
             node = lambda x: geno2index[x]
@@ -91,7 +89,6 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         # Add edge with data (include transition data if given)
         edges = list
         for edge in ebunch:
-
             # Get indices of neighbor nodes
             index = node(edge[0])
             index2 = node(edge[1])
@@ -102,7 +99,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
                 # Calculate the transition function
                 attributes["fixation"] = transition_func(self.gpm.phenotypes[index], self.gpm.phenotypes[index2])
 
-            self.add_edge(index, index2, attributes)
+            self.add_edge(index, index2, **attributes)
 
     def add_evolutionary_model(self, model, *args, **kwargs):
         """Add an evolutionary model to the genotype phenotype graph. The model

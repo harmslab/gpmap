@@ -62,7 +62,9 @@ class Sample:
                 stdeviations=self.stdeviations,
                 log_transform=self._gpm.log_transform,
                 mutations=self._gpm.mutations,
-                n_replicates=self._gpm.n_replicates)
+                n_replicates=self._gpm.n_replicates,
+                phenotype_scalar=self._gpm.phenotype_scalar,
+                logbase=self._gpm.logbase)
 
 
 # ----------------------------------------------------------
@@ -75,7 +77,8 @@ class GenotypePhenotypeMap(BaseMap):
         stdeviations=None,
         log_transform=False,
         mutations=None,
-        n_replicates=1):
+        n_replicates=1,
+        logbase=np.log10):
         """
             Construct a full genotype phenotype mapping object.
 
@@ -85,8 +88,10 @@ class GenotypePhenotypeMap(BaseMap):
             2. Mutations mapped to their binary encoding
             3. NetworkX graph representation.
 
-            Args:
-            ----
+            Parameters
+            ----------
+            wildtype : string
+                wildtype sequence.
             genotypes: array-like
                 list of all genotypes in system. Must be a complete system.
             phenotypes: array-like
@@ -95,11 +100,16 @@ class GenotypePhenotypeMap(BaseMap):
                 Set to True to log tranform the phenotypes.
             mutations: dict
                 Dictionary that maps each site indice to their possible substitution alphabet.
+            n_replicates : int
+                number of replicate measurements comprising the mean phenotypes
+            scalar : float
+                scalar value to multiply by the phenotypes and their standard deviations
+            logbase : callable log transformation function
+                logarithm function to apply to phenotypes if log_transform is True.
 
             Returns:
             -------
             GenoPhenoMap object
-
 
             GenoPhenoMap.Mutations --> includes all mutational mapping
             GenoPhenoMap.Binary --> genotypes mapped to their binary representations of the space.
@@ -114,6 +124,13 @@ class GenotypePhenotypeMap(BaseMap):
             mutant = farthest_genotype(wildtype, genotypes)
             mutations = binary_mutations_map(wildtype, mutant)
             self.mutations = mutations
+
+        # Check that logbase is a callable function
+        if hasattr(logbase, '__call__'):
+            self.logbase = logbase
+        else:
+            raise Exception("""Logbase must be a callable function to transform \
+            phenotypes.(i.e. np.log(...)).""")
 
         # Set initial properties fo GPM
         self.wildtype = wildtype
@@ -133,6 +150,7 @@ class GenotypePhenotypeMap(BaseMap):
         self._construct_binary()
 
         # Construct the error maps
+        stdeviations = stdeviations
         self._construct_errors(stdeviations)
 
         # Set up plotting subclass
@@ -160,6 +178,7 @@ class GenotypePhenotypeMap(BaseMap):
             "log_transform": False,
             "mutations": None,
             "n_replicates": 1,
+            "logbase": np.log10
         }
 
         # Grab all arguments and order them
@@ -315,14 +334,15 @@ class GenotypePhenotypeMap(BaseMap):
             self.Raw = RawMap()
             self.Raw.genotypes = self._genotypes
             self.Raw.phenotypes = _phenotypes
-            _phenotypes = np.log10(_phenotypes)
+            _phenotypes = self.logbase(_phenotypes)
 
+        #Set the phenotypes AND multiply them by scalar
         self._phenotypes = _phenotypes
 
         # Set binary phenotypes if binary exists... assumes
         # that binary sequences are sorted to match raw genotypes.
         if hasattr(self, "Binary"):
-            self.Binary.phenotypes = phenotypes
+            self.Binary.phenotypes = self._phenotypes
 
 
     @n_replicates.setter
@@ -415,31 +435,62 @@ class GenotypePhenotypeMap(BaseMap):
                 try:
                     # Add to the Raw map
                     self.Raw.stdeviations = self.stdeviations
-                    self.Raw.std = StandardDeviationMap(self.phenotypes, self.stdeviations, log_transform=False)
-                    self.Raw.err = StandardErrorMap(self.phenotypes, self.stdeviations, log_transform=False, n_replicates=self.n_replicates)
+                    self.Raw.std = StandardDeviationMap(self.phenotypes, self.stdeviations,
+                        log_transform=False,
+                        logbase=self.logbase)
 
-                    self.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform)
-                    self.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
+                    self.Raw.err = StandardErrorMap(self.phenotypes, self.stdeviations,
+                        log_transform=False,
+                        n_replicates=self.n_replicates,
+                        logbase=self.logbase)
+
+                    # Set log transformed map
+                    self.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations,
+                        log_transform=self.log_transform,
+                        logbase=self.logbase)
+
+                    self.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations,
+                        log_transform=self.log_transform,
+                        n_replicates=self.n_replicates,
+                        logbase=self.logbase
+                        )
 
                     # If a binary map exists
                     if hasattr(self, "Binary"):
                         # Set up all statistics for error.
-                        self.Binary.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform)
-                        self.Binary.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
+                        self.Binary.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations,
+                            log_transform=self.log_transform,
+                            logbase=self.logbase)
+
+                        self.Binary.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations,
+                            log_transform=self.log_transform,
+                            n_replicates=self.n_replicates,
+                            logbase=self.logbase)
 
                 except AttributeError:
                     raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
 
             else:
                 # Set up all statistics for error.
-                self.std = StandardDeviationMap(self.phenotypes, self.stdeviations, log_transform=self.log_transform)
-                self.err = StandardErrorMap(self.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
+                self.std = StandardDeviationMap(self.phenotypes, self.stdeviations,
+                    log_transform=self.log_transform,
+                    logbase=self.logbase)
+
+                self.err = StandardErrorMap(self.phenotypes, self.stdeviations,
+                    log_transform=self.log_transform,
+                    n_replicates=self.n_replicates,
+                    logbase=self.logbase)
 
                 # If a binary map exists
                 if hasattr(self, "Binary"):
                     # Set up all statistics for error.
-                    self.Binary.std = StandardDeviationMap(self.phenotypes, self.stdeviations, log_transform=self.log_transform)
-                    self.Binary.err = StandardErrorMap(self.phenotypes, self.stdeviations, log_transform=self.log_transform, n_replicates=self.n_replicates)
+                    self.Binary.std = StandardDeviationMap(self.phenotypes, self.stdeviations,
+                        log_transform=self.log_transform,
+                        logbase=self.logbase)
+                    self.Binary.err = StandardErrorMap(self.phenotypes, self.stdeviations,
+                        log_transform=self.log_transform,
+                        n_replicates=self.n_replicates,
+                        logbase=self.logbase)
 
         else:
 
@@ -561,4 +612,5 @@ class GenotypePhenotypeMap(BaseMap):
             stdeviations=stdeviations,
             log_transform=self.log_transform,
             mutations=mutations,
-            n_replicates=self.n_replicates)
+            n_replicates=self.n_replicates,
+            logbase=self.logbase)

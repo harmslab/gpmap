@@ -1,25 +1,25 @@
 import numpy as np
 import networkx as nx
 from scipy.misc import comb
-from matplotlib.cm import gray, spring 
+from matplotlib.cm import gray, spring
 import matplotlib.pyplot as plt
 
 
 class GraphDrawing(object):
-    
-    def __init__(self, graph, figsize=):
+
+    def __init__(self, graph, figsize=(6,6)):
         self._graph = graph
         self._configs = DrawingConfigs(self._graph, figsize=figsize)
-    
+
     @property
-    def configs(self): 
+    def configs(self):
         return self._config.__dict__
-        
+
     def change(self, **kwargs):
         """ Change one of the configurations"""
         for kw in kwargs:
             setattr(self._config, kw, kwargs[kw])
-        
+
         # Return fig, ax and config
         try:
             return self.fig, self.ax, config
@@ -27,8 +27,8 @@ class GraphDrawing(object):
             return self.configs
 
     def _draw_nodes(self):
-        
-        nx.draw_networkx_nodes(self._graph
+
+        nx.draw_networkx_nodes(self._graph,
             pos=self._configs.pos,
             node_size=self._configs.node_size,
             node_color=self._configs.node_color,
@@ -37,20 +37,20 @@ class GraphDrawing(object):
             cmap=self._configs.cmap,
             vmin=self._configs.vmin,
             vmax=self._configs.vmax,
-            
+
         )
 
     def flattened(self):
         pass
-    
+
     def spring(self):
         pass
-        
-        
-        
-        
+
+
+
+
 class DrawingConfigs(object):
-    
+
     def __init__(self, graph, **kwargs):
         self._graph = graph
         self.pos = None
@@ -64,78 +64,78 @@ class DrawingConfigs(object):
         self.vmax = max(self._graph.gpm.phenotypes)
         self.width = 0.5
         self.alpha = 1
-        
+
         # Set any attributes desired.
         for kw in kwargs:
             setattr(self, kw, kwargs[kw])
-    
+
     def spring_positions(self):
         """ """
         pos = nx.spring_layout(self._graph, iterations=300)
         return pos
-    
+
     def flattened_positions(self, scale=1, vertical=False):
         """
             Get flattened positions for a genotype-phenotype graph.
-        
+
             Input:
             -----
             space: GenotypePhenotypeGraph object
-        
+
             Returns:
             -------
             positions: dict
                 positions of all nodes in network (i.e. {index: [x,y]})
         """
-        
-        # Get the binary genotypes from GPM 
+
+        # Get the binary genotypes from GPM
         nodes = self.graph.gpm.Binary.genotypes
-    
+
         # Get mapping of binary genotypes to their graph indices
         mapping = self.graph.gpm.Binary.get_map("genotypes", "indices")
 
         # Build an offset dictionary as we go...
         offsets = dict([(j, 0) for j in range(space.length+1)])
-    
+
         # Init main positions dict
         positions = {}
 
         for i in range(space.n):
             # count the number of mutations for horizontal axis
             x = nodes[i].count("1")
-        
+
             # Number of vertical positions
             pascal = comb(space.length, x)
-        
+
             # Calculate the y position
             y = -(pascal-1) / 2 + offsets[x]
-        
+
             # Add new position
             if vertical:
                 positions[mapping[nodes[i]]] = [y, x*scale]
             else:
                 positions[mapping[nodes[i]]] = [x*scale,y]
-                
+
             # Iterate offset for that index on horizontal axis
             offsets[x] += 1.0
-        
+
         self.pos = positions
         return positions
-        
+
     def arrows(self):
         """ """
         for e in edges:
-            
+
             arrows
-        
-        
-        return 
-        
-        
+
+
+        return
+
+
 
 def draw_trajectories(G, trajectories, pos=None):
     pass
-    
+
 # ------------------------------------------------
 # Methods for drawing trajectories on networks
 # ------------------------------------------------
@@ -144,9 +144,9 @@ def edge_arrows(pos, edges):
     """ Maker a list of edge arrows. """
     arrows = list()
     for e in edges:
-        arrows.append((pos[e[0]][0], pos[e[0]][1], 
-                       .9*(pos[e[1]][0]-pos[e[0]][0]), 
-                       .9*(pos[e[1]][1]- pos[e[0]][1]), 
+        arrows.append((pos[e[0]][0], pos[e[0]][1],
+                       .9*(pos[e[1]][0]-pos[e[0]][0]),
+                       .9*(pos[e[1]][1]- pos[e[0]][1]),
                        edges[e]))
     return arrows
 
@@ -168,18 +168,18 @@ def draw_space(G, pos=None):
     fig = plt.figure(figsize=[7,7])
     if pos is None:
         pos = nx.spring_layout(G, iterations=150)
-     
+
     # Draw network
     colors = list()
     for n in G.nodes():
         colors.append(G.node[n]["phenotype"])
-                      
-    nx.draw(G,pos, alpha=.8, 
-            cmap=gray, 
-            node_color=colors, 
-            node_size=400, 
-            arrows=False, 
-            with_labels=True, 
+
+    nx.draw(G,pos, alpha=.8,
+            cmap=gray,
+            node_color=colors,
+            node_size=400,
+            arrows=False,
+            with_labels=True,
             width=0.5,
             vmin = 0.94,
             vmax = 1.2,
@@ -191,23 +191,23 @@ def draw_traj(G, traj, pos=None):
     fig = plt.figure(figsize=[7,7])
     if pos is None:
         pos = nx.spring_layout(G, iterations=150)
-     
+
     # Draw network
     colors = list()
     for n in G.nodes():
         colors.append(G.node[n]["phenotype"])
-                      
-    nx.draw(G,pos, alpha=.8, 
-            cmap=gray, 
-            node_color=colors, 
-            node_size=400, 
-            arrows=False, 
-            with_labels=True, 
+
+    nx.draw(G,pos, alpha=.8,
+            cmap=gray,
+            node_color=colors,
+            node_size=400,
+            arrows=False,
+            with_labels=True,
             width=2,
             vmin = 0.94,
             vmax = 1.2,
            )
-    
+
     # Draw arrows
     edges = edge_weight(traj)
     arrows = edge_arrows(pos, edges)
