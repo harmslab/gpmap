@@ -63,7 +63,6 @@ class Sample:
                 log_transform=self._gpm.log_transform,
                 mutations=self._gpm.mutations,
                 n_replicates=self._gpm.n_replicates,
-                phenotype_scalar=self._gpm.phenotype_scalar,
                 logbase=self._gpm.logbase)
 
 
