@@ -171,8 +171,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         )
         # Populate the
         for i in range(len(matrix)):
-            if matrix[i].sum() == 0:
-                matrix[i,i] = 1.0
+            matrix[i,i] = 1.0 - matrix[i].sum()
         #np.fill_diagonal(matrix, 1.0)
         # Normalize the row
         matrix = matrix / matrix.sum(axis=1)
