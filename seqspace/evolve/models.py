@@ -8,7 +8,7 @@ def fixation(fitness1, fitness2, N=10e8):
     sij = (fitness2 - fitness1)/abs(fitness1)
 
     # Check the value of denominator
-    denominator = 1 - np.exp(-2 * N * sij)
+    denominator = 1 - np.exp(-N * sij)
     numerator = 1 - np.exp(- sij)
 
     # Calculate the fixation probability
