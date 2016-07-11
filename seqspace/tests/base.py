@@ -78,6 +78,7 @@ class BaseTestClass:
             self.wildtype,
             self.genotypes,
             self.phenotypes,
+            stdeviations=self.stdeviations,
             log_transform=self.log_transform,
             n_replicates=self.n_replicates,
             mutations=self.mutations

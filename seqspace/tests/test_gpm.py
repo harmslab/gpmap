@@ -49,8 +49,16 @@ class testGenotypePhenotypeMap(base.BaseTestClass):
         tools.assert_equal(self.GPM.n, 2**4)
 
     def test_raw_phenotypes(self):
-        """Test log_transform to raw phenotypes"""
+        """Test non-log_transform to raw phenotypes"""
         np.testing.assert_array_equal(self.GPM.Raw.phenotypes, self.phenotypes)
+
+    def test_raw_std(self):
+        """Test raw errors"""
+        np.testing.assert_array_equal(self.GPM.Raw.std.upper, self.stdeviations)
+
+    def test_mutant(self):
+        """Test mutant"""
+        tools.assert_equal(self.GPM.Mutations.mutant, "1111")
 
     def test_missing_genotypes(self):
         """Test that missing genotypes are identified."""

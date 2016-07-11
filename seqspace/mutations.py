@@ -10,7 +10,24 @@ from seqspace.base import BaseMap
 
 class MutationMap(BaseMap):
     """This object tracks the index and order of mutations in an epistatic map.
+
+    Parameters
+    ----------
+    GPM : GenotypePhenotypeMap object
+        The genotype phenotype map object to translate as Binary.
+
+    Attributes
+    ----------
+    wildtype : str
+        wildtype genotype
+    mutations : dict
+        mapping of site number to alphabet
+    n : int
+        number of mutations
     """
+    def __init__(self, GPM):
+        self._GPM = GPM
+
     # ------------------------------------------------------------------
     # Getter methods for attributes that are not set explicitly by user.
     # ------------------------------------------------------------------
@@ -18,7 +35,20 @@ class MutationMap(BaseMap):
     @property
     def wildtype(self):
         """ Get possible that occur from reference system. """
-        return self._wildtype
+        return self._GPM.wildtype
+
+    @property
+    def mutant(self):
+        """Get the farthest mutant in genotype-phenotype map."""
+        _mutant = []
+        _wt = self.wildtype
+        for i in range(0,self.n):
+            site = _wt[i]
+            options = self.mutations[i]
+            for o in options:
+                if o != site:
+                    _mutant.append(o)
+        return "".join(_mutant)
 
     @property
     def mutations(self):
@@ -33,11 +63,6 @@ class MutationMap(BaseMap):
     # ------------------------------------------------------------------
     # Setter methods for attributes that are not set explicitly by user.
     # ------------------------------------------------------------------
-
-    @wildtype.setter
-    def wildtype(self, wildtype):
-        """ Set the wildtype genotype. """
-        self._wildtype = wildtype
 
     @mutations.setter
     def mutations(self, mutations):
@@ -58,9 +83,4 @@ class MutationMap(BaseMap):
         if type(mutations) != dict:
             raise TypeError("mutations must be a dict")
         self._mutations = mutations
-        self.n = len(mutations)
-
-    @n.setter
-    def n(self, n):
-        """ Set the number of mutations. """
-        self._n = n
+        self._n = len(mutations)

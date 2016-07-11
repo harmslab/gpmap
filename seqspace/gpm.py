@@ -71,7 +71,8 @@ class Sample:
 # ----------------------------------------------------------
 
 class GenotypePhenotypeMap(BaseMap):
-    """Construct a full genotype phenotype mapping object.
+    """Genotype-phenotype map datatype. Efficient memory storage, fast-ish mapping,
+    graphing, plotting, and simulations.
 
     Attributes
     ----------
@@ -82,10 +83,13 @@ class GenotypePhenotypeMap(BaseMap):
     Graph : Networkx DiGraph
         Networkx graph representation.
     genotypes : numpy.array
+        array of genotypes
     phenotypes : numpy.array
+        array of phenotypes
     length : int
-    n :
-
+        length of each genotype
+    n : int
+        number of genotypes.
 
     Parameters
     ----------
@@ -134,19 +138,14 @@ class GenotypePhenotypeMap(BaseMap):
         self.phenotypes = np.array(phenotypes)
         self.n_replicates = n_replicates
 
-        # Initialize Mutational mapping
-        self.Mutations = MutationMap()
-        self.Mutations.mutations = mutations
-        self.Mutations.wildtype = wildtype
-
         # Built the binary representation of the genotype-phenotype.
         # Constructs a complete sequence space and stores genotypes missing in the
         # data as an attribute, `missing_genotypes`.
         self.Binary = BinaryMap(self)
 
         # Construct the error maps
-        stdeviations = stdeviations
-        self._construct_errors(stdeviations)
+        self.stdeviations = stdeviations
+        #self._construct_errors(stdeviations)
 
         # Set up plotting subclass
         self.plot = PlottingContainer(self)
@@ -198,6 +197,18 @@ class GenotypePhenotypeMap(BaseMap):
         # Create an instance
         gpm = cls(args[0], args[1], args[2], **options)
         return gpm
+
+    def attrs(self):
+        """Return attributes"""
+        return {
+            "wildtype" : self.wildtype,
+            "genotypes" : self.genotypes,
+            "phenotypes" : self.Raw.phenotypes,
+            "log_transform" : self.log_transform,
+            "stdeviations" : self.stdeviations,
+            "n_replicates" : self.n_replicates,
+            "mutations" : self.mutations,
+        }
 
     # ----------------------------------------------------------
     # Properties of the map
@@ -279,7 +290,6 @@ class GenotypePhenotypeMap(BaseMap):
     def wildtype(self, wildtype):
         """ Set the reference genotype among the mutants in the system. """
         self._wildtype = wildtype
-        self.Mutations.wildtype = wildtype
 
     @mutations.setter
     def mutations(self, mutations):
@@ -301,9 +311,8 @@ class GenotypePhenotypeMap(BaseMap):
         if type(mutations) != dict:
             raise TypeError("mutations must be a dict")
         self._mutations = mutations
-        self.Mutations = MutationMap()
+        self.Mutations = MutationMap(self)
         self.Mutations.mutations = mutations
-        self.Mutations.n = len(mutations)
 
     @phenotypes.setter
     def phenotypes(self, phenotypes):
@@ -326,9 +335,7 @@ class GenotypePhenotypeMap(BaseMap):
 
         # log transform if log_transform = True. Raw phenotypes are stored in an separate object
         if self.log_transform is True:
-            self.Raw = RawMap(self)
-            self.Raw.genotypes = self._genotypes
-            self.Raw.phenotypes = _phenotypes
+            self._add_Raw(_phenotypes)
             _phenotypes = self.logbase(_phenotypes)
 
         #Set the phenotypes AND multiply them by scalar
@@ -349,97 +356,16 @@ class GenotypePhenotypeMap(BaseMap):
     # Hidden methods for mapping object
     # ------------------------------------------------------------
 
-    def _add_Raw(self,):
+    def _add_Raw(self, nonlog_phenotypes):
         """Store a non-log-transformed version of the genotype-phenotype map."""
         self.Raw = RawMap(self)
-        self.Raw._build()
+        self.Raw.phenotypes = nonlog_phenotypes
 
-    def _add_graph(self, transition_func=None, mutation_labels=False):
+    def _add_networkx(self):
         """Construct NetworkX DiGraph object from GenotypePhenotypeMap."""
         # Add a networkx graph object
         self.Graph = GenotypePhenotypeGraph(self)
-        self.Graph._build(transition_func=transition_func, mutation_labels=mutation_labels)
-
-    def _construct_errors(self, stdeviations):
-        """
-            Construct and attach a set of standard deviation and errormaps
-        """
-        # Set up the error mapping
-        if stdeviations is not None:
-
-            self.stdeviations = np.array(stdeviations)
-
-            if self.log_transform is True:
-
-                # Add errors to the Raw map
-                try:
-                    # Add to the Raw map
-                    self.Raw.stdeviations = self.stdeviations
-                    self.Raw.std = StandardDeviationMap(self.phenotypes, self.stdeviations,
-                        log_transform=False,
-                        logbase=self.logbase)
-
-                    self.Raw.err = StandardErrorMap(self.phenotypes, self.stdeviations,
-                        log_transform=False,
-                        n_replicates=self.n_replicates,
-                        logbase=self.logbase)
-
-                    # Set log transformed map
-                    self.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations,
-                        log_transform=self.log_transform,
-                        logbase=self.logbase)
-
-                    self.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations,
-                        log_transform=self.log_transform,
-                        n_replicates=self.n_replicates,
-                        logbase=self.logbase
-                        )
-
-                    # If a binary map exists
-                    if hasattr(self, "Binary"):
-                        # Set up all statistics for error.
-                        self.Binary.std = StandardDeviationMap(self.Raw.phenotypes, self.stdeviations,
-                            log_transform=self.log_transform,
-                            logbase=self.logbase)
-
-                        self.Binary.err = StandardErrorMap(self.Raw.phenotypes, self.stdeviations,
-                            log_transform=self.log_transform,
-                            n_replicates=self.n_replicates,
-                            logbase=self.logbase)
-
-                except AttributeError:
-                    raise Exception("A RawMap must be initialized as an attribute before we can transform the errors.")
-
-            else:
-                # Set up all statistics for error.
-                self.std = StandardDeviationMap(self.phenotypes, self.stdeviations,
-                    log_transform=self.log_transform,
-                    logbase=self.logbase)
-
-                self.err = StandardErrorMap(self.phenotypes, self.stdeviations,
-                    log_transform=self.log_transform,
-                    n_replicates=self.n_replicates,
-                    logbase=self.logbase)
-
-                # If a binary map exists
-                if hasattr(self, "Binary"):
-                    # Set up all statistics for error.
-                    self.Binary.std = StandardDeviationMap(self.phenotypes, self.stdeviations,
-                        log_transform=self.log_transform,
-                        logbase=self.logbase)
-                    self.Binary.err = StandardErrorMap(self.phenotypes, self.stdeviations,
-                        log_transform=self.log_transform,
-                        n_replicates=self.n_replicates,
-                        logbase=self.logbase)
-
-        else:
-
-            if self.log_transform is True:
-                self.Raw.stdeviations = None
-                self.stdeviations = None
-            else:
-                self.stdeviations = None
-
+        self.Graph._build()
 
     # ------------------------------------------------------------
     # Hidden methods for mapping object

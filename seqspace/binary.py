@@ -8,6 +8,7 @@
 import numpy as np
 
 from seqspace.base import BaseMap
+from seqspace.errors import StandardErrorMap, StandardDeviationMap
 from seqspace.utils import (hamming_distance,
                             binary_mutations_map,
                             farthest_genotype,
@@ -21,8 +22,6 @@ class BinaryMap(BaseMap):
     ----------
     GPM : GenotypePhenotypeMap object
         The genotype phenotype map object to translate as Binary.
-    encoding : dict
-        mapping
 
     Attributes
     ----------
@@ -39,12 +38,38 @@ class BinaryMap(BaseMap):
         phenotypes given by GPM, in the same order as GPM.
     encoding : dict
         mapping dictionary that takes
-
+    n_replicates : int
+        number of replicates.
+    logbase : callable
+        function for log transforming an array or value.
+    stdeviations : array
+        standard deviations of genotype phenotype map.
     """
     def __init__(self, GPM):
         self._GPM = GPM
-        self.encoding = encode_mutations(self._GPM.wildtype, self._GPM.mutations)
         self._build()
+        self.std = StandardDeviationMap(self)
+        self.err = StandardErrorMap(self)
+
+    @property
+    def n_replicates(self):
+        """Get number of replicates"""
+        return self._GPM.n_replicates
+
+    @property
+    def logbase(self):
+        """Get logbase."""
+        return self._GPM.logbase
+
+    @property
+    def stdeviations(self):
+        """"""
+        return self._GPM.stdeviations
+
+    @property
+    def log_transform(self):
+        """Get boolean for log_transform"""
+        return self._GPM.log_transform
 
     @property
     def length(self):
@@ -55,6 +80,11 @@ class BinaryMap(BaseMap):
     def genotypes(self):
         """ Get Binary representation of genotypes. """
         return self._genotypes
+
+    @property
+    def phenotypes(self):
+        """Get phenotypes of the map."""
+        return self._GPM.phenotypes
 
     @property
     def missing_genotypes(self):
@@ -79,6 +109,8 @@ class BinaryMap(BaseMap):
     def _build(self):
         """Builds a binary representation of a GenotypePhenotypeMap object.
         """
+        self.encoding = encode_mutations(self._GPM.wildtype, self._GPM.mutations)
+
         # Use encoding map to construct binary presentation for any type of alphabet
         unsorted_genotypes, unsorted_binary = construct_genotypes(self.encoding)
 

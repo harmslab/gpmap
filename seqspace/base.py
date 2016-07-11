@@ -17,7 +17,7 @@ class BaseMap:
     """
     def _if_dict(self, dictionary):
         """ If setter method is passed a dictionary with genotypes as keys,
-            use those keys to populate array of elements in order
+        use those keys to populate array of elements in order
         """
         elements = np.empty(self._n, dtype=float)
         for i in range(self._n):
@@ -27,16 +27,16 @@ class BaseMap:
     def map(self, attr1, attr2):
         """ Return a mapping dictionary between two attributes in map.
 
-            Args:
-            ----
-            attr1: str
-                __name__ of attribute that will be keys of dictionary
-            attr2: str
-                __name__ of attribute that will the values of dictionary
+        Parameters
+        ----------
+        attr1 : str
+            __name__ of attribute that will be keys of dictionary
+        attr2 : str
+            __name__ of attribute that will the values of dictionary
 
-            Return:
-            ------
-             { attr1 : attr2 }
+        Returns
+        -------
+         { attr1 : attr2 }
 
         """
 
@@ -45,10 +45,10 @@ class BaseMap:
         def nested_attr(main_obj, attr):
             """ Get attributes in nested objects.
 
-                Returns the children object that is the parent object
-                of the attribute of interest.
+            Returns the children object that is the parent object
+            of the attribute of interest.
 
-                Also returns the attribute as a string
+            Also returns the attribute as a string
             """
             levels = attr.split(".")
             subclasses = levels[:-1]
