@@ -92,7 +92,7 @@ class DrawingConfigs(object):
         nodes = self.graph.gpm.Binary.genotypes
 
         # Get mapping of binary genotypes to their graph indices
-        mapping = self.graph.gpm.Binary.get_map("genotypes", "indices")
+        mapping = self.graph.gpm.Binary.map("genotypes", "indices")
 
         # Build an offset dictionary as we go...
         offsets = dict([(j, 0) for j in range(space.length+1)])

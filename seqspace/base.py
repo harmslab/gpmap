@@ -13,34 +13,33 @@ from collections import OrderedDict
 # -------------------------------------
 
 class BaseMap:
+    """Base class for all maps in this file.
     """
-        Base class for all maps in this file. 
-    """ 
     def _if_dict(self, dictionary):
-        """ If setter method is passed a dictionary with genotypes as keys, 
+        """ If setter method is passed a dictionary with genotypes as keys,
             use those keys to populate array of elements in order
         """
         elements = np.empty(self._n, dtype=float)
         for i in range(self._n):
             elements[i] = dictionary[self._genotypes[i]]
         return elements
-        
-    def get_map(self, attr1, attr2):
+
+    def map(self, attr1, attr2):
         """ Return a mapping dictionary between two attributes in map.
-            
-            Args: 
+
+            Args:
             ----
             attr1: str
                 __name__ of attribute that will be keys of dictionary
             attr2: str
                 __name__ of attribute that will the values of dictionary
-            
+
             Return:
             ------
              { attr1 : attr2 }
 
         """
-        
+
         # For handling nested object attributes
 
         def nested_attr(main_obj, attr):
@@ -50,10 +49,10 @@ class BaseMap:
                 of the attribute of interest.
 
                 Also returns the attribute as a string
-            """ 
+            """
             levels = attr.split(".")
             subclasses = levels[:-1]
-            attr = levels[-1] 
+            attr = levels[-1]
 
             obj = main_obj
             for sub_obj in subclasses:
@@ -64,11 +63,11 @@ class BaseMap:
         # Get keys
         obj, attr = nested_attr(self, attr1)
         keys = getattr(obj, attr)
-        
+
         obj, attr = nested_attr(self, attr2)
         values = getattr(obj, attr)
-        
+
         # Construct map
         mapping = dict(zip(keys, values))
-        
+
         return mapping

@@ -9,8 +9,11 @@
 from seqspace.base import BaseMap
 
 class RawMap:
-    """ Object for containing untransformed data. 
+    """ Object for containing untransformed data.
     """
+    def __init__(self, GPM):
+        self._GPM = GPM
+
     @property
     def genotypes(self):
         """"""

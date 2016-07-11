@@ -71,49 +71,45 @@ class Sample:
 # ----------------------------------------------------------
 
 class GenotypePhenotypeMap(BaseMap):
+    """Construct a full genotype phenotype mapping object.
 
+    Attributes
+    ----------
+    Binary : Binary object
+        representation of all genotypes mapped to proper phenotypes
+    Mutations : Mutations object
+        mapped to their binary encoding
+    Graph : Networkx DiGraph
+        Networkx graph representation.
+    genotypes : numpy.array
+    phenotypes : numpy.array
+    length : int
+    n :
+
+
+    Parameters
+    ----------
+    wildtype : string
+        wildtype sequence.
+    genotypes: array-like
+        list of all genotypes in system. Must be a complete system.
+    phenotypes: array-like
+        List of phenotypes in the same order as genotypes.
+    log_transform: boolean (default = False)
+        Set to True to log tranform the phenotypes.
+    mutations: dict
+        Dictionary that maps each site indice to their possible substitution alphabet.
+    n_replicates : int
+        number of replicate measurements comprising the mean phenotypes
+    logbase : callable log transformation function
+        logarithm function to apply to phenotypes if log_transform is True.
+    """
     def __init__(self, wildtype, genotypes, phenotypes,
         stdeviations=None,
         log_transform=False,
         mutations=None,
         n_replicates=1,
         logbase=np.log10):
-        """
-            Construct a full genotype phenotype mapping object.
-
-            Things included:
-            ---------------
-            1. Binary representation of all genotypes mapped to proper phenotypes
-            2. Mutations mapped to their binary encoding
-            3. NetworkX graph representation.
-
-            Parameters
-            ----------
-            wildtype : string
-                wildtype sequence.
-            genotypes: array-like
-                list of all genotypes in system. Must be a complete system.
-            phenotypes: array-like
-                List of phenotypes in the same order as genotypes.
-            log_transform: boolean (default = False)
-                Set to True to log tranform the phenotypes.
-            mutations: dict
-                Dictionary that maps each site indice to their possible substitution alphabet.
-            n_replicates : int
-                number of replicate measurements comprising the mean phenotypes
-            scalar : float
-                scalar value to multiply by the phenotypes and their standard deviations
-            logbase : callable log transformation function
-                logarithm function to apply to phenotypes if log_transform is True.
-
-            Returns:
-            -------
-            GenoPhenoMap object
-
-            GenoPhenoMap.Mutations --> includes all mutational mapping
-            GenoPhenoMap.Binary --> genotypes mapped to their binary representations of the space.
-
-        """
 
         # Set mutations; if not given, assume binary space.
         if mutations is not None:
@@ -146,7 +142,7 @@ class GenotypePhenotypeMap(BaseMap):
         # Built the binary representation of the genotype-phenotype.
         # Constructs a complete sequence space and stores genotypes missing in the
         # data as an attribute, `missing_genotypes`.
-        self._construct_binary()
+        self.Binary = BinaryMap(self)
 
         # Construct the error maps
         stdeviations = stdeviations
@@ -330,7 +326,7 @@ class GenotypePhenotypeMap(BaseMap):
 
         # log transform if log_transform = True. Raw phenotypes are stored in an separate object
         if self.log_transform is True:
-            self.Raw = RawMap()
+            self.Raw = RawMap(self)
             self.Raw.genotypes = self._genotypes
             self.Raw.phenotypes = _phenotypes
             _phenotypes = self.logbase(_phenotypes)
@@ -349,75 +345,20 @@ class GenotypePhenotypeMap(BaseMap):
         """Set the number of replicate measurements taken of phenotypes"""
         self._n_replicates = n_replicates
 
-
     # ------------------------------------------------------------
     # Hidden methods for mapping object
     # ------------------------------------------------------------
 
-    def graph(self, transition_func=None, mutation_labels=False):
-        """ Construct NetworkX graph from GenotypePhenotypeMap."""
+    def _add_Raw(self,):
+        """Store a non-log-transformed version of the genotype-phenotype map."""
+        self.Raw = RawMap(self)
+        self.Raw._build()
+
+    def _add_graph(self, transition_func=None, mutation_labels=False):
+        """Construct NetworkX DiGraph object from GenotypePhenotypeMap."""
         # Add a networkx graph object
         self.Graph = GenotypePhenotypeGraph(self)
         self.Graph._build(transition_func=transition_func, mutation_labels=mutation_labels)
-
-    def _construct_binary(self):
-        """ Encode the genotypes an ordered binary set of genotypes with
-            wildtype as reference state (ref is all zeros).
-
-            This method maps each genotype to their binary representation
-            relative to the 'wildtype' sequence.
-        """
-        # Initialize Binary representation of genotype-phenotype map
-        self.Binary = BinaryMap()
-
-        # Encode mutations as individual binary representation
-        self.Binary.encoding = encode_mutations(self.wildtype, self.mutations)
-
-        # Use encoding map to construct binary presentation for any type of alphabet
-        unsorted_genotypes, unsorted_binary = construct_genotypes(self.Binary.encoding)
-
-        # length of binary strings
-        self.Binary._length = len(unsorted_binary[0])
-
-        # Sort binary representation to match genotypes
-        geno2index = self.get_map("genotypes", "indices")
-        binary = np.empty(self.n, dtype="<U" + str(self.Binary.length))
-
-        # Sort the genotypes by looking for them in the data.
-
-        # Sort the missing genotypes into a separate object
-        missing_genotypes = list()
-        missing_binary = list()
-
-        for i in range(len(unsorted_genotypes)):
-            # Keep and sort genotype if it exists in data.
-            try:
-
-                index = geno2index[unsorted_genotypes[i]]
-                binary[index] = unsorted_binary[i]
-
-            except KeyError:
-
-                missing_genotypes.append(unsorted_genotypes[i])
-                missing_binary.append(unsorted_binary[i])
-
-        # Set the missing genotypes
-        self._missing_genotypes = np.array(missing_genotypes)
-        self.Binary._missing_genotypes= np.array(missing_binary)
-
-        # Set binary attributes to sorted genotypes
-        self.Binary.genotypes = binary
-        self.Binary.indices = self.indices[:]
-
-        # Grab phenotypes if given by user. Otherwise, pass.
-        try:
-
-            self.Binary.phenotypes = self.phenotypes[:]
-
-        except AttributeError:
-
-            pass
-
 
     def _construct_errors(self, stdeviations):
         """
@@ -519,28 +460,22 @@ class GenotypePhenotypeMap(BaseMap):
             `samples` [Sample object]: returns this object with all stats on experiment
         """
         if genotypes is None:
-
             # make sure fraction is float between 0 and 1
             if fraction < 0 or fraction > 1:
                 raise Exception("fraction is invalid.")
-
             # fractional length of space.
             frac_length = int(fraction * self.n)
-
             # random genotypes and phenotypes to sample
             random_indices = np.sort(np.random.choice(range(self.n), size=frac_length, replace=False))
-
             # If sample must include derived, set the last random_indice to self.n-1
             if derived:
                 random_indices[-1] = self.n-1
 
         else:
             # Mapping from genotypes to indices
-            mapping = self.get_map("genotypes", "indices")
-
+            mapping = self.map("genotypes", "indices")
             # Construct an array of genotype indices to sample
             random_indices = [mapping[g] for g in genotypes]
-
 
         # initialize arrays
         phenotypes = np.empty((len(random_indices), n_samples), dtype=float)
@@ -550,10 +485,8 @@ class GenotypePhenotypeMap(BaseMap):
         try:
             # Iterate through "seen" genotypes and sample from their distributions
             for i in range(len(random_indices)):
-
                 index = random_indices[i]
                 seq = self.genotypes[index]
-
                 # Build genotype array
                 genotypes[i] = np.array([seq for j in range(n_samples)])
 
@@ -561,19 +494,15 @@ class GenotypePhenotypeMap(BaseMap):
                 if self.log_transform:
                     # Error distribution to sample from.
                     stdevs = self.Raw.err.upper
-
                     phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.Raw.phenotypes[index]
                 else:
                     # Error distribution to sample from.
                     stdevs = self.err.upper
-
                     phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.phenotypes[index]
-
         except:
             # Can't sample if no error distribution is given.
             if n_samples != 1:
                 raise Exception("Won't create samples if sample error is not given.")
-
             genotypes = np.array([self.genotypes[i] for i in random_indices])
             phenotypes = np.array([self.phenotypes[i] for i in random_indices])
 
@@ -583,20 +512,19 @@ class GenotypePhenotypeMap(BaseMap):
 
 
     def subspace(self, genotype1, genotype2):
-        """ Create a genotype-phenotype map for a subspace of genotypes. """
-
+        """Select a region/subspace within a genotype-phenotype map
+        """
         # Construct the mutations dictionary
         mutations = binary_mutations_map(genotype1, genotype2)
-
         # Construct binary encoding
         encoding = encode_mutations(genotype1, mutations)
 
         # Get old genotype-phenotype mapping
         if self.log_transform:
-            mapping = self.get_map("genotypes", "Raw.phenotypes")
+            mapping = self.map("genotypes", "Raw.phenotypes")
             stdeviations = self.Raw.stdeviations
         else:
-            mapping = self.get_map("genotypes", "phenotypes")
+            mapping = self.map("genotypes", "phenotypes")
             stdeviations = self.stdeviations
 
         # Construct the subspace
