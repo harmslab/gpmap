@@ -25,11 +25,7 @@ from seqspace.errors import (StandardDeviationMap,
 from seqspace.stats import corrected_sterror
 
 # import utils used into module.
-from seqspace.utils import (hamming_distance,
-                            binary_mutations_map,
-                            farthest_genotype,
-                            encode_mutations,
-                            construct_genotypes)
+from seqspace import utils
 
 from seqspace.plotting import PlottingContainer
 
@@ -74,23 +70,6 @@ class GenotypePhenotypeMap(BaseMap):
     """Genotype-phenotype map datatype. Efficient memory storage, fast-ish mapping,
     graphing, plotting, and simulations.
 
-    Attributes
-    ----------
-    Binary : Binary object
-        representation of all genotypes mapped to proper phenotypes
-    Mutations : Mutations object
-        mapped to their binary encoding
-    Graph : Networkx DiGraph
-        Networkx graph representation.
-    genotypes : numpy.array
-        array of genotypes
-    phenotypes : numpy.array
-        array of phenotypes
-    length : int
-        length of each genotype
-    n : int
-        number of genotypes.
-
     Parameters
     ----------
     wildtype : string
@@ -107,6 +86,26 @@ class GenotypePhenotypeMap(BaseMap):
         number of replicate measurements comprising the mean phenotypes
     logbase : callable log transformation function
         logarithm function to apply to phenotypes if log_transform is True.
+
+
+    Attributes
+    ----------
+    Binary : Binary object
+        representation of all genotypes mapped to proper phenotypes
+    Graph : Networkx DiGraph
+        Networkx graph representation.
+    genotypes : numpy.array
+        array of genotypes
+    phenotypes : numpy.array
+        array of phenotypes
+    length : int
+        length of each genotype
+    n : int
+        number of genotypes.
+    logbase : callable
+        logarithm function to use when tranforming phenotypes.
+    base : float
+        base of logarithm used during transform.
     """
     def __init__(self, wildtype, genotypes, phenotypes,
         stdeviations=None,
@@ -120,13 +119,14 @@ class GenotypePhenotypeMap(BaseMap):
             # Make sure the keys in the mutations dict are integers, not strings.
             self.mutations = dict([(int(key), val) for key, val in mutations.items()])
         else:
-            mutant = farthest_genotype(wildtype, genotypes)
-            mutations = binary_mutations_map(wildtype, mutant)
+            mutant = utils.farthest_genotype(wildtype, genotypes)
+            mutations = utils.binary_mutations_map(wildtype, mutant)
             self.mutations = mutations
 
         # Check that logbase is a callable function
         if hasattr(logbase, '__call__'):
             self.logbase = logbase
+            self.base = utils.get_base(self.logbase)
         else:
             raise Exception("""Logbase must be a callable function to transform \
             phenotypes.(i.e. np.log(...)).""")
@@ -198,8 +198,13 @@ class GenotypePhenotypeMap(BaseMap):
         gpm = cls(args[0], args[1], args[2], **options)
         return gpm
 
-    def attrs(self):
-        """Return attributes"""
+    # ----------------------------------------------------------
+    # Writing methods
+    # ----------------------------------------------------------
+
+    @property
+    def metadata(self):
+        """Return metadata."""
         return {
             "wildtype" : self.wildtype,
             "genotypes" : self.genotypes,
@@ -209,6 +214,25 @@ class GenotypePhenotypeMap(BaseMap):
             "n_replicates" : self.n_replicates,
             "mutations" : self.mutations,
         }
+
+    def write(self, *items, sep="\t"):
+        """Write out items to a tab-separated file.
+        """
+        # write a mapping dictionary to file
+        if type(items) is dict:
+            with open("fname", "w") as f:
+                for key,value in items.items():
+                    f.write(key + sep + value + "\n")
+        # write a list of items to file.
+        else:
+            with open("fname", "w") as f:
+                nrows = len(items[0])
+                ncols = len(items)
+                for i in range(nrows):
+                    row = []
+                    for j in range(ncols):
+                        row.append(items[j][i])
+                    f.write(sep.join(row))
 
     # ----------------------------------------------------------
     # Properties of the map
@@ -233,6 +257,19 @@ class GenotypePhenotypeMap(BaseMap):
     def wildtype(self):
         """ Get reference genotypes for interactions. """
         return self._wildtype
+
+    @property
+    def mutant(self):
+        """Get the farthest mutant in genotype-phenotype map."""
+        _mutant = []
+        _wt = self.wildtype
+        for i in range(0,len(self.mutations)):
+            site = _wt[i]
+            options = self.mutations[i]
+            for o in options:
+                if o != site:
+                    _mutant.append(o)
+        return "".join(_mutant)
 
     @property
     def mutations(self):
@@ -311,8 +348,6 @@ class GenotypePhenotypeMap(BaseMap):
         if type(mutations) != dict:
             raise TypeError("mutations must be a dict")
         self._mutations = mutations
-        self.Mutations = MutationMap(self)
-        self.Mutations.mutations = mutations
 
     @phenotypes.setter
     def phenotypes(self, phenotypes):
@@ -435,7 +470,6 @@ class GenotypePhenotypeMap(BaseMap):
         # Create a sample object
         samples = Sample(self, genotypes, phenotypes, random_indices)
         return samples
-
 
     def subspace(self, genotype1, genotype2):
         """Select a region/subspace within a genotype-phenotype map

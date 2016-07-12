@@ -58,7 +58,7 @@ class testGenotypePhenotypeMap(base.BaseTestClass):
 
     def test_mutant(self):
         """Test mutant"""
-        tools.assert_equal(self.GPM.Mutations.mutant, "1111")
+        tools.assert_equal(self.GPM.mutant, "1111")
 
     def test_missing_genotypes(self):
         """Test that missing genotypes are identified."""
