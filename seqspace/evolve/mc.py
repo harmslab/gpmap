@@ -50,7 +50,7 @@ class Trajectories(object):
     def _binary(self, trajectories):
         """ Replace the keys in the trajectories dictionary for binary genotypes. """
         # Get the mapping between indices and binary genotypes
-        index2binary = self._gpm.map("indices", "Binary.genotypes")
+        index2binary = self._gpm.map("indices", "binary.genotypes")
 
         # New dictionary
         mapping = OrderedDict()

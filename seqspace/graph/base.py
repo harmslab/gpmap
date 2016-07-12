@@ -135,7 +135,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
             self.add_gpm_node(
                 int(geno2index[self.gpm.genotypes[i]]),         # genotype index
                 genotype=str(self.gpm.genotypes[i]),            # genotype
-                binary=str(self.gpm.Binary.genotypes[i]),       # binary representation
+                binary=str(self.gpm.binary.genotypes[i]),       # binary representation
                 phenotype=phenotype,                            # phenotype
                 value=phenotype,                                # same as phenotype
                 errors=errors[i]                                # error in phenotype

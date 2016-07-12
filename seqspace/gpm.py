@@ -90,7 +90,7 @@ class GenotypePhenotypeMap(BaseMap):
 
     Attributes
     ----------
-    Binary : Binary object
+    binary : binary object
         representation of all genotypes mapped to proper phenotypes
     Graph : Networkx DiGraph
         Networkx graph representation.
@@ -141,7 +141,7 @@ class GenotypePhenotypeMap(BaseMap):
         # Built the binary representation of the genotype-phenotype.
         # Constructs a complete sequence space and stores genotypes missing in the
         # data as an attribute, `missing_genotypes`.
-        self.Binary = BinaryMap(self)
+        self.binary = BinaryMap(self)
 
         # Construct the error maps
         self.stdeviations = stdeviations
@@ -378,8 +378,8 @@ class GenotypePhenotypeMap(BaseMap):
 
         # Set binary phenotypes if binary exists... assumes
         # that binary sequences are sorted to match raw genotypes.
-        if hasattr(self, "Binary"):
-            self.Binary.phenotypes = self._phenotypes
+        if hasattr(self, "binary"):
+            self.binary.phenotypes = self._phenotypes
 
 
     @n_replicates.setter

@@ -15,7 +15,7 @@ class RawMap(BaseMap):
     Parameters
     ----------
     GPM : GenotypePhenotypeMap object
-        The genotype phenotype map object to translate as Binary.
+        The genotype phenotype map object.
 
     Attributes
     ----------
