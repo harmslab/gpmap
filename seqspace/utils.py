@@ -40,6 +40,20 @@ def ipywidgets_missing(function):
 # Useful methods for genotype-phenotype spaces
 # -------------------------------------------------------
 
+def get_base(logbase):
+    """Get base from logbase
+    Parameters
+    ----------
+    logbase : callable
+        logarithm function
+    Returns
+    -------
+    base : float
+        returns base of logarithm.
+    """
+    testval = 10
+    return np.exp(np.log(testval) / logbase(testval))
+
 def hamming_distance(s1, s2):
     """ Return the Hamming distance between equal-length sequences """
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
