@@ -67,9 +67,9 @@ class BinaryMap(BaseMap):
         return self._GPM.stdeviations
 
     @property
-    def log_transform(self):
-        """Get boolean for log_transform"""
-        return self._GPM.log_transform
+    def tranformed(self):
+        """Get boolean for tranformed"""
+        return self._GPM.transformed
 
     @property
     def length(self):

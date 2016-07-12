@@ -28,7 +28,8 @@ class testGenotypePhenotypeMap(base.BaseTestClass):
         tools.assert_is_instance(gpm, GenotypePhenotypeMap)
         # Test elements align
         np.testing.assert_array_equal(gpm.genotypes, self.genotypes)
-        np.testing.assert_array_equal(gpm.phenotypes, np.log10(self.phenotypes))
+        np.testing.assert_array_equal(gpm.phenotypes, self.phenotypes)
+
 
     def test_from_json(self):
         """Test reading from json"""
@@ -37,7 +38,7 @@ class testGenotypePhenotypeMap(base.BaseTestClass):
         tools.assert_is_instance(gpm, GenotypePhenotypeMap)
         # Test elements align
         np.testing.assert_array_equal(gpm.genotypes, self.genotypes)
-        np.testing.assert_array_equal(gpm.phenotypes, np.log10(self.phenotypes))
+        np.testing.assert_array_equal(gpm.log.phenotypes, np.log10(self.phenotypes))
 
     def test_length(self):
         """Test genotype length."""
@@ -48,13 +49,13 @@ class testGenotypePhenotypeMap(base.BaseTestClass):
         """Test size"""
         tools.assert_equal(self.GPM.n, 2**4)
 
-    def test_raw_phenotypes(self):
+    def test_log_phenotypes(self):
         """Test non-log_transform to raw phenotypes"""
-        np.testing.assert_array_equal(self.GPM.Raw.phenotypes, self.phenotypes)
+        np.testing.assert_array_equal(self.GPM.log.phenotypes, np.log10(self.phenotypes))
 
-    def test_raw_std(self):
+    def test_std(self):
         """Test raw errors"""
-        np.testing.assert_array_equal(self.GPM.Raw.std.upper, self.stdeviations)
+        np.testing.assert_array_equal(self.GPM.std.upper, self.stdeviations)
 
     def test_mutant(self):
         """Test mutant"""

@@ -7,80 +7,80 @@ import warnings
 
 def mpl_missing(function):
     """ Function wrapper to check that matplotlib is install. """
-    
+
     def wrapper(*args, **kwargs):
         try:
-            import matplotlib 
+            import matplotlib
             return function(*args, **kwargs)
 
         except ImportError:
             warnings.filterwarnings("once")
-            warnings.warn("""Looks like `matplotlib` is not installed, so plots can't be constructed. 
+            warnings.warn("""Looks like `matplotlib` is not installed, so plots can't be constructed.
                         Install matplotlib before trying to use this method.""", ImportWarning)
-            
-    return wrapper 
+
+    return wrapper
 
 class PlottingContainer(object):
-    
+
     @mpl_missing
     def __init__(self, gpm):
-        """ 
+        """
             A class for quickly building plots from genotype-phenotype maps
         """
         self._gpm = gpm
-    
+
     def phenotypes(self, with_err=False, horizontal=False):
         """ Plot the phenotypes of a genotype phenotype map"""
         if horizontal:
             raise Warning(""" Horizontal plot not implemented yet. """)
         else:
             # construct plot
-            if self._gpm.log_transform:
+            if self._gpm.tranformed:
                 # Get the non-transformed data
-                
-                # Plot error? 
+
+                # Plot error?
                 if with_err:
-                    err = self._gpm.Raw.err.upper
+                    err = self._gpm.err.upper
                 else:
                     err = None
-                
-                fig, ax = phenotypes_barh(self._gpm.genotypes, 
-                    self._gpm.Raw.phenotypes, 
+
+                fig, ax = phenotypes_barh(self._gpm.genotypes,
+                    self._gpm.phenotypes,
                     wildtype=self._gpm.wildtype,
                     errors=err,
                 )
             else:
-                
-                # Plot error? 
+
+                # Plot error?
                 if with_err:
-                    err = [self._gpm.Raw.err.upper, self._gpm.err.lower]
+                    err = [self._gpm.err.upper, self._gpm.err.lower]
                 else:
                     err = None
-                    
-                fig, ax = phenotypes_barh(self._gpm.genotypes, 
-                    self._gpm.phenotypes, 
+
+                fig, ax = phenotypes_barh(self._gpm.genotypes,
+                    self._gpm.phenotypes,
                     wildtype=self._gpm.wildtype,
                     errors=err,
                 )
         return fig, ax
-        
+
 @mpl_missing
 def phenotypes_barh(genotypes, phenotypes, wildtype=None, errors=None, xlabel="", title="", figsize=(), **kwargs):
     """
-       Plot phenotypes as horizontal bars. 
+       Plot phenotypes as horizontal bars.
     """
     n_genotypes = len(genotypes)
-    
+
     if figsize == ():
         figsize = (5, n_genotypes/5.0)
-        
+
     fig, ax = mpl.pyplot.subplots(figsize=figsize)
 
 
     # default graph styling
     graph_properties = {'color':"k", 'alpha':0.5, 'error_kw':{'ecolor': '0.3'}}
 
-    # Add user defined 
+    # Add user defined
     for key in kwargs:
         graph_properties[key] = kwargs[key]
 
@@ -130,39 +130,39 @@ def phenotypes_barh(genotypes, phenotypes, wildtype=None, errors=None, xlabel=""
 
     ax.set_yticks(range(n_genotypes))
     ax.set_yticklabels(genotypes, fontProperties)
-    
+
     # Label axis and title
     ax.set_xlabel(xlabel)
     ax.set_title(title)
 
     return fig, ax
-    
-    
+
+
 class MonteCarloSimulationPlotting(object):
-    
+
     @mpl_missing
     def __init__(self, simulation):
-        
+
         self._simulation = simulation
-    
+
 class TrajectoriesPlotting(object):
-    
+
     @mpl_missing
     def __init__(self, trajectories):
         """
             An object for visualizing trajectory data.
         """
         self._trajectories = trajectories
-        
+
     def spectrum(self, ax=None, figsize=(6,4), **kwargs):
-        """ 
+        """
             Plots a spectrum of forward trajectories' probabilities, labeled by their index.
         """
         if ax is None:
             fig, ax = plt.subplots(figsize=figsize)
         else:
             fig = ax.get_figure()
-        
+
         # Calculate possible paths
         possible = self._trajectories.possible
         paths = [tuple(path) for path in possible]
@@ -181,12 +181,10 @@ class TrajectoriesPlotting(object):
             # If path is not in counts, it has 0 probabilities
             except KeyError:
                 probabilities.append(0)
-    
+
         # Create plot
         ax.plot(indices, probabilities)
         ax.set_xlabel("Trajectory ID")
-        ax.set_ylabel("Probability of Trajectory") 
-               
+        ax.set_ylabel("Probability of Trajectory")
+
         return fig, ax
-        
-        

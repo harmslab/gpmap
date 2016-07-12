@@ -17,7 +17,7 @@ import numpy as np
 from seqspace.base import BaseMap
 from seqspace.binary import BinaryMap
 from seqspace.mutations import MutationMap
-from seqspace.raw import RawMap
+from seqspace.transform import TransformMap
 from seqspace.graph import GenotypePhenotypeGraph
 from seqspace.errors import (StandardDeviationMap,
                             StandardErrorMap)
@@ -135,6 +135,7 @@ class GenotypePhenotypeMap(BaseMap):
         self.wildtype = wildtype
         self.genotypes = np.array(genotypes)
         self.log_transform = log_transform
+        self.transformed = False
         self.phenotypes = np.array(phenotypes)
         self.n_replicates = n_replicates
 
@@ -145,6 +146,7 @@ class GenotypePhenotypeMap(BaseMap):
 
         # Construct the error maps
         self.stdeviations = stdeviations
+        self._add_error()
         #self._construct_errors(stdeviations)
 
         # Set up plotting subclass
@@ -312,8 +314,10 @@ class GenotypePhenotypeMap(BaseMap):
 
     @log_transform.setter
     def log_transform(self, boolean):
-        """ True/False to log transform the space. """
         self._log_transform = boolean
+        # log transform if log_transform = True. Raw phenotypes are stored in an separate object
+        if boolean is True:
+            self._add_transform()
 
     @genotypes.setter
     def genotypes(self, genotypes):
@@ -368,11 +372,6 @@ class GenotypePhenotypeMap(BaseMap):
             else:
                 _phenotypes = phenotypes
 
-        # log transform if log_transform = True. Raw phenotypes are stored in an separate object
-        if self.log_transform is True:
-            self._add_Raw(_phenotypes)
-            _phenotypes = self.logbase(_phenotypes)
-
         #Set the phenotypes AND multiply them by scalar
         self._phenotypes = _phenotypes
 
@@ -391,10 +390,14 @@ class GenotypePhenotypeMap(BaseMap):
     # Hidden methods for mapping object
     # ------------------------------------------------------------
 
-    def _add_Raw(self, nonlog_phenotypes):
-        """Store a non-log-transformed version of the genotype-phenotype map."""
-        self.Raw = RawMap(self)
-        self.Raw.phenotypes = nonlog_phenotypes
+    def _add_transform(self):
+        """Store a log-transformed version of the genotype-phenotype map."""
+        self.log = TransformMap(self)
+
+    def _add_error(self):
+        """Store error maps"""
+        self.std = StandardDeviationMap(self)
+        self.err = StandardErrorMap(self)
 
     def _add_networkx(self):
         """Construct NetworkX DiGraph object from GenotypePhenotypeMap."""
@@ -452,7 +455,7 @@ class GenotypePhenotypeMap(BaseMap):
                 genotypes[i] = np.array([seq for j in range(n_samples)])
 
                 # If the phenotypes are log transformed, make sure to sample from untransformed...
-                if self.log_transform:
+                if self.transformed:
                     # Error distribution to sample from.
                     stdevs = self.Raw.err.upper
                     phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.Raw.phenotypes[index]
@@ -480,7 +483,7 @@ class GenotypePhenotypeMap(BaseMap):
         encoding = encode_mutations(genotype1, mutations)
 
         # Get old genotype-phenotype mapping
-        if self.log_transform:
+        if self.transformed:
             mapping = self.map("genotypes", "Raw.phenotypes")
             stdeviations = self.Raw.stdeviations
         else:
