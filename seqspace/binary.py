@@ -8,6 +8,7 @@
 import numpy as np
 
 from seqspace.base import BaseMap
+from seqspace.transform import TransformMap
 from seqspace.errors import StandardErrorMap, StandardDeviationMap
 from seqspace.utils import (hamming_distance,
                             binary_mutations_map,
@@ -50,6 +51,9 @@ class BinaryMap(BaseMap):
         self._build()
         self.std = StandardDeviationMap(self)
         self.err = StandardErrorMap(self)
+        self.transformed = False
+        if self.log_transform:
+            self.log = TransformMap(self)
 
     @property
     def n_replicates(self):
@@ -70,6 +74,11 @@ class BinaryMap(BaseMap):
     def tranformed(self):
         """Get boolean for tranformed"""
         return self._GPM.transformed
+
+    @property
+    def log_transform(self):
+        """Get boolean for log tranforming based on input model"""
+        return self._GPM.log_transform
 
     @property
     def length(self):

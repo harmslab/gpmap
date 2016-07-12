@@ -299,6 +299,11 @@ class GenotypePhenotypeMap(BaseMap):
         return self._phenotypes
 
     @property
+    def stdeviations(self):
+        """Get stdeviations"""
+        return self._stdeviations
+
+    @property
     def n_replicates(self):
         """Return the number of replicate measurements made of the phenotype"""
         return self._n_replicates
@@ -373,12 +378,12 @@ class GenotypePhenotypeMap(BaseMap):
                 _phenotypes = phenotypes
 
         #Set the phenotypes AND multiply them by scalar
-        self._phenotypes = _phenotypes
+        self._phenotypes = np.array(_phenotypes)
 
-        # Set binary phenotypes if binary exists... assumes
-        # that binary sequences are sorted to match raw genotypes.
-        if hasattr(self, "binary"):
-            self.binary.phenotypes = self._phenotypes
+    @stdeviations.setter
+    def stdeviations(self, stdeviations):
+        """set stdeviations to array"""
+        self._stdeviations = np.array(stdeviations)
 
 
     @n_replicates.setter

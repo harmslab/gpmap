@@ -4,6 +4,7 @@ import nose.tools as tools
 
 from . import base
 from ..gpm import GenotypePhenotypeMap
+from ..binary import BinaryMap
 
 class testGenotypePhenotypeMap(base.BaseTestClass):
 
@@ -29,7 +30,7 @@ class testGenotypePhenotypeMap(base.BaseTestClass):
         # Test elements align
         np.testing.assert_array_equal(gpm.genotypes, self.genotypes)
         np.testing.assert_array_equal(gpm.phenotypes, self.phenotypes)
-
+        tools.assert_is_instance(gpm.binary, BinaryMap)
 
     def test_from_json(self):
         """Test reading from json"""
