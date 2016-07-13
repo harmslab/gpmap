@@ -44,7 +44,7 @@ def lower_transform(mean, bound, logbase):
         so log(bound) = log(1 + bound/Ymean)
            log(bound) = log(1 - bound/Ymean)
     """
-    return abs(logbase( mean / (mean - bounds) ))
+    return abs(logbase( mean / (mean - bound) ))
 
 
 class BaseErrorMap(BaseMap):
