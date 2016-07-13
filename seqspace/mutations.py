@@ -68,17 +68,17 @@ class MutationMap(BaseMap):
     def mutations(self, mutations):
         """ Set the mutation alphabet for all sites in wildtype genotype.
 
-        `mutations = { site_number : alphabet }`. If the site
+        Examples
+        --------
+        mutations = { site_number : alphabet }. If the site
         alphabet is note included, the model will assume binary
-        between wildtype and derived.
+        between wildtype and derived::
 
-        ```
-        mutations = {
-            0: [alphabet],
-            1: [alphabet],
+            mutations = {
+                0: [alphabet],
+                1: [alphabet],
 
-        }
-        ```
+            }
         """
         if type(mutations) != dict:
             raise TypeError("mutations must be a dict")

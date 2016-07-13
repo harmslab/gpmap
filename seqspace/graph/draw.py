@@ -16,7 +16,7 @@ class GraphDrawing(object):
         return self._config.__dict__
 
     def change(self, **kwargs):
-        """ Change one of the configurations"""
+        """Change one of the configurations"""
         for kw in kwargs:
             setattr(self._config, kw, kwargs[kw])
 
@@ -75,17 +75,16 @@ class DrawingConfigs(object):
         return pos
 
     def flattened_positions(self, scale=1, vertical=False):
-        """
-            Get flattened positions for a genotype-phenotype graph.
+        """Get flattened positions for a genotype-phenotype graph.
 
-            Input:
-            -----
-            space: GenotypePhenotypeGraph object
+        Parameters
+        ----------
+        space: GenotypePhenotypeGraph object
 
-            Returns:
-            -------
-            positions: dict
-                positions of all nodes in network (i.e. {index: [x,y]})
+        Returns
+        -------
+        positions: dict
+            positions of all nodes in network (i.e. {index: [x,y]})
         """
 
         # Get the binary genotypes from GPM
@@ -141,7 +140,7 @@ def draw_trajectories(G, trajectories, pos=None):
 # ------------------------------------------------
 
 def edge_arrows(pos, edges):
-    """ Maker a list of edge arrows. """
+    """Maker a list of edge arrows. """
     arrows = list()
     for e in edges:
         arrows.append((pos[e[0]][0], pos[e[0]][1],
@@ -151,7 +150,7 @@ def edge_arrows(pos, edges):
     return arrows
 
 def edge_weight(traj):
-    """ Count the number of times each edge is visited. """
+    """Count the number of times each edge is visited. """
     edge_counter = dict()
     for t in traj:
         sequences = t
@@ -164,7 +163,7 @@ def edge_weight(traj):
     return edge_counter
 
 def draw_space(G, pos=None):
-    """ Draw the trajectories on Graph. """
+    """Draw the trajectories on Graph. """
     fig = plt.figure(figsize=[7,7])
     if pos is None:
         pos = nx.spring_layout(G, iterations=150)
@@ -187,7 +186,7 @@ def draw_space(G, pos=None):
     return pos, fig
 
 def draw_traj(G, traj, pos=None):
-    """ Draw the trajectories on Graph. """
+    """Draw the trajectories on Graph. """
     fig = plt.figure(figsize=[7,7])
     if pos is None:
         pos = nx.spring_layout(G, iterations=150)

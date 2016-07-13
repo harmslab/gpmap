@@ -67,7 +67,7 @@ class BinaryMap(BaseMap):
 
     @property
     def stdeviations(self):
-        """"""
+        """Get standard deviations"""
         return self._GPM.stdeviations
 
     @property
@@ -82,12 +82,12 @@ class BinaryMap(BaseMap):
 
     @property
     def length(self):
-        """ Get length of binary strings in space. """
+        """Get length of binary strings in space. """
         return self._length
 
     @property
     def genotypes(self):
-        """ Get Binary representation of genotypes. """
+        """Get Binary representation of genotypes. """
         return self._genotypes
 
     @property
@@ -97,12 +97,12 @@ class BinaryMap(BaseMap):
 
     @property
     def missing_genotypes(self):
-        """ Binary genotypes missing in the dataset """
+        """Binary genotypes missing in the dataset """
         return self._missing_genotypes
 
     @property
     def complete_genotypes(self):
-        """ All possible genotypes in the complete genotype space"""
+        """All possible genotypes in the complete genotype space"""
         return np.concatenate((self.genotypes, self.missing_genotypes))
 
     # ----------------------------------------------------------
@@ -111,7 +111,7 @@ class BinaryMap(BaseMap):
 
     @genotypes.setter
     def genotypes(self, genotypes):
-        """ Set Binary representation of genotypes. """
+        """Set Binary representation of genotypes. """
         self._length = len(genotypes[0])
         self._genotypes = genotypes
 

@@ -34,7 +34,7 @@ from seqspace.plotting import PlottingContainer
 # ----------------------------------------------------------
 
 class LoadingException(Exception):
-    """ Error when loading Genotype Phenotype map data. """
+    """Error when loading Genotype Phenotype map data. """
 
 # ----------------------------------------------------------
 # Sampling from Genotype-phenotype
@@ -43,7 +43,7 @@ class LoadingException(Exception):
 class Sample:
 
     def __init__(self, gpm, replicate_genotypes, replicate_phenotypes, indices=None):
-        """ Sample from simulated experiment """
+        """Sample from simulated experiment """
         self._gpm = gpm
         self.replicate_genotypes = replicate_genotypes
         self.replicate_phenotypes = replicate_phenotypes
@@ -53,7 +53,7 @@ class Sample:
         self.indices = indices
 
     def get_gpm(self):
-        """ Return a Genotype-phenotype object from sample. """
+        """Return a Genotype-phenotype object from sample. """
         return GenotypePhenotypeMap(self._gpm.wildtype, self.genotypes, self.phenotypes,
                 stdeviations=self.stdeviations,
                 log_transform=self._gpm.log_transform,
@@ -158,9 +158,8 @@ class GenotypePhenotypeMap(BaseMap):
 
     @classmethod
     def from_json(cls, filename, **kwargs):
-        """ Load a genotype-phenotype map directly from a json file.
-
-            The JSON metadata must include the following attributes
+        """Load a genotype-phenotype map directly from a json file.
+        The JSON metadata must include the following attributes
         """
         # Open, json load, and close a json file
         f = open(filename, "r")
@@ -242,22 +241,22 @@ class GenotypePhenotypeMap(BaseMap):
 
     @property
     def length(self):
-        """ Get length of the genotypes. """
+        """Get length of the genotypes. """
         return self._length
 
     @property
     def n(self):
-        """ Get number of genotypes, i.e. size of the genotype-phenotype map. """
+        """Get number of genotypes, i.e. size of the genotype-phenotype map. """
         return self._n
 
     @property
     def log_transform(self):
-        """ Boolean argument telling whether space is log transformed. """
+        """Boolean argument telling whether space is log transformed. """
         return self._log_transform
 
     @property
     def wildtype(self):
-        """ Get reference genotypes for interactions. """
+        """Get reference genotypes for interactions. """
         return self._wildtype
 
     @property
@@ -275,27 +274,27 @@ class GenotypePhenotypeMap(BaseMap):
 
     @property
     def mutations(self):
-        """ Get the furthest genotype from the wildtype genotype. """
+        """Get the furthest genotype from the wildtype genotype. """
         return self._mutations
 
     @property
     def genotypes(self):
-        """ Get the genotypes of the system. """
+        """Get the genotypes of the system. """
         return self._genotypes
 
     @property
     def missing_genotypes(self):
-        """ Genotypes that are missing from the complete genotype-to-phenotype map."""
+        """Genotypes that are missing from the complete genotype-to-phenotype map."""
         return self._missing_genotypes
 
     @property
     def complete_genotypes(self):
-        """ All possible genotypes in the complete genotype space"""
+        """All possible genotypes in the complete genotype space"""
         return np.concatenate((self.genotypes, self.missing_genotypes))
 
     @property
     def phenotypes(self):
-        """ Get the phenotypes of the system. """
+        """Get the phenotypes of the system. """
         return self._phenotypes
 
     @property
@@ -310,7 +309,7 @@ class GenotypePhenotypeMap(BaseMap):
 
     @property
     def indices(self):
-        """ Return numpy array of genotypes position. """
+        """Return numpy array of genotypes position. """
         return self._indices
 
     # ----------------------------------------------------------
@@ -326,7 +325,7 @@ class GenotypePhenotypeMap(BaseMap):
 
     @genotypes.setter
     def genotypes(self, genotypes):
-        """ Set genotypes from ordered list of sequences. """
+        """Set genotypes from ordered list of sequences. """
         self._n = len(genotypes)
         self._length = len(genotypes[0])
         self._genotypes = np.array(genotypes)
@@ -334,25 +333,24 @@ class GenotypePhenotypeMap(BaseMap):
 
     @wildtype.setter
     def wildtype(self, wildtype):
-        """ Set the reference genotype among the mutants in the system. """
+        """Set the reference genotype among the mutants in the system. """
         self._wildtype = wildtype
 
     @mutations.setter
     def mutations(self, mutations):
         """ Set the mutation alphabet for all sites in wildtype genotype.
 
-            `mutations = { site_number : alphabet }`. If the site
-            alphabet is note included, the model will assume binary
-            between wildtype and derived.
+        Examples
+        --------
+        `mutations = { site_number : alphabet }``. If the site
+        alphabet is note included, the model will assume binary
+        between wildtype and derived::
 
-            ```
             mutations = {
                 0: [alphabet],
                 1: [alphabet],
 
             }
-            ```
-
         """
         if type(mutations) != dict:
             raise TypeError("mutations must be a dict")
@@ -362,12 +360,12 @@ class GenotypePhenotypeMap(BaseMap):
     def phenotypes(self, phenotypes):
         """ Set phenotypes from ordered list of phenotypes
 
-            Args:
-            -----
-            phenotypes: array-like or dict
-                if array-like, it musted be ordered by genotype; if dict,
-                this method automatically orders the phenotypes into numpy
-                array.
+        Parameters
+        ----------
+        phenotypes: array-like or dict
+            if array-like, it musted be ordered by genotype; if dict,
+            this method automatically orders the phenotypes into numpy
+            array.
         """
         if type(phenotypes) is dict:
             _phenotypes = self._if_dict(phenotypes)
@@ -416,17 +414,20 @@ class GenotypePhenotypeMap(BaseMap):
 
 
     def sample(self, n_samples=1, genotypes=None, fraction=1.0, derived=True):
-        """ Generate artificial data sampled from phenotype and percent error.
+        """Generate artificial data sampled from phenotype and percent error.
 
-            __Arguments__:
+        Parameters
+        ----------
+        n_samples : int
+            Number of samples to take from space
 
-            `n_samples` [int] : Number of samples to take from space
+        fraction : float
+            fraction of space to sample.
 
-            `fraction` [float] : fraction of space to sample.
-
-            __Return__:
-
-            `samples` [Sample object]: returns this object with all stats on experiment
+        Returns
+        -------
+        samples :  Sample object
+            returns this object with all stats on experiment
         """
         if genotypes is None:
             # make sure fraction is float between 0 and 1

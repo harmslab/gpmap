@@ -36,12 +36,10 @@ class BaseMap:
 
         Returns
         -------
-         { attr1 : attr2 }
-
+        mapping : dict
+            mapping attr1 to att2
         """
-
-        # For handling nested object attributes
-
+        # for handling nested object attributes
         def nested_attr(main_obj, attr):
             """ Get attributes in nested objects.
 

@@ -24,13 +24,12 @@ class PlottingContainer(object):
 
     @mpl_missing
     def __init__(self, gpm):
-        """
-            A class for quickly building plots from genotype-phenotype maps
+        """A class for quickly building plots from genotype-phenotype maps
         """
         self._gpm = gpm
 
     def phenotypes(self, with_err=False, horizontal=False):
-        """ Plot the phenotypes of a genotype phenotype map"""
+        """Plot the phenotypes of a genotype phenotype map"""
         if horizontal:
             raise Warning(""" Horizontal plot not implemented yet. """)
         else:
@@ -66,8 +65,7 @@ class PlottingContainer(object):
 
 @mpl_missing
 def phenotypes_barh(genotypes, phenotypes, wildtype=None, errors=None, xlabel="", title="", figsize=(), **kwargs):
-    """
-       Plot phenotypes as horizontal bars.
+    """Plot phenotypes as horizontal bars.
     """
     n_genotypes = len(genotypes)
 
@@ -149,14 +147,12 @@ class TrajectoriesPlotting(object):
 
     @mpl_missing
     def __init__(self, trajectories):
-        """
-            An object for visualizing trajectory data.
+        """An object for visualizing trajectory data.
         """
         self._trajectories = trajectories
 
     def spectrum(self, ax=None, figsize=(6,4), **kwargs):
-        """
-            Plots a spectrum of forward trajectories' probabilities, labeled by their index.
+        """Plots a spectrum of forward trajectories' probabilities, labeled by their index.
         """
         if ax is None:
             fig, ax = plt.subplots(figsize=figsize)

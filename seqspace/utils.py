@@ -55,12 +55,12 @@ def get_base(logbase):
     return np.exp(np.log(testval) / logbase(testval))
 
 def hamming_distance(s1, s2):
-    """ Return the Hamming distance between equal-length sequences """
+    """Return the Hamming distance between equal-length sequences """
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
 
 
 def sample_phenotypes(phenotypes, errors, n=1):
-    """ Generate `n` phenotypes from from normal distributions. """
+    """Generate `n` phenotypes from from normal distributions. """
     samples = np.random.randn(len(phenotypes), n)
     # Apply phenotype scale and variance
     for i in range(n):
@@ -72,7 +72,7 @@ def sample_phenotypes(phenotypes, errors, n=1):
 # -------------------------------------------------------
 
 def find_differences(s1, s2):
-    """ Return the index of differences between two sequences."""
+    """Return the index of differences between two sequences."""
     indices = list()
     for i in range(len(s1)):
         if s1[i] != s2[i]:
@@ -80,7 +80,7 @@ def find_differences(s1, s2):
     return indices
 
 def farthest_genotype(reference, genotypes):
-    """ Find the genotype in the system that differs at the most sites. """
+    """Find the genotype in the system that differs at the most sites. """
     mutations = 0
     for genotype in genotypes:
         differs = hamming_distance(genotype, reference)
@@ -90,7 +90,7 @@ def farthest_genotype(reference, genotypes):
     return mutant
 
 def binary_mutations_map(wildtype, mutant):
-    """ Construct a site-to-binary-mutations dict between two sequences.
+    """Construct a site-to-binary-mutations dict between two sequences.
 
     Parameters
     ----------
@@ -258,7 +258,6 @@ def construct_genotypes(encoding):
     binary: array
         Array of binary represention of genotypes
     """
-
     binary = [""]
     genotypes = [""]
     for site in encoding:

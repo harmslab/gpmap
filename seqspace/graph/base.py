@@ -7,13 +7,13 @@ import networkx as nx
 
 def binary_neighbors(reference, mutations, mutation_labels=False):
     """ Return neighbors to reference string using mutations dictionary
-        and return neighbor pairs.
+    and return neighbor pairs.
 
-        Returns:
-        -------
-        neighbor_pairs = [(genotype1, genotype2), ...]
-                       or
-                       = [(genotype1, genotype2, {mutations: "0A1"}), ...]
+    Returns
+    -------
+    neighbor_pairs = [(genotype1, genotype2), ...]
+                   or
+                   = [(genotype1, genotype2, {mutations: "0A1"}), ...]
     """
     neighbor_pairs = list()
     n_sites = len(reference)
@@ -55,7 +55,7 @@ def binary_neighbors(reference, mutations, mutation_labels=False):
 
 
 class GenotypePhenotypeGraph(nx.DiGraph):
-    """ Construct a DiGraph network from gpm.
+    """Construct a DiGraph network from gpm.
     """
     def __init__(self, gpm):
         # initialize the DiGraph object
@@ -64,7 +64,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         self.built = False
 
     def add_gpm_node(self, index, genotype=None, binary=None, phenotype=None, value=None, errors=None, **kwargs):
-        """ ADD node to networkx graph. """
+        """Add node to networkx graph. """
         self.add_node(index,
             genotype=genotype,
             binary=binary,
@@ -76,7 +76,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
 
 
     def add_gpm_edges(self, ebunch):
-        """ Method for adding edges to the graph. """
+        """Method for adding edges to the graph. """
         # Check whether the edges are genotypes or indices --> convert to indices.
         if type(ebunch[0][0]) is str or type(ebunch[0][0]) is np.str_:
             geno2index = self.gpm.map("genotypes", "indices")
@@ -115,7 +115,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
 
 
     def _build(self, mutation_labels=False):
-        """ Attach a Network DiGraph to GenotypePhenotypeMap object."""
+        """Attach a Network DiGraph to GenotypePhenotypeMap object."""
         try:
             errors = np.array(self.gpm.err.upper)
         except:
