@@ -1,6 +1,7 @@
-# Python mapping objects for analyzing genotype-phenotype maps 
+# SeqSpace: a Python API for analyzing genotype-phenotype maps
 
-This module provides mapping object/data-structures for managing genotype-phenotype data. 
+A python API for analyzing large genotype phenotype maps. It defines a genotype-
+phenotype map data-structure.
 
 1. Easily construct sequence spaces from lists of genotypes
 2. Convert any set of sequences into binary representations for modeling.
@@ -8,11 +9,9 @@ This module provides mapping object/data-structures for managing genotype-phenot
 4. Paired with LatticeGPM, can easily construct lattice protein sequence spaces.
 5. Uses the power of [NetworkX](https://networkx.github.io) for network construction, enabling the use of their network algorithms.
 6. Easily convert between Networkx objects and JSON data-structures.
-7. Visualize networks with [NetworkViewer](https://github.com/harmslab/NetworkViewer) application. 
+7. Visualize networks with [NetworkViewer](https://github.com/harmslab/NetworkViewer) application.
 
-**NOTE**: Currently, these maps only work with complete spaces. We'll soon be working to make this more general.
-
-## Installation 
+## Installation
 
 ### Developers
 
@@ -23,7 +22,7 @@ Git must be installed to clone and contribute to this project.
 ```
 git clone https://github.com/Zsailer/gpm
 ```
-3. Navigate to this directory, and install (softly) this python package with 
+3. Navigate to this directory, and install (softly) this python package with
 ```
 cd gpm
 python setup.py develop
@@ -53,7 +52,7 @@ Clone this repo locally:
 git clone https://github.com/Zsailer/gpm
 ```
 
-Navigate to this directory, and install this python package with 
+Navigate to this directory, and install this python package with
 
 ```
 python setup.py install
@@ -61,7 +60,7 @@ python setup.py install
 
 ## Dependencies
 
-The following modules are required for this to work. Also, the examples/tutorials are written in Jupyter notebooks and require IPython to be install. 
+The following modules are required for this to work. Also, the examples/tutorials are written in Jupyter notebooks and require IPython to be install.
 
 * [NetworkX](https://networkx.github.io/)
 * [Numpy](http://www.numpy.org/)

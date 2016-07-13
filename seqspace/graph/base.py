@@ -152,7 +152,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
 
     @property
     def transition_matrix(self):
-        """ Get transition matrix of the graph. Only works if transitions is function is set."""
+        """Get transition matrix of the graph. Only works if transitions is function is set."""
         matrix = np.nan_to_num(
             nx.attr_matrix(
                 self,
