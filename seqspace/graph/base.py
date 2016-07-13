@@ -7,13 +7,13 @@ import networkx as nx
 
 def binary_neighbors(reference, mutations, mutation_labels=False):
     """ Return neighbors to reference string using mutations dictionary
-        and return neighbor pairs.
+    and return neighbor pairs.
 
-        Returns:
-        -------
-        neighbor_pairs = [(genotype1, genotype2), ...]
-                       or
-                       = [(genotype1, genotype2, {mutations: "0A1"}), ...]
+    Returns
+    -------
+    neighbor_pairs = [(genotype1, genotype2), ...]
+                   or
+                   = [(genotype1, genotype2, {mutations: "0A1"}), ...]
     """
     neighbor_pairs = list()
     n_sites = len(reference)
@@ -55,18 +55,16 @@ def binary_neighbors(reference, mutations, mutation_labels=False):
 
 
 class GenotypePhenotypeGraph(nx.DiGraph):
-
+    """Construct a DiGraph network from gpm.
+    """
     def __init__(self, gpm):
-        """ Construct a DiGraph network from gpm. """
-
         # initialize the DiGraph object
         super(GenotypePhenotypeGraph, self).__init__()
         self.gpm = gpm
         self.built = False
 
-
     def add_gpm_node(self, index, genotype=None, binary=None, phenotype=None, value=None, errors=None, **kwargs):
-        """ ADD node to networkx graph. """
+        """Add node to networkx graph. """
         self.add_node(index,
             genotype=genotype,
             binary=binary,
@@ -77,11 +75,11 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         )
 
 
-    def add_gpm_edges(self, ebunch, transition_func=None):
-        """ Method for adding edges to the graph. """
+    def add_gpm_edges(self, ebunch):
+        """Method for adding edges to the graph. """
         # Check whether the edges are genotypes or indices --> convert to indices.
         if type(ebunch[0][0]) is str or type(ebunch[0][0]) is np.str_:
-            geno2index = self.gpm.get_map("genotypes", "indices")
+            geno2index = self.gpm.map("genotypes", "indices")
             node = lambda x: geno2index[x]
         else:
             node = lambda x: x
@@ -93,12 +91,6 @@ class GenotypePhenotypeGraph(nx.DiGraph):
             index = node(edge[0])
             index2 = node(edge[1])
             attributes = edge[2]
-
-            # Run transition calculation
-            if transition_func is not None:
-                # Calculate the transition function
-                attributes["fixation"] = transition_func(self.gpm.phenotypes[index], self.gpm.phenotypes[index2])
-
             self.add_edge(index, index2, **attributes)
 
     def add_evolutionary_model(self, model, *args, **kwargs):
@@ -122,8 +114,8 @@ class GenotypePhenotypeGraph(nx.DiGraph):
             self.edge[i][j]["fixation"] = fixation
 
 
-    def _build(self, transition_func=None, mutation_labels=False):
-        """ Build the graph. """
+    def _build(self, mutation_labels=False):
+        """Attach a Network DiGraph to GenotypePhenotypeMap object."""
         try:
             errors = np.array(self.gpm.err.upper)
         except:
@@ -132,7 +124,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         for i in range(self.gpm.n):
 
             # If no error is present, store None
-            geno2index = self.gpm.get_map("genotypes", "indices")
+            geno2index = self.gpm.map("genotypes", "indices")
 
             if self.gpm.log_transform:
                 phenotype = float(self.gpm.Raw.phenotypes[i])
@@ -141,9 +133,9 @@ class GenotypePhenotypeGraph(nx.DiGraph):
 
             # Construct nodes to add to the graph
             self.add_gpm_node(
-                int(geno2index[self.gpm.genotypes[i]]),                     # genotype index
+                int(geno2index[self.gpm.genotypes[i]]),         # genotype index
                 genotype=str(self.gpm.genotypes[i]),            # genotype
-                binary=str(self.gpm.Binary.genotypes[i]),      # binary representation
+                binary=str(self.gpm.binary.genotypes[i]),       # binary representation
                 phenotype=phenotype,                            # phenotype
                 value=phenotype,                                # same as phenotype
                 errors=errors[i]                                # error in phenotype
@@ -156,11 +148,11 @@ class GenotypePhenotypeGraph(nx.DiGraph):
             )
 
             # Add edges to map
-            self.add_gpm_edges(edges, transition_func=transition_func)
+            self.add_gpm_edges(edges)
 
     @property
     def transition_matrix(self):
-        """ Get transition matrix of the graph. Only works if transitions is function is set."""
+        """Get transition matrix of the graph. Only works if transitions is function is set."""
         matrix = np.nan_to_num(
             nx.attr_matrix(
                 self,
