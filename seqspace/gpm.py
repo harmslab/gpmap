@@ -47,9 +47,14 @@ class Sample:
         self._gpm = gpm
         self.replicate_genotypes = replicate_genotypes
         self.replicate_phenotypes = replicate_phenotypes
-        self.genotypes = self.replicate_genotypes[:,0]
-        self.phenotypes = np.mean(self.replicate_phenotypes, axis=1)
-        self.stdeviations = np.std(self.replicate_phenotypes, ddof=1, axis=1)
+        try:
+            self.genotypes = self.replicate_genotypes[:,0]
+            self.phenotypes = np.mean(self.replicate_phenotypes, axis=1)
+            self.stdeviations = np.std(self.replicate_phenotypes, ddof=1, axis=1)
+        except IndexError:
+            self.genotypes = self.replicate_genotypes
+            self.phenotypes = self.replicate_phenotypes
+            self.stdeviations = self.replicate_phenotypes
         self.indices = indices
 
     def get_gpm(self):
@@ -440,7 +445,6 @@ class GenotypePhenotypeMap(BaseMap):
             # If sample must include derived, set the last random_indice to self.n-1
             if derived:
                 random_indices[-1] = self.n-1
-
         else:
             # Mapping from genotypes to indices
             mapping = self.map("genotypes", "indices")
@@ -459,16 +463,8 @@ class GenotypePhenotypeMap(BaseMap):
                 seq = self.genotypes[index]
                 # Build genotype array
                 genotypes[i] = np.array([seq for j in range(n_samples)])
-
-                # If the phenotypes are log transformed, make sure to sample from untransformed...
-                if self.transformed:
-                    # Error distribution to sample from.
-                    stdevs = self.Raw.err.upper
-                    phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.Raw.phenotypes[index]
-                else:
-                    # Error distribution to sample from.
-                    stdevs = self.err.upper
-                    phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.phenotypes[index]
+                stdevs = self.error.upper
+                phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.phenotypes[index]
         except:
             # Can't sample if no error distribution is given.
             if n_samples != 1:
@@ -487,20 +483,18 @@ class GenotypePhenotypeMap(BaseMap):
         mutations = binary_mutations_map(genotype1, genotype2)
         # Construct binary encoding
         encoding = encode_mutations(genotype1, mutations)
-
-        # Get old genotype-phenotype mapping
-        if self.transformed:
-            mapping = self.map("genotypes", "Raw.phenotypes")
-            stdeviations = self.Raw.stdeviations
-        else:
-            mapping = self.map("genotypes", "phenotypes")
-            stdeviations = self.stdeviations
-
         # Construct the subspace
         wildtype = genotype1
         genotypes, binary = construct_genotypes(encoding)
+        # Get old genotype-phenotype mapping
+        mapping = self.map("genotypes", "phenotypes")
         phenotypes = [mapping[g] for g in genotypes]
-
+        # Get stdeviations
+        if self.stdeviations is not None:
+            mappingstd = self.map("genotypes", "stdeviations")
+            stdeviations = [mappingstd[g] for g in genotypes]
+        else:
+            stdeviations = None
         # Create GenotypePhenotypeMap object
         return GenotypePhenotypeMap(wildtype,
             genotypes,
