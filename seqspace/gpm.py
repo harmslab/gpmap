@@ -463,9 +463,9 @@ class GenotypePhenotypeMap(BaseMap):
                 seq = self.genotypes[index]
                 # Build genotype array
                 genotypes[i] = np.array([seq for j in range(n_samples)])
-                stdevs = self.error.upper
+                stdevs = self.err.upper
                 phenotypes[i] = stdevs[index] * np.random.randn(n_samples) + self.phenotypes[index]
-        except:
+        except AttributeError:
             # Can't sample if no error distribution is given.
             if n_samples != 1:
                 raise Exception("Won't create samples if sample error is not given.")

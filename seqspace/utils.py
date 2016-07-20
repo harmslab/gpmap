@@ -240,7 +240,6 @@ def encode_mutations(wildtype, mutations):
 
     return encoding
 
-
 def construct_genotypes(encoding):
     """ Constructs binary representation of genotype map given a specific alphabet
         for each site.
@@ -298,3 +297,24 @@ def construct_genotypes(encoding):
     binary = np.array(binary)
 
     return genotypes, binary
+
+
+def mutations_to_genotypes(mutations):
+    """Use a mutations dictionary to construct an array of genotypes composed
+    of those mutations.
+
+    Parameters
+    ----------
+    mutations : dict
+        A mapping dict with site numbers as keys and lists of mutations as values.
+
+    Returns
+    -------
+    genotypes : list
+        list of genotypes comprised of mutations in given dictionary.
+    """
+    # Convert mutations dict to list of lists
+    mutations_ = [val for val in mutations.values()]
+    sequences = it.product(*mutations_)
+    genotypes = ["".join(s) for s in sequences]
+    return genotypes
