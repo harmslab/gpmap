@@ -109,12 +109,6 @@ class BinaryMap(BaseMap):
     # Setter methods
     # ----------------------------------------------------------
 
-    @genotypes.setter
-    def genotypes(self, genotypes):
-        """Set Binary representation of genotypes. """
-        self._length = len(genotypes[0])
-        self._genotypes = genotypes
-
     def _build(self):
         """Builds a binary representation of a GenotypePhenotypeMap object.
         """
@@ -128,12 +122,11 @@ class BinaryMap(BaseMap):
 
         # Sort binary representation to match genotypes
         mapping = self._GPM.map("genotypes", "indices")
-        binary = np.empty(self._GPM.n, dtype="<U" + str(self.length))
+        binary = np.empty(self._GPM.n, dtype="U" + str(self.length))
 
         # Sort the genotypes by looking for them in the data.
         missing_genotypes = list()
         missing_binary = list()
-
         for i in range(len(unsorted_genotypes)):
             # Keep and sort genotype if it exists in data.
             try:
@@ -143,10 +136,9 @@ class BinaryMap(BaseMap):
             except KeyError:
                 missing_genotypes.append(unsorted_genotypes[i])
                 missing_binary.append(unsorted_binary[i])
-
         # Set the missing genotypes
-        self._GPM._missing_genotypes = np.array(missing_genotypes)
-        self._missing_genotypes = np.array(missing_binary)
+        self._GPM._missing_genotypes = np.array(missing_genotypes, dtype="U" + str(self.length))
+        self._missing_genotypes = np.array(missing_binary, dtype="U" + str(self.length))
 
         # Set binary attributes to sorted genotypes
         self._genotypes = binary
