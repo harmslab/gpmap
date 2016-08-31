@@ -16,7 +16,6 @@ import numpy as np
 # import different maps into this module
 from seqspace.base import BaseMap
 from seqspace.binary import BinaryMap
-from seqspace.mutations import MutationMap
 from seqspace.transform import TransformMap
 from seqspace.graph import GenotypePhenotypeGraph
 from seqspace.errors import (StandardDeviationMap,
@@ -221,17 +220,17 @@ class GenotypePhenotypeMap(BaseMap):
             "mutations" : self.mutations,
         }
 
-    def write(self, *items, sep="\t"):
+    def write(self, fname, items, sep="\t", **kwargs):
         """Write out items to a tab-separated file.
         """
         # write a mapping dictionary to file
         if type(items) is dict:
-            with open("fname", "w") as f:
-                for key,value in items.items():
-                    f.write(key + sep + value + "\n")
+            with open(fname, "w") as f:
+                for key, value in items.items():
+                    f.write(str(key) + str(sep) + str(value) + "\n")
         # write a list of items to file.
         else:
-            with open("fname", "w") as f:
+            with open(fname, "w") as f:
                 nrows = len(items[0])
                 ncols = len(items)
                 for i in range(nrows):
@@ -239,6 +238,19 @@ class GenotypePhenotypeMap(BaseMap):
                     for j in range(ncols):
                         row.append(items[j][i])
                     f.write(sep.join(row))
+
+    def sort(self, genotypes):
+        """Sort the genotype-phenotype map by genotypes
+        """
+        if len(genotypes) != self.n:
+            raise Exception("""genotypes argument must be the same length.""")
+        map = self.map("genotypes", "indices")
+        indices_ = np.empty(self.n, dtype=int)
+        for i, genotype in enumerate(genotypes):
+            indices_[i] = map[genotype]
+        self._genotypes = self._genotypes[indices_]
+        self._phenotypes = self._phenotypes[indices_]
+        self.binary._genotypes = self.binary._genotypes[indices_]
 
     # ----------------------------------------------------------
     # Properties of the map
@@ -416,7 +428,6 @@ class GenotypePhenotypeMap(BaseMap):
     # ------------------------------------------------------------
     # Hidden methods for mapping object
     # ------------------------------------------------------------
-
 
     def sample(self, n_samples=1, genotypes=None, fraction=1.0, derived=True):
         """Generate artificial data sampled from phenotype and percent error.
