@@ -78,3 +78,8 @@ def probability_of_path(paths, transition_matrix):
         return probabilities
     else:
         return probabilities/sum(probabilities)
+
+
+def greedy_trajectory(G):
+    """
+    """
