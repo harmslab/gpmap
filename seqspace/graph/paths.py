@@ -54,7 +54,7 @@ def greedy_path(G, source, target):
     """
     # Determine direction of the space w.r.t. binary encoding.
     n1 = Graph.node[source]["binary"].count("1")
-    n2 = Graph.node[source]["binary"].count("1")
+    n2 = Graph.node[target]["binary"].count("1")
     if n1 > n2:
         char = "0"
     else:
