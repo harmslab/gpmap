@@ -11,9 +11,8 @@ def binary_neighbors(reference, mutations, mutation_labels=False):
 
     Returns
     -------
-    neighbor_pairs = [(genotype1, genotype2), ...]
-                   or
-                   = [(genotype1, genotype2, {mutations: "0A1"}), ...]
+    neighbor_pairs :
+        [(genotype1, genotype2), ...] or [(genotype1, genotype2, {mutations: "0A1"}), ...]
     """
     neighbor_pairs = list()
     n_sites = len(reference)
@@ -62,6 +61,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         super(GenotypePhenotypeGraph, self).__init__()
         self.gpm = gpm
         self.built = False
+        self.transition_model = None
 
     def add_gpm_node(self, index, genotype=None, binary=None, phenotype=None, value=None, errors=None, **kwargs):
         """Add node to networkx graph. """
@@ -73,7 +73,6 @@ class GenotypePhenotypeGraph(nx.DiGraph):
             errors=errors,
             **kwargs
         )
-
 
     def add_gpm_edges(self, ebunch):
         """Method for adding edges to the graph. """
@@ -100,6 +99,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         The main assumption of this method is that each node has an attribute named
         values, which is the fitness of that genotype.
         """
+        self.transition_model = model
         for e in self.edges():
             # Acquire states.
             i = e[0]
@@ -148,6 +148,8 @@ class GenotypePhenotypeGraph(nx.DiGraph):
     @property
     def transition_matrix(self):
         """Get transition matrix of the graph. Only works if transitions is function is set."""
+        if self.transition_model is None:
+            raise Exception("""A transition model must be set. checkout `add_evolutionary_model` method.""")
         matrix = np.nan_to_num(
             nx.attr_matrix(
                 self,

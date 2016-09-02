@@ -1,61 +1,23 @@
-# SeqSpace: a Python API for analyzing genotype-phenotype maps
 
-A python API for analyzing large genotype phenotype maps. It defines a genotype-
-phenotype map data-structure.
+#Python API for analyzing and manipulating genotype-phenotype maps
 
-1. Easily construct sequence spaces from lists of genotypes
-2. Convert any set of sequences into binary representations for modeling.
-3. Flexible framework for managing the type of mutations that occur in map.
-4. Paired with LatticeGPM, can easily construct lattice protein sequence spaces.
-5. Uses the power of [NetworkX](https://networkx.github.io) for network construction, enabling the use of their network algorithms.
-6. Easily convert between Networkx objects and JSON data-structures.
-7. Visualize networks with [NetworkViewer](https://github.com/harmslab/NetworkViewer) application.
+This package defines a strict data-structure for genotype-phenotype mapping data.
+It, then, provides a simple API for analyzing and manipulating such data. Some of
+the things you can do:  
+
+1. Convert any set of sequences into binary representations for modeling.
+2. Paired with LatticeGPM, can easily construct lattice protein sequence spaces.
+3. Seamlessly construct [NetworkX](https://networkx.github.io) object, enabling graph and network analysis.
+4. Visualize networks with [NetworkViewer](https://github.com/harmslab/NetworkViewer) application.
 
 ## Installation
 
-### Developers
-
-Git must be installed to clone and contribute to this project.
-
-1. Fork this repository on Github
-2. Clone that repository locally
-```
-git clone https://github.com/Zsailer/gpm
-```
-3. Navigate to this directory, and install (softly) this python package with
-```
-cd gpm
-python setup.py develop
-```
-4. Add another remote link to the master version, call it `upstream`.
-```
-git remote add upstream https://github.com/Zsailer/gpm
-```
-5. Start a branch locally from local master
-```
-git checkout -B <branch-name>
-```
-6. Make changes and commit to that branch.
-```
-git commit -a -m "<commit message>"
-```
-7. Push to your fork on github (which you called `upstream`).
-```
-git push upstream <branch-name>
-```
-8. Pull request the branch on Github into this master repository on Github.
-## Users
-
-Clone this repo locally:
+To install this package, clone from source and use pip.
 
 ```
-git clone https://github.com/Zsailer/gpm
-```
-
-Navigate to this directory, and install this python package with
-
-```
-python setup.py install
+git clone https://github.com/harmslab/seqspace
+cd seqspace
+pip install -e .
 ```
 
 ## Dependencies

@@ -1,6 +1,6 @@
 import numpy as np
 
-def fixation(fitness1, fitness2, N=10e8):
+def fixation(fitness1, fitness2, N=10e8, *args, **kwargs):
     """ Simple fixation probability between two organism with fitnesses 1 and 2.
 
     Note that N is the effective population size.

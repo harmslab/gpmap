@@ -1,27 +1,43 @@
 import networkx as nx
+import numpy as np
 
-def probability_of_path(paths, transition_matrix):
-    """Calculate the probability of a given trajectory by calculating the
-    string of conditional probabilities from a transition matrix.
+def paths_and_probabilities(G, source, target, transition_model=None, *args, **kwargs):
+    """Find the most likely shortest path between a source and target.
 
     Parameters
     ----------
-    paths : list of lists
-        List of the indicies matching the state indices in transition matrix
-    transition matrix : 2d array
-        Transition matrix. elements represent the probability of transitions from
-        state i --> j and vice versa.
+    G : GenotypePhenotypeGraph (Subclass of networkx.DiGraph)
+        Networkx object constructed for genotype-phenotype map.
+    source : int
+        index of source node.
+    target : int
+        index of target node.
+    transition_model : callable
+        function to compute transition probabilities
+
+    Notes
+    -----
+    ``args`` and ``kwargs`` get passed to the transition_model function.
 
     Returns
     -------
-    probabilities : array (length = len(paths))
-        Probabilities for array of paths.
+    paths : list
+        a list of lists representing all paths from source to target.
+    probabilities : list
+        a list of the probabilities for each path between source and target.
     """
-    if type(paths) == tuple:
-        paths = [paths]
+    # Confirm that an evolutionary model is set in the Graph.
+    if transition_model is not None:
+        G.add_evolutionary_model(transition_model, *args, **kwargs)
+    else:
+        if G.transition_model is None:
+            raise Exception("""Transition model must be set or given.""")
+    # Get all paths between source and target
+    paths = list(nx.all_shortest_paths(G, source, target))
     # Build a list of probabilities
     probabilities = list()
     # Iterate through all paths in paths-list
+    transition_matrix = G.transition_matrix
     for p in paths:
         path_length = len(p)
         # Begin by giving this path a probability of 1.
@@ -32,29 +48,69 @@ def probability_of_path(paths, transition_matrix):
             pi *= transition_matrix[p[i],p[i+1]]
         # Append pi to probabilities
         probabilities.append(pi)
-    probabilities = np.array(probabilities)
     # Return normalized probabilities. If sum(probabilities) is zero, return
     # a vector of zeros.
     if sum(probabilities) == 0 :
-        return probabilities
+        return paths, list(probabilities)
     else:
-        return probabilities/sum(probabilities)
+        return paths, list(np.array(probabilities)/sum(probabilities))
+
+
+def ml_path(G, source, target, transition_model=None, *args, **kwargs):
+    """Find the most likely shortest path between a source and target.s
+
+    Parameters
+    ----------
+    G : GenotypePhenotypeGraph (Subclass of networkx.DiGraph)
+        Networkx object constructed for genotype-phenotype map.
+    source : int
+        index of source node.
+    target : int
+        index of target node.
+    transition_model : callable
+        function to compute transition probabilities
+
+    Notes
+    -----
+    ``args`` and ``kwargs`` get passed to the transition_model function.
+
+    Returns
+    -------
+    path : list
+        a list of each node index in the ml path.
+    phenotypes : list
+        a list of the phenotypes for each node in ml path.
+    """
+    paths, probabilities = paths_and_probabilities(G, source, target,
+        transition_model=transition_model, *args, **kwargs)
+    index = probabilities.index(max(probabilities))
+    path = paths[index]
+    phenotypes =  [G.node[p]["phenotype"] for p in path]
+    return path, phenotypes
+
 
 def greedy_path(G, source, target):
     """Find shortest path that yields all the best moves from source to target.
 
     Parameters
     ----------
-    G : Graph
+    G : GenotypePhenotypeGraph (Subclass of networkx.DiGraph)
         Networkx object constructed for genotype-phenotype map.
     source : int
         index of source node.
     target : int
         index of target node.
+
+    Returns
+    -------
+    path : list
+        a list of each node index in the greedy path.
+    phenotypes : list
+        a list of the phenotypes for each node in greedy path.
     """
     # Determine direction of the space w.r.t. binary encoding.
-    n1 = Graph.node[source]["binary"].count("1")
-    n2 = Graph.node[target]["binary"].count("1")
+    n1 = G.node[source]["binary"].count("1")
+    n2 = G.node[target]["binary"].count("1")
     if n1 > n2:
         char = "0"
     else:
@@ -64,21 +120,21 @@ def greedy_path(G, source, target):
     attempts = 0
     start = source
     path = [source]
-    phenotypes = [Graph.node[source]["phenotype"]]
+    phenotypes = [G.node[source]["phenotype"]]
     # Move along trajectory until reaching target
     while start != target or attempts > target:
-        mnode = Graph.node[start]["binary"].count(char)
-        neighbors = Graph.neighbors(start)
+        mnode = G.node[start]["binary"].count(char)
+        neighbors = G.neighbors(start)
         # iterate through neighbors and find only step forward
         for n in neighbors[:]:
-            node = Graph.node[n]
+            node = G.node[n]
             # number of mutations from neighbor
             mneighbor = node["binary"].count(char)
             # if backwards step, remove from list
             if mneighbor < mnode:
                 neighbors.remove(n)
         # get phenotypes of leftover neighbors
-        vals = [Graph.node[n]["phenotype"] for n in neighbors]
+        vals = [G.node[n]["phenotype"] for n in neighbors]
         # Find maximum phenotype and add to path
         phenotypes.append(max(vals))
         # Set that node as the new starting point for loop
