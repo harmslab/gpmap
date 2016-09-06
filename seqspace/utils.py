@@ -299,7 +299,7 @@ def construct_genotypes(encoding):
     return genotypes, binary
 
 
-def mutations_to_genotypes(mutations):
+def mutations_to_genotypes(wildtype, mutations):
     """Use a mutations dictionary to construct an array of genotypes composed
     of those mutations.
 
@@ -314,7 +314,12 @@ def mutations_to_genotypes(mutations):
         list of genotypes comprised of mutations in given dictionary.
     """
     # Convert mutations dict to list of lists
-    mutations_ = [val for val in mutations.values()]
+    mutations_ = []
+    for i, val in enumerate(mutations.values()):
+        if val is None:
+            mutations_.append(wildtype[i])
+        else:
+            mutations_.append(val)
     sequences = it.product(*mutations_)
     genotypes = ["".join(s) for s in sequences]
     return genotypes

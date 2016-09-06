@@ -391,8 +391,6 @@ class GenotypePhenotypeMap(BaseMap):
                 raise ValueError("Number of phenotypes does not equal number of genotypes.")
             else:
                 _phenotypes = phenotypes
-
-        #Set the phenotypes AND multiply them by scalar
         self._phenotypes = np.array(_phenotypes)
 
     @stdeviations.setter
