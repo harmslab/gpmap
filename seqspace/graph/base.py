@@ -116,10 +116,10 @@ class GenotypePhenotypeGraph(nx.DiGraph):
 
     def _build(self, mutation_labels=False):
         """Attach a Network DiGraph to GenotypePhenotypeMap object."""
-        try:
-            errors = np.array(self.gpm.err.upper)
-        except:
+        if self.gpm.stdeviations is None:
             errors = [None for i in range(self.gpm.n)]
+        else:
+            errors = np.array(self.gpm.err.upper)
 
         for i in range(self.gpm.n):
 

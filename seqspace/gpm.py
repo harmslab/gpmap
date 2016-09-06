@@ -27,6 +27,7 @@ from seqspace.stats import corrected_sterror
 from seqspace import utils
 
 from seqspace.plotting import PlottingContainer
+from . import utils
 
 # ----------------------------------------------------------
 # Exceptions
@@ -396,8 +397,10 @@ class GenotypePhenotypeMap(BaseMap):
     @stdeviations.setter
     def stdeviations(self, stdeviations):
         """set stdeviations to array"""
-        self._stdeviations = np.array(stdeviations)
-
+        if stdeviations is None:
+            self._stdeviations = None
+        else:
+            self._stdeviations = np.array(stdeviations)
 
     @n_replicates.setter
     def n_replicates(self, n_replicates):
@@ -489,12 +492,12 @@ class GenotypePhenotypeMap(BaseMap):
         """Select a region/subspace within a genotype-phenotype map
         """
         # Construct the mutations dictionary
-        mutations = binary_mutations_map(genotype1, genotype2)
+        mutations = utils.binary_mutations_map(genotype1, genotype2)
         # Construct binary encoding
-        encoding = encode_mutations(genotype1, mutations)
+        encoding = utils.encode_mutations(genotype1, mutations)
         # Construct the subspace
         wildtype = genotype1
-        genotypes, binary = construct_genotypes(encoding)
+        genotypes, binary = utils.construct_genotypes(encoding)
         # Get old genotype-phenotype mapping
         mapping = self.map("genotypes", "phenotypes")
         phenotypes = [mapping[g] for g in genotypes]
