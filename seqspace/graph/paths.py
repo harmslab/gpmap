@@ -111,10 +111,10 @@ def greedy_path(G, source, target):
     # Determine direction of the space w.r.t. binary encoding.
     n1 = G.node[source]["binary"].count("1")
     n2 = G.node[target]["binary"].count("1")
-    if n1 > n2:
-        char = "0"
-    else:
+    if n2 > n1:
         char = "1"
+    else:
+        char = "0"
 
     # Move through space from source to target
     attempts = 0
@@ -122,7 +122,7 @@ def greedy_path(G, source, target):
     path = [source]
     phenotypes = [G.node[source]["phenotype"]]
     # Move along trajectory until reaching target
-    while start != target or attempts > target:
+    while start != target or attempts > len(G.nodes()):
         mnode = G.node[start]["binary"].count(char)
         neighbors = G.neighbors(start)
         # iterate through neighbors and find only step forward
