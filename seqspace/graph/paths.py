@@ -10,8 +10,8 @@ def paths_and_probabilities(G, source, target, transition_model=None, *args, **k
         Networkx object constructed for genotype-phenotype map.
     source : int
         index of source node.
-    target : int
-        index of target node.
+    target : int or list of ints
+        index of target node(s).
     transition_model : callable
         function to compute transition probabilities
 
@@ -32,8 +32,13 @@ def paths_and_probabilities(G, source, target, transition_model=None, *args, **k
     else:
         if G.transition_model is None:
             raise Exception("""Transition model must be set or given.""")
-    # Get all paths between source and target
-    paths = list(nx.all_shortest_paths(G, source, target))
+    # Get all paths between source and target (or multiple targets)
+    try:
+        paths = []
+        for t in target:
+            paths += list(nx.all_shortest_paths(G, source, t))
+    except TypeError:
+        paths = list(nx.all_shortest_paths(G, source, target))
     # Build a list of probabilities
     probabilities = list()
     # Iterate through all paths in paths-list
@@ -98,8 +103,8 @@ def greedy_path(G, source, target):
         Networkx object constructed for genotype-phenotype map.
     source : int
         index of source node.
-    target : int
-        index of target node.
+    target : int or list of ints
+        index of target node(s).
 
     Returns
     -------
@@ -110,7 +115,10 @@ def greedy_path(G, source, target):
     """
     # Determine direction of the space w.r.t. binary encoding.
     n1 = G.node[source]["binary"].count("1")
-    n2 = G.node[target]["binary"].count("1")
+    try:
+        n2 = G.node[target]["binary"].count("1")
+    except TypeError:
+        n2 = G.node[target[0]]["binary"].count("1")
     if n2 > n1:
         char = "1"
     else:
@@ -122,7 +130,7 @@ def greedy_path(G, source, target):
     path = [source]
     phenotypes = [G.node[source]["phenotype"]]
     # Move along trajectory until reaching target
-    while start != target or attempts > len(G.nodes()):
+    while start not in target or attempts > len(G.nodes()):
         mnode = G.node[start]["binary"].count(char)
         neighbors = G.neighbors(start)
         # iterate through neighbors and find only step forward

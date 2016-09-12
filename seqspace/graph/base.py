@@ -87,10 +87,13 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         edges = list
         for edge in ebunch:
             # Get indices of neighbor nodes
-            index = node(edge[0])
-            index2 = node(edge[1])
-            attributes = edge[2]
-            self.add_edge(index, index2, **attributes)
+            try:
+                index = node(edge[0])
+                index2 = node(edge[1])
+                attributes = edge[2]
+                self.add_edge(index, index2, **attributes)
+            except KeyError:
+                pass
 
     def add_evolutionary_model(self, model, *args, **kwargs):
         """Add an evolutionary model to the genotype phenotype graph. The model
