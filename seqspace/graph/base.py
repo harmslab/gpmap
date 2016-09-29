@@ -11,7 +11,7 @@ def binary_neighbors(reference, mutations, mutation_labels=False):
 
     Returns
     -------
-    neighbor_pairs :
+    neighbor_pairs : list of tuple pairs
         [(genotype1, genotype2), ...] or [(genotype1, genotype2, {mutations: "0A1"}), ...]
     """
     neighbor_pairs = list()
@@ -109,10 +109,8 @@ class GenotypePhenotypeGraph(nx.DiGraph):
             j = e[1]
             state_i = self.node[i]
             state_j = self.node[j]
-
             # Calculate the fixation probability for this age.
             fixation = model(state_i["value"], state_j["value"], *args, **kwargs)
-
             # Set the edge value
             self.edge[i][j]["fixation"] = fixation
 
@@ -123,12 +121,9 @@ class GenotypePhenotypeGraph(nx.DiGraph):
             errors = [None for i in range(self.gpm.n)]
         else:
             errors = np.array(self.gpm.err.upper)
-
         for i in range(self.gpm.n):
-
             # If no error is present, store None
             geno2index = self.gpm.map("genotypes", "indices")
-
             # Construct nodes to add to the graph
             self.add_gpm_node(
                 int(geno2index[self.gpm.genotypes[i]]),         # genotype index
@@ -138,19 +133,19 @@ class GenotypePhenotypeGraph(nx.DiGraph):
                 value=self.gpm.binary.phenotypes[i],                                # same as phenotype
                 errors=errors[i]                                # error in phenotype
             )
-
             # Construct a set of edge labels to add to Graph
             edges = binary_neighbors(self.gpm.genotypes[i],
                         self.gpm.mutations,
                         mutation_labels=mutation_labels
             )
-
             # Add edges to map
             self.add_gpm_edges(edges)
 
     @property
     def transition_matrix(self):
-        """Get transition matrix of the graph. Only works if transitions is function is set."""
+        """Get transition matrix of the graph. Only works if transitions is
+        function is set.
+        """
         if self.transition_model is None:
             raise Exception("""A transition model must be set. checkout `add_evolutionary_model` method.""")
         matrix = np.nan_to_num(
@@ -161,9 +156,10 @@ class GenotypePhenotypeGraph(nx.DiGraph):
                 rc_order=self.gpm.indices       # Order the matrix
                 )
         )
-        # Populate the
+        # Populate the diagonals
         for i in range(len(matrix)):
-            matrix[i,i] = 1.0 - matrix[i].sum()
+            if matrix[i].sum() == 0:
+                matrix[i,i] = 1.0
         #np.fill_diagonal(matrix, 1.0)
         # Normalize the row
         matrix = matrix / matrix.sum(axis=1)
