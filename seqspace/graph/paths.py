@@ -1,5 +1,6 @@
 import networkx as nx
 import numpy as np
+from collections import OrderedDict
 
 def paths_and_probabilities(G, source, target, transition_model=None, *args, **kwargs):
     """Find the most likely shortest path between a source and target.
@@ -60,6 +61,40 @@ def paths_and_probabilities(G, source, target, transition_model=None, *args, **k
     else:
         return paths, list(np.array(probabilities)/sum(probabilities))
 
+def flux(G, source, target, transition_model=None, *args, **kwargs):
+    """Calculate the probability at each edge, i.e. the flux of probability
+    through each edge.
+
+    Parameters
+    ----------
+    G : GenotypePhenotypeGraph (Subclass of networkx.DiGraph)
+        Networkx object constructed for genotype-phenotype map.
+    source : int
+        index of source node.
+    target : int
+        index of target node.
+    transition_model : callable
+        function to compute transition probabilities
+    """
+    paths, probs = paths_and_probabilities(G, source, target,
+        transition_model=transition_model,
+        *args,
+        **kwargs
+    )
+    # convert paths to tuples
+    paths = [tuple(p) for p in paths]
+    # map path to probability
+    traj = dict(zip(paths, probs))
+    # flux mapping dictionary (edge to probability)
+    flux = OrderedDict([(edge,0) for edge in G.edges()])
+    for path, prob in traj.items():
+        # walk through trajectory and add probabilities to each edge.
+        for last_i, node in enumerate(path[1:]):
+            i = path[last_i]
+            j = node
+            flux[(i,j)] += prob
+    # Return edge probabilities as array.
+    return np.array(list(flux.values()))
 
 def ml_path(G, source, target, transition_model=None, *args, **kwargs):
     """Find the most likely shortest path between a source and target.s

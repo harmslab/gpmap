@@ -23,7 +23,7 @@ def labels(G, pos, ax, label_type="genotype", **kwargs):
     # Get labels from Graph.
     labels = dict([(node, G.node[node][label_type]) for node in G.nodes()])
     # Draw node labels
-    nx.draw_networkx_labels(G, pos=pos, labels=labels, ax=ax,**kwargs)
+    nx.draw_networkx_labels(G, pos=pos, labels=labels, ax=ax, **kwargs)
     return ax
 
 @checkG
@@ -34,12 +34,14 @@ def edges(G, pos, ax, **kwargs):
     return ax
 
 @checkG
-def nodes(G, pos, ax, cmap='plasma', **kwargs):
+def nodes(G, pos, ax, cmap='plasma', colorbar=False, **kwargs):
     """Draw nodes
     """
     # Add color to nodes
     color = np.array([float(G.node[n]["phenotype"]) for n in G.nodes()])
-    draw_networkx_nodes(G, pos, ax=ax, color=color, cmap=cmap, **kwargs)
+    ax, nodes = draw_networkx_nodes(G, pos, ax=ax, color=color, cmap=cmap, **kwargs)
+    if colorbar is True:
+        plt.colorbar(nodes, shrink=.3, aspect=5)
     return ax
 
 @checkG
@@ -72,11 +74,11 @@ def network(G, scale=1, vertical=True, figsize=(5,5), **kwargs):
     options = {"e":{}, "n":{}, "l":{}}
     for key, value in kwargs.items():
         options[key[0]][key[2:]] = value
-    # init plot
+    # init plotx
     fig, ax = plt.subplots(figsize=figsize)
     ax = edges(G, pos, ax, **options["e"])
     ax = nodes(G, pos, ax, **options["n"])
-    ax = labels(G, pos, ax, **options["l"])
+    ax = labels(G, pos, ax, label_type="genotype", **options["l"])
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)

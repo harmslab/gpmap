@@ -156,11 +156,13 @@ class GenotypePhenotypeGraph(nx.DiGraph):
                 rc_order=self.gpm.indices       # Order the matrix
                 )
         )
-        # Populate the diagonals
         for i in range(len(matrix)):
-            if matrix[i].sum() == 0:
-                matrix[i,i] = 1.0
+            matrix[i,i] = 1 - matrix[i].sum()
+        # Populate the diagonals
+        #for i in range(len(matrix)):
+        #    if matrix[i].sum() == 0:
+        #        matrix[i,i] = 1.0
         #np.fill_diagonal(matrix, 1.0)
         # Normalize the row
-        matrix = matrix / matrix.sum(axis=1)
+        #matrix = matrix / matrix.sum(axis=1)
         return matrix

@@ -112,4 +112,4 @@ def draw_networkx_nodes_ellipses(G, pos,
     node_collection.set_zorder(2)
     ax.add_collection(node_collection)
 
-    return ax
+    return ax, node_collection

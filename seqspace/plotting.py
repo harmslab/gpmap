@@ -7,17 +7,14 @@ import warnings
 
 def mpl_missing(function):
     """ Function wrapper to check that matplotlib is install. """
-
     def wrapper(*args, **kwargs):
         try:
             import matplotlib
             return function(*args, **kwargs)
-
         except ImportError:
             warnings.filterwarnings("once")
             warnings.warn("""Looks like `matplotlib` is not installed, so plots can't be constructed.
                         Install matplotlib before trying to use this method.""", ImportWarning)
-
     return wrapper
 
 class PlottingContainer(object):
