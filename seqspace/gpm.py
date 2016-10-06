@@ -165,6 +165,10 @@ class GenotypePhenotypeMap(BaseMap):
     def from_json(cls, filename, **kwargs):
         """Load a genotype-phenotype map directly from a json file.
         The JSON metadata must include the following attributes
+
+        Note
+        ----
+        Keyword arguments override input that is loaded from the JSON file.
         """
         # Open, json load, and close a json file
         f = open(filename, "r")
@@ -172,23 +176,17 @@ class GenotypePhenotypeMap(BaseMap):
         f.close()
 
         # Grab all properties from data-structure
-        args = ["wildtype", "genotypes", "phenotypes"]
+        necessary_args = ["wildtype", "genotypes", "phenotypes"]
         options = {
+            "genotypes" : [],
+            "phenotypes" : [],
+            "wildtype" : [],
             "stdeviations": None,
             "log_transform": False,
             "mutations": None,
             "n_replicates": 1,
             "logbase": np.log10
         }
-
-        # Grab all arguments and order them
-        for i in range(len(args)):
-            # Get all args
-            try:
-                args[i] = data[args[i]]
-            except KeyError:
-                raise LoadingException("""No `%s` property in json data. Must have %s for GPM construction. """ % (args[i], args[i]) )
-
         # Get all options for map and order them
         for key in options:
             # See if options are in json data
@@ -196,10 +194,12 @@ class GenotypePhenotypeMap(BaseMap):
                 options[key] = data[key]
             except:
                 pass
-
-        # Override any properties with specified kwargs passed directly into method
+        # Override any properties with manually entered kwargs passed directly into method
         options.update(kwargs)
-
+        args = []
+        for arg in necessary_args:
+            val = options.pop(arg)
+            args.append(val)
         # Create an instance
         gpm = cls(args[0], args[1], args[2], **options)
         return gpm
