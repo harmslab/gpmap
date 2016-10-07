@@ -34,11 +34,12 @@ def edges(G, pos, ax, **kwargs):
     return ax
 
 @checkG
-def nodes(G, pos, ax, cmap='plasma', colorbar=False, **kwargs):
-    """Draw nodes
+def nodes(G, pos, ax, cmap='plasma', color=None, colorbar=False, **kwargs):
+    """Draw nodes.
     """
     # Add color to nodes
-    color = np.array([float(G.node[n]["phenotype"]) for n in G.nodes()])
+    if color is None:
+        color = np.array([float(G.node[n]["phenotype"]) for n in G.nodes()])
     ax, nodes = draw_networkx_nodes(G, pos, ax=ax, color=color, cmap=cmap, **kwargs)
     if colorbar is True:
         plt.colorbar(nodes, shrink=.3, aspect=5)

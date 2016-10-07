@@ -245,10 +245,10 @@ class GenotypePhenotypeMap(BaseMap):
         """
         if len(genotypes) != self.n:
             raise Exception("""genotypes argument must be the same length.""")
-        map = self.map("genotypes", "indices")
+        mapping = self.map("genotypes", "indices")
         indices_ = np.empty(self.n, dtype=int)
         for i, genotype in enumerate(genotypes):
-            indices_[i] = map[genotype]
+            indices_[i] = mapping[genotype]
         self._genotypes = self._genotypes[indices_]
         self._phenotypes = self._phenotypes[indices_]
         self.binary._genotypes = self.binary._genotypes[indices_]

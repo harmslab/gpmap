@@ -90,10 +90,6 @@ def draw_networkx_nodes_ellipses(G, pos,
     except ValueError:
         raise nx.NetworkXError('Bad value in node positions.')
 
-    if isinstance(alpha, collections.Iterable):
-        color = apply_alpha(color, alpha, nodelist, cmap, vmin, vmax)
-        alpha = None
-
     if cmap is not None:
         cmap = mpl.cm.get_cmap(cmap)
         norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
@@ -107,7 +103,13 @@ def draw_networkx_nodes_ellipses(G, pos,
         transOffset=ax.transData,
         linewidths=linewidths)
 
-    node_collection.set_array( color)
+    if type(color) == str:
+        node_collection.set_color(color)
+    else:
+        if isinstance(alpha, collections.Iterable):
+            color = apply_alpha(color, alpha, nodelist, cmap, vmin, vmax)
+            alpha = None
+        node_collection.set_array( color)
     node_collection.set_label(label)
     node_collection.set_zorder(2)
     ax.add_collection(node_collection)
