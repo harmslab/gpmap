@@ -18,10 +18,11 @@ def checkG(func):
     return wrapper
 
 @checkG
-def labels(G, pos, ax, label_type="genotype", **kwargs):
+def labels(G, pos, ax, labels=None, label_type="genotype", **kwargs):
     """Draw labels"""
     # Get labels from Graph.
-    labels = dict([(node, G.node[node][label_type]) for node in G.nodes()])
+    if labels is None:
+        labels = dict([(node, G.node[node][label_type]) for node in G.nodes()])
     # Draw node labels
     nx.draw_networkx_labels(G, pos=pos, labels=labels, ax=ax, **kwargs)
     return ax
@@ -79,7 +80,7 @@ def network(G, scale=1, vertical=True, figsize=(5,5), **kwargs):
     fig, ax = plt.subplots(figsize=figsize)
     ax = edges(G, pos, ax, **options["e"])
     ax = nodes(G, pos, ax, **options["n"])
-    ax = labels(G, pos, ax, label_type="genotype", **options["l"])
+    ax = labels(G, pos, ax, **options["l"])
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)

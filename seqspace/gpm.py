@@ -253,6 +253,18 @@ class GenotypePhenotypeMap(BaseMap):
         self._phenotypes = self._phenotypes[indices_]
         self.binary._genotypes = self.binary._genotypes[indices_]
 
+    def sort_missing(self, missing):
+        """Sort the missing genotypes in the genotype-phenotype map.
+        """
+        if len(missing) != len(self.missing_genotypes):
+            raise Exception("""genotypes argument must be the same length.""")
+        mapping = dict(zip(self.missing_genotypes, range(len(self.missing_genotypes))))
+        indices_ = np.empty(len(missing), dtype=int)
+        for i, genotype in enumerate(missing):
+            indices_[i] = mapping[genotype]
+        self._missing_genotypes = self._missing_genotypes[indices_]
+        self.binary._missing_genotypes = self.binary._missing_genotypes[indices_]
+
     # ----------------------------------------------------------
     # Properties of the map
     # ----------------------------------------------------------
@@ -420,11 +432,11 @@ class GenotypePhenotypeMap(BaseMap):
         self.std = StandardDeviationMap(self)
         self.err = StandardErrorMap(self)
 
-    def _add_networkx(self):
+    def _add_networkx(self, **kwargs):
         """Construct NetworkX DiGraph object from GenotypePhenotypeMap."""
         # Add a networkx graph object
         self.Graph = GenotypePhenotypeGraph(self)
-        self.Graph._build()
+        self.Graph._build(**kwargs)
 
     # ------------------------------------------------------------
     # Hidden methods for mapping object
@@ -488,11 +500,26 @@ class GenotypePhenotypeMap(BaseMap):
         samples = Sample(self, genotypes, phenotypes, random_indices)
         return samples
 
-    def subspace(self, genotype1, genotype2):
-        """Select a region/subspace within a genotype-phenotype map
+    def subspace(self, genotype1, genotype2=None, mutations=None):
+        """Creates a sub-GenotypePhenotypeMap object between two genotypes.
+
+        Parameters
+        ----------
+        genotype1 :
+            retu
+        genotype2 :
+            Farthest mutant sequence. Will assume from mutations dictionary if None
+        mutations : dict
+            Mutations dictionary
+
+        Returns
+        -------
+        GenotypePhenotypeMap: obj
+            Sub-GenotypePhenotypeMap between two sequences.
         """
-        # Construct the mutations dictionary
-        mutations = utils.binary_mutations_map(genotype1, genotype2)
+        # Construct the mutations dictionary if not given (assumes binary)
+        if mutations is None:
+            mutations = utils.binary_mutations_map(genotype1, genotype2)
         # Construct binary encoding
         encoding = utils.encode_mutations(genotype1, mutations)
         # Construct the subspace
@@ -500,16 +527,21 @@ class GenotypePhenotypeMap(BaseMap):
         genotypes, binary = utils.construct_genotypes(encoding)
         # Get old genotype-phenotype mapping
         mapping = self.map("genotypes", "phenotypes")
-        phenotypes = [mapping[g] for g in genotypes]
+        known, phenotypes = [], []
+        for g in genotypes:
+            try:
+                phenotypes.append(mapping[g])
+                known.append(g)
+            except KeyError: pass
         # Get stdeviations
         if self.stdeviations is not None:
             mappingstd = self.map("genotypes", "stdeviations")
-            stdeviations = [mappingstd[g] for g in genotypes]
+            stdeviations = [mappingstd[g] for g in known]
         else:
             stdeviations = None
         # Create GenotypePhenotypeMap object
         return GenotypePhenotypeMap(wildtype,
-            genotypes,
+            known,
             phenotypes,
             stdeviations=stdeviations,
             log_transform=self.log_transform,
