@@ -117,7 +117,8 @@ class GenotypePhenotypeMap(BaseMap):
         log_transform=False,
         mutations=None,
         n_replicates=1,
-        logbase=np.log10):
+        logbase=np.log10,
+        **kwargs):
 
         # Set mutations; if not given, assume binary space.
         if mutations is not None:
