@@ -113,7 +113,6 @@ class BinaryMap(BaseMap):
         """Builds a binary representation of a GenotypePhenotypeMap object.
         """
         self.encoding = encode_mutations(self._GPM.wildtype, self._GPM.mutations)
-
         # Use encoding map to construct binary presentation for any type of alphabet
         unsorted_genotypes, unsorted_binary = construct_genotypes(self.encoding)
 
@@ -137,7 +136,7 @@ class BinaryMap(BaseMap):
                 missing_genotypes.append(unsorted_genotypes[i])
                 missing_binary.append(unsorted_binary[i])
         # Set the missing genotypes
-        self._GPM._missing_genotypes = np.array(missing_genotypes, dtype="U" + str(self._length))
+        self._GPM._missing_genotypes = np.array(missing_genotypes, dtype="U" + str(self._GPM._length))
         self._missing_genotypes = np.array(missing_binary, dtype="U" + str(self._length))
 
         # Set binary attributes to sorted genotypes
