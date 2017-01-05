@@ -439,6 +439,12 @@ class GenotypePhenotypeMap(BaseMap):
         self.Graph = GenotypePhenotypeGraph(self)
         self.Graph._build(**kwargs)
 
+    def add_networkx(self, **kwargs):
+        """
+        """
+        self._add_networkx(**kwargs)
+        return self.Graph
+
     # ------------------------------------------------------------
     # Hidden methods for mapping object
     # ------------------------------------------------------------
