@@ -3,23 +3,24 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-SeqSpace documentation
-======================
+Introduction
+============
 
-A python API for analyzing large genotype phenotype maps. It defines a genotype-
-phenotype map data-structure.
+The `seqspace` package standardizes a data structure for genotype-phenotype (GP) maps.
+This format can be quickly ported to network graph formats (via NetworkX).
+Subset, manipulate, extend, etc. genotype-phenotype maps easily. Calculate statistics,
+model evolutionary trajectories, predict phenotypes. Efficient memory usage,
+using numpy arrays to store in memory.
 
-1. Easily construct sequence spaces from lists of genotypes
-2. Convert any set of sequences into binary representations for modeling.
-3. Flexible framework for managing the type of mutations that occur in map.
-4. Paired with LatticeGPM, can easily construct lattice protein sequence spaces.
-5. Uses the power of [NetworkX](https://networkx.github.io) for network construction, enabling the use of their network algorithms.
-6. Easily convert between Networkx objects and JSON data-structures.
-7. Visualize networks with [NetworkViewer](https://github.com/harmslab/NetworkViewer) application.
-Contents:
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 3
+
+   _pages/gpm
+   _pages/io
+   _pages/tutorials
+   _pages/network
+
 
 Indices and tables
 ==================
