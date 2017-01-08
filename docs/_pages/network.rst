@@ -24,4 +24,30 @@ Example
 So, why didn't we start with NetworkX? Great question. Genotype-phenotype maps
 scale horribly. NetworkX uses a dict-of-dict data structure, which is quite memory
 intensive for larger genotype-phenotype maps. We store all values in numpy arrays.
-If your data is small enough, you can easily port to NetworkX and begin using it.
+If your data is small enough, you can easily port to a NetworkX Graph and take advantage
+of all the functions provided by NetworkX.
+
+
+Add evolutionary model
+----------------------
+
+Along with all the methods from
+
+.. code-block:: python
+
+    def adaptive(fitness1, fitness2):
+        if fitness2 > fitness1:
+            return 0
+        else:
+            return 1
+
+
+    gpm.add_evolutionary_model(adaptive)
+    gpm.
+
+
+Interface
+---------
+
+.. autoclass:: seqspace.graph.base.GenotypePhenotypeGraph
+    :members:

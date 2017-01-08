@@ -1,19 +1,36 @@
 
 #Python API for analyzing and manipulating genotype-phenotype maps
 
-This package defines a strict data-structure for genotype-phenotype mapping data.
-It, then, provides a simple API for analyzing and manipulating such data. Some of
-the things you can do:  
+This package defines a standard data-structure for genotype-phenotype (GP) map data.
+Useful for creating network graphs (via NetworkX) from GP data. Subset, manipulate,
+extend, etc. GP maps. Calculate statistics, model evolutionary trajectories, predict
+phenotypes (in combination with the epistasis package). Efficient memory usage,
+using numpy arrays to store in memory.
 
-1. Convert any set of sequences into binary representations for modeling.
-2. Paired with LatticeGPM, can easily construct lattice protein sequence spaces.
-3. Seamlessly construct [NetworkX](https://networkx.github.io) object, enabling graph and network analysis.
-4. Visualize networks with [NetworkViewer](https://github.com/harmslab/NetworkViewer) application.
+## Basic example
+
+Import the package's base object.
+```python
+import GenotypePhenotypeMap
+```
+
+Load a dataset from disk.
+```python
+gpm = GenotypePhenotypeMap.from_json("data.json")
+```
+
+Create a NetworkX graph from the genotype-phenotype map data.
+```python
+import networkx as nx
+
+gpm.add_network()
+G = gpm.Graph
+nx.draw(G)
+```
 
 ## Installation
 
 To install this package, clone from source and use pip.
-
 ```
 git clone https://github.com/harmslab/seqspace
 cd seqspace
@@ -22,7 +39,7 @@ pip install -e .
 
 ## Dependencies
 
-The following modules are required for this to work. Also, the examples/tutorials are written in Jupyter notebooks and require IPython to be install.
+The following modules are required. Also, the examples/tutorials are written in Jupyter notebooks and require IPython to be install.
 
 * [NetworkX](https://networkx.github.io/)
 * [Numpy](http://www.numpy.org/)

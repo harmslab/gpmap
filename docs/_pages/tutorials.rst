@@ -31,4 +31,11 @@ Alternatively, you can load data from a json file (using the format defined `her
     path = "data.json"
     gpm = GenotypePhenotypeMap.from_json(path)
 
+
 .. _here: io.rst
+
+
+Port to NetworkX object
+-----------------------
+
+A useful feature of the ``seqspace`` object

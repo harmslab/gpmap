@@ -3,7 +3,31 @@ GenotypePhenotypeMap
 
 The ``GenotypePhenotypeMap`` class is the primary tool provided by the ``seqspace`` package.
 It creates intuitive and useful mapping on the fly. It appends methods and attributes
-for analysis.
+to make analyzing genotype-phenotype data easy. We've create other packages that
+easily interact with the ``GenotypePhenotypeMap``.
+
+Example
+-------
+
+.. code-block:: python
+
+    from seqspace import GenotypePhenotypeMap
+
+    # Create list of genotypes and phenotypes
+    wildtype = "AA"
+    genotypes = ["AA", "AV", "AM", "VA", "VV", "VM"]
+    phenotypes = [1.0, 1.1, 1.4, 1.5, 2.0, 3.0]
+
+    # Create GenotypePhenotypeMap object
+    gpm = GenotypePhenotypeMap(wildtype, genotypes, phenotypes)
+
+
+Interface
+---------
+
+.. autoclass:: seqspace.gpm.GenotypePhenotypeMap
+    :members:
+
 
 BinaryMap
 ---------
@@ -17,4 +41,4 @@ All ``GenotypePhenotypeMap`` objects append a ``BinaryMap`` instance to a the ``
 attribute. Most attributes in the ``GenotypePhenotypeMap`` also exist in under
 the ``binary`` attribute, updated with the binary genotype representations.
 
-.. _epistasis: http://epistasis.readthedocs.io/
+.. _epistasis: http://epicstasis.readthedocs.io/

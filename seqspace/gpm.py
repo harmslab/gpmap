@@ -72,8 +72,8 @@ class Sample:
 # ----------------------------------------------------------
 
 class GenotypePhenotypeMap(BaseMap):
-    """Genotype-phenotype map datatype. Efficient memory storage, fast-ish mapping,
-    graphing, plotting, and simulations.
+    """Main object for containing genotype-phenotype map data. Efficient memory storage,
+    fast-ish mapping, graphing, plotting, and simulations.
 
     Parameters
     ----------
@@ -91,26 +91,6 @@ class GenotypePhenotypeMap(BaseMap):
         number of replicate measurements comprising the mean phenotypes
     logbase : callable log transformation function
         logarithm function to apply to phenotypes if log_transform is True.
-
-
-    Attributes
-    ----------
-    binary : binary object
-        representation of all genotypes mapped to proper phenotypes
-    Graph : Networkx DiGraph
-        Networkx graph representation.
-    genotypes : numpy.array
-        array of genotypes
-    phenotypes : numpy.array
-        array of phenotypes
-    length : int
-        length of each genotype
-    n : int
-        number of genotypes.
-    logbase : callable
-        logarithm function to use when tranforming phenotypes.
-    base : float
-        base of logarithm used during transform.
     """
     def __init__(self, wildtype, genotypes, phenotypes,
         stdeviations=None,
@@ -215,7 +195,7 @@ class GenotypePhenotypeMap(BaseMap):
         return {
             "wildtype" : self.wildtype,
             "genotypes" : self.genotypes,
-            "phenotypes" : self.Raw.phenotypes,
+            "phenotypes" : self.phenotypes,
             "log_transform" : self.log_transform,
             "stdeviations" : self.stdeviations,
             "n_replicates" : self.n_replicates,
