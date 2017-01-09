@@ -8,7 +8,7 @@
 
 import numpy as np
 
-from seqspace.base import BaseMap
+from gpmap.base import BaseMap
 
 def upper_transform(mean, bound, logbase):
     """ Log transformation scaling.

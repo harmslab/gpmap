@@ -6,8 +6,8 @@
 # Local imports
 # ----------------------------------------------------------
 
-from seqspace.base import BaseMap
-from seqspace.errors import StandardErrorMap, StandardDeviationMap
+from gpmap.base import BaseMap
+from gpmap.errors import StandardErrorMap, StandardDeviationMap
 
 class TransformMap(BaseMap):
     """ Object for containing untransformed data.

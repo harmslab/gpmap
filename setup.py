@@ -3,12 +3,12 @@ try:
 except:
     from distutils.core import setup
 
-setup(name='seqspace',
+setup(name='gpmap',
       version='0.1',
       description='Internal mapping module for sequence space (specifically, genotype-phenotype maps).',
       author='Zach Sailer',
       author_email='zachsailer@gmail.com',
-      packages=['seqspace'],
+      packages=['gpmap'],
       install_requires=[
           'networkx',
           'numpy',
