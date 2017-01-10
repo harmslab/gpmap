@@ -1,8 +1,7 @@
-seqspace
-========
+gpmap
+=====
 
 .. toctree::
    :maxdepth: 4
 
-   seqspace
-   setup
+   gpmap

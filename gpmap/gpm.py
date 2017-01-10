@@ -1,4 +1,3 @@
-# Main mapping object to be used the epistasis models in this package.
 #
 # Author: Zach Sailer
 #
@@ -14,19 +13,19 @@ import numpy as np
 # ----------------------------------------------------------
 
 # import different maps into this module
-from seqspace.base import BaseMap
-from seqspace.binary import BinaryMap
-from seqspace.transform import TransformMap
-from seqspace.graph import GenotypePhenotypeGraph
-from seqspace.errors import (StandardDeviationMap,
+from gpmap.base import BaseMap
+from gpmap.binary import BinaryMap
+from gpmap.transform import TransformMap
+from gpmap.graph import GenotypePhenotypeGraph
+from gpmap.errors import (StandardDeviationMap,
                             StandardErrorMap)
 
-from seqspace.stats import corrected_sterror
+from gpmap.stats import corrected_sterror
 
 # import utils used into module.
-from seqspace import utils
+from gpmap import utils
 
-from seqspace.plotting import PlottingContainer
+from gpmap.plotting import PlottingContainer
 from . import utils
 
 # ----------------------------------------------------------

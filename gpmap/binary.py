@@ -7,10 +7,10 @@
 # ----------------------------------------------------------
 import numpy as np
 
-from seqspace.base import BaseMap
-from seqspace.transform import TransformMap
-from seqspace.errors import StandardErrorMap, StandardDeviationMap
-from seqspace.utils import (hamming_distance,
+from gpmap.base import BaseMap
+from gpmap.transform import TransformMap
+from gpmap.errors import StandardErrorMap, StandardDeviationMap
+from gpmap.utils import (hamming_distance,
                             binary_mutations_map,
                             farthest_genotype,
                             encode_mutations,

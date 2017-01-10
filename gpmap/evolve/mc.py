@@ -5,7 +5,7 @@
 
 import numpy as np
 import networkx as nx
-from seqspace.plotting import TrajectoriesPlotting
+from gpmap.plotting import TrajectoriesPlotting
 from collections import Counter, OrderedDict
 
 class MaxIterationsError(Exception):
