@@ -11,7 +11,7 @@ using numpy arrays to store in memory.
 
 Import the package's base object.
 ```python
-import GenotypePhenotypeMap
+from gpmap import GenotypePhenotypeMap
 ```
 
 Load a dataset from disk.
