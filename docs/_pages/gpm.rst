@@ -1,7 +1,7 @@
 GenotypePhenotypeMap
 ====================
 
-The ``GenotypePhenotypeMap`` class is the primary tool provided by the ``seqspace`` package.
+The ``GenotypePhenotypeMap`` class is the primary tool provided by the ``gpmap`` package.
 It creates intuitive and useful mapping on the fly. It appends methods and attributes
 to make analyzing genotype-phenotype data easy. We've create other packages that
 easily interact with the ``GenotypePhenotypeMap``.

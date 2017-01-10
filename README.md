@@ -1,6 +1,10 @@
 
 #Python API for analyzing and manipulating genotype-phenotype maps
 
+
+[![Join the chat at https://gitter.im/harmslab/gpmap](https://badges.gitter.im/harmslab/gpmap.svg)](https://gitter.im/harmslab/gpmap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Documentation Status](https://readthedocs.org/projects/gpmap/badge/?version=latest)](http://gpmap.readthedocs.io/en/latest/?badge=latest)
+
 This package defines a standard data-structure for genotype-phenotype (GP) map data.
 Useful for creating network graphs (via NetworkX) from GP data. Subset, manipulate,
 extend, etc. GP maps. Calculate statistics, model evolutionary trajectories, predict

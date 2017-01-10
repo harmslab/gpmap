@@ -10,7 +10,7 @@ To begin using this package, import the base class of the package, `GenotypePhen
 
 .. code-block:: python
 
-    import GenotypePhenotypeMap
+    from gpmap import GenotypePhenotypeMap
 
 There a few ways you initialize a GenotypePhenotypeMap object. First, you can pass
 the data into the object directly:
