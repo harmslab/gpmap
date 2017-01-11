@@ -18,9 +18,11 @@ def random_mutation_set(length, alphabet_size=2):
         size = [alphabet_size for i in range(length)]
     else:
         size = alphabet_size
-
-    alphabet = utils.AMINO_ACIDS[:size]
-    mutations = dict([(i, alphabet[i])for i in range(length)])
+    # build mutations dictionary
+    mutations = {}
+    for i in range(length):
+        alphabet = utils.AMINO_ACIDS[:size[i]]
+        mutations[i] = alphabet
     return mutations
 
 class GenotypePhenotypeSimulation(GenotypePhenotypeMap):
@@ -40,7 +42,7 @@ class GenotypePhenotypeSimulation(GenotypePhenotypeMap):
     def set_random(self, range=(0,1)):
         """ Get a set of random
         """
-        self.phenotypes = np.random.random(range[0], range[1], size=self.n)
+        self.phenotypes = np.random.uniform(range[0], range[1], size=self.n)
 
     @classmethod
     def from_length(cls, length, alphabet_size=2, *args, **kwargs):
@@ -53,12 +55,11 @@ class GenotypePhenotypeSimulation(GenotypePhenotypeMap):
         alphabet_size : int (optional)
             alphabet size
 
-
         Returns
         -------
         self : GenotypePhenotypeSimulation
         """
-        mutations = random_mutations_set(lengths, alphabet_size=alphabet_size)
-        wildtype = ".join"([m[0] for m in mutations.values()])
+        mutations = random_mutation_set(length, alphabet_size=alphabet_size)
+        wildtype = "".join([m[0] for m in mutations.values()])
         self = cls(wildtype, mutations, *args, **kwargs)
         return self

@@ -7,6 +7,8 @@ def flattened(G, scale=1, vertical=False):
     ----------
     G : GenotypePhenotypeGraph object
         A genotype-phenotype objects
+    scale : float (default=1)
+        density of the nodes.
 
     Returns
     -------

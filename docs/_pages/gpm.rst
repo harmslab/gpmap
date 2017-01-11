@@ -1,9 +1,9 @@
 GenotypePhenotypeMap
 ====================
 
-The ``GenotypePhenotypeMap`` class is the primary tool provided by the ``gpmap`` package.
-It creates intuitive and useful mapping on the fly. It appends methods and attributes
-to make analyzing genotype-phenotype data easy. We've create other packages that
+The ``GenotypePhenotypeMap`` class is main entry-point to the ``gpmap`` package.
+It offers intuitive and useful methods and attributes
+for analyzing genotype-phenotype data. We've also created a number of other packages that
 easily interact with the ``GenotypePhenotypeMap``.
 
 Example
@@ -31,14 +31,7 @@ Interface
 
 BinaryMap
 ---------
-Attached to the GenotypePhenotypeMap is a ``BinaryMap`` object.
-
-The ``BinaryMap`` class creates a binary representation of all genotypes and maps
-them to a genotype-phenotype map. Binary representations are useful for many reasons,
-like modeling evolutionary paths and analyzing epistatic interactions (see epistasis_)
-
 All ``GenotypePhenotypeMap`` objects append a ``BinaryMap`` instance to a the ``binary``
-attribute. Most attributes in the ``GenotypePhenotypeMap`` also exist in under
-the ``binary`` attribute, updated with the binary genotype representations.
-
-.. _epistasis: http://epicstasis.readthedocs.io/
+attribute. The ``BinaryMap`` class creates a binary representation of all genotypes and maps
+them to a genotype-phenotype map. Most attributes in the ``GenotypePhenotypeMap`` also exist in
+the ``binary`` object, updated with the binary genotype representations.

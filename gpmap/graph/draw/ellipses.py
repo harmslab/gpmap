@@ -1,3 +1,7 @@
+import numpy
+import matplotlib as mpl
+import networkx as nx
+
 def draw_networkx_nodes_ellipses(G, pos,
     nodelist=None,
     height=20,

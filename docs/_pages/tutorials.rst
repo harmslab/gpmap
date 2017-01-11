@@ -38,4 +38,8 @@ Alternatively, you can load data from a json file (using the format defined `her
 Port to NetworkX object
 -----------------------
 
-A useful feature of the ``seqspace`` object
+.. code-block:: python
+
+    Graph = gpm.add_networkx()
+
+.. code-block:: python

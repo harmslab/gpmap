@@ -70,6 +70,13 @@ def path(G, pos, ax, path, scale=1, length=1, **kwargs):
 @checkG
 def network(G, scale=1, vertical=True, figsize=(5,5), **kwargs):
     """Draw a generic plot for a genotype-phenotype map.
+
+    Parameters
+    ----------
+    G : GenotypePhenotypeGraph object
+        genotype-phenotype network to plot
+    scale : 
+
     """
     pos = positions.flattened(G, vertical=vertical, scale=scale)
     # separate keyword args.

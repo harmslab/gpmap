@@ -221,7 +221,7 @@ class GenotypePhenotypeMap(BaseMap):
                     f.write(sep.join(row))
 
     def sort(self, genotypes):
-        """Sort the genotype-phenotype map by genotypes
+        """Sort the genotype-phenotype map using a list of genotypes.
         """
         if len(genotypes) != self.n:
             raise Exception("""genotypes argument must be the same length.""")
