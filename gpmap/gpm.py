@@ -191,10 +191,10 @@ class GenotypePhenotypeMap(BaseMap):
     @property
     def metadata(self):
         """Return metadata."""
-        return {
+        meta =  {
             "wildtype" : self.wildtype,
-            "genotypes" : self.genotypes,
-            "phenotypes" : self.phenotypes,
+            "genotypes" : list(self.genotypes),
+            "phenotypes" : list(self.phenotypes),
             "log_transform" : self.log_transform,
             "stdeviations" : self.stdeviations,
             "n_replicates" : self.n_replicates,
@@ -364,7 +364,11 @@ class GenotypePhenotypeMap(BaseMap):
         """
         if type(mutations) != dict:
             raise TypeError("mutations must be a dict")
-        self._mutations = mutations
+        # make sure keys are ints
+        _mutations = {}
+        for key, val in mutations.items():
+            _mutations[int(key)] = val
+        self._mutations = _mutations
 
     @phenotypes.setter
     def phenotypes(self, phenotypes):
