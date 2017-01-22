@@ -503,6 +503,11 @@ class GenotypePhenotypeMap(BaseMap):
         GenotypePhenotypeMap: obj
             Sub-GenotypePhenotypeMap between two sequences.
         """
+
+        if genotype2 != None and len(genotype1) != len(genotype2):
+            err = "genotypes must have the same length to calculate subspace.\n"
+            raise ValueError(err)
+
         # Construct the mutations dictionary if not given (assumes binary)
         if mutations is None:
             mutations = utils.binary_mutations_map(genotype1, genotype2)
