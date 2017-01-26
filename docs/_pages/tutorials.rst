@@ -3,8 +3,8 @@ Tutorials
 
 Below are a set of simple tutorials for using the `seqspace` package.
 
-Construct a GenotypePhenotypeMap
---------------------------------
+GenotypePhenotypeMap
+--------------------
 
 To begin using this package, import the base class of the package, `GenotypePhenotypeMap`.
 

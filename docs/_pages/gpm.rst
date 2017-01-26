@@ -22,13 +22,6 @@ Example
     gpm = GenotypePhenotypeMap(wildtype, genotypes, phenotypes)
 
 
-Interface
----------
-
-.. autoclass:: gpmap.gpm.GenotypePhenotypeMap
-    :members:
-
-
 BinaryMap
 ---------
 All ``GenotypePhenotypeMap`` objects append a ``BinaryMap`` instance to a the ``binary``
