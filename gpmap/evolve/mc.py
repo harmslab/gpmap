@@ -70,7 +70,7 @@ def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, **kwa
 
     The only edges accessible to a given genotype in this implementation are genotypes
     that differ by a single mutation. All other moves are ignored. The algorithm
-    builds a list of neighbors on-the-fly for each node. There is no `self` probability
+    builds a list of neighbors on-the-fly for each step. There is no `self` probability
     considered when making a move, thus, this will NOT recapitulate stationary
     frequencies, uncover a fitness landscape, or find equilibrium states. For the sake of
     efficiency, it merely samples pathways from source to target. If you'd like

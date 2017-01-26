@@ -18,9 +18,30 @@ The ``monte_carlo`` function will use Monte Carlo sampling to walk through a
 genotype-phentoype map. Given a source and target, it will return all steps taken
 to move between the source and target.
 
+The algorithm builds a list of neighbors on-the-fly for each step. There is no `self` probability
+considered when making a move, thus, this will NOT recapitulate stationary
+frequencies, uncover a fitness landscape, or find equilibrium states. For the sake of
+efficiency, it merely samples pathways from source to target. If you'd like
+a better sampling of the fitness landscape and its equilibrium states, try
+the monte_carlo_metropolis_criterion function.
+
+**Example**
+
 .. code-block:: python
 
+    # Simulate evolution on a rough Mt. Fuji landscape
+    from gpmap.simulate import MountFujiSimulation
     from gpmap.evolve import monte_carlo
+    from gpmap.evolve.models import fixation
+
+    # Simulate a genotype-phenotype map
+    gpm = MountFujiSimulation.from_length(5)
+    gpm.set_roughness((-1,1))
+
+    # Monte carlo sample space
+    source = "11111"
+    target = "00000"
+    path = monte_carlo(gpm, source, target, fixation, forward=False)
 
 
 Evolutionary models
@@ -44,7 +65,7 @@ the wildtype fitness and the new fitness using Gillespie's fixation model [1]_.
     :align: center
 
 
-Source code:
+**Source Code:**
 
 .. code-block:: python
 
