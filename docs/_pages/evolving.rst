@@ -44,6 +44,38 @@ the monte_carlo_metropolis_criterion function.
     path = monte_carlo(gpm, source, target, fixation, forward=False)
 
 
+Monte Carlo, Metropolis Criterion
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``monte_carlo_metropolis_criterion`` function will use Monte Carlo sampling
+and a Metropolis criterion to walk through a genotype-phentoype map. Given a
+source and target, it will return all steps taken to move between the source and
+target.
+
+This method chooses a sample at random from its neighbors and uses a Metropolis
+criterion to accept or reject the move. The output will include all moves in the
+simulation, including all 'self' moves. This is useful for sampling the fitness
+landscape's stationary frequencies.
+
+**Example**
+
+.. code-block:: python
+
+    # Simulate evolution on a rough Mt. Fuji landscape
+    from gpmap.simulate import MountFujiSimulation
+    from gpmap.evolve import monte_carlo
+    from gpmap.evolve.models import fixation
+
+    # Simulate a genotype-phenotype map
+    gpm = MountFujiSimulation.from_length(5)
+    gpm.set_roughness((-1,1))
+
+    # Monte carlo sample space
+    source = "11111"
+    target = "00000"
+    path = monte_carlo(gpm, source, target, fixation)
+
+
 Evolutionary models
 -------------------
 
