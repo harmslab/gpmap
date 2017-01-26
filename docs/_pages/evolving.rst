@@ -63,7 +63,7 @@ landscape's stationary frequencies.
 
     # Simulate evolution on a rough Mt. Fuji landscape
     from gpmap.simulate import MountFujiSimulation
-    from gpmap.evolve import monte_carlo
+    from gpmap.evolve import monte_carlo_metropolis_criterion
     from gpmap.evolve.models import fixation
 
     # Simulate a genotype-phenotype map
@@ -73,7 +73,7 @@ landscape's stationary frequencies.
     # Monte carlo sample space
     source = "11111"
     target = "00000"
-    path = monte_carlo(gpm, source, target, fixation)
+    path = monte_carlo_metropolis_criterion(gpm, source, target, fixation)
 
 
 Evolutionary models
