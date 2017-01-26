@@ -16,36 +16,28 @@ def binary_neighbors(reference, mutations, mutation_labels=False):
     """
     neighbor_pairs = list()
     n_sites = len(reference)
-
     for i in range(n_sites):
-
         # Calculate the number of mutations possible at a given sites
         if mutations[i] == None:
             n_sub = 1
-
         else:
             n_sub = len(mutations[i])
-
             # Remove the reference mutation
             possible = list(mutations[i])
             possible.remove(reference[i])
-
         # Create a tuple of pair and append to list
         for j in range(n_sub-1):
             # Switch out site i with each mutation possible at that site
             neighbor = list(reference)
             neighbor[i] = possible[j]
             neighbor = "".join(neighbor)
-
             # If user wants the mutation to be defined with a string (i.e. `A42G`), do that.
             if mutation_labels:
                 # Add mutation
                 mutation = reference[i] + str(i) + possible[j]
                 neighbor_pairs.append((reference, neighbor, {"mutation":mutation}))
-
             else:
                 neighbor_pairs.append((reference, neighbor, {}))
-
     return neighbor_pairs
 
 # --------------------------------------------------------
@@ -165,24 +157,22 @@ class GenotypePhenotypeGraph(nx.DiGraph):
     def transition_matrix(self):
         """Get transition matrix of the graph. Only works if transitions is
         function is set.
+
+        Calculates each element as
+
+        .. math:
+
+            p_{i \rightarrow j} = 1 / N \cdot \pi_{i \rightarrow j}
+
+        where N is the number of neighbors and pi is a fixation probability
         """
         if self.transition_model is None:
             raise Exception("""A transition model must be set. checkout `add_evolutionary_model` method.""")
-        matrix = np.nan_to_num(
-            nx.attr_matrix(
-                self,
-                edge_attr="fixation",         # Get the transitions value
-                #normalized=True,                # Normalize the rows
-                rc_order=self.gpm.indices       # Order the matrix
-                )
-        )
+        # Get a matrix of fixation probabilities.
+        matrix = np.nan_to_num( nx.attr_matrix(self, edge_attr="fixation",rc_order=self.gpm.indices))
+        # scale fixation probabilities by the condition probability.
+        matrix = matrix / self.gpm.binary.length
+        # Calculate the self probabilities (diagonal)
         for i in range(len(matrix)):
             matrix[i,i] = 1 - matrix[i].sum()
-        # Populate the diagonals
-        #for i in range(len(matrix)):
-        #    if matrix[i].sum() == 0:
-        #        matrix[i,i] = 1.0
-        #np.fill_diagonal(matrix, 1.0)
-        # Normalize the row
-        #matrix = matrix / matrix.sum(axis=1)
         return matrix

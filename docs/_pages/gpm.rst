@@ -11,7 +11,7 @@ Example
 
 .. code-block:: python
 
-    from seqspace import GenotypePhenotypeMap
+    from gpmap import GenotypePhenotypeMap
 
     # Create list of genotypes and phenotypes
     wildtype = "AA"
@@ -25,7 +25,7 @@ Example
 Interface
 ---------
 
-.. autoclass:: seqspace.gpm.GenotypePhenotypeMap
+.. autoclass:: gpmap.gpm.GenotypePhenotypeMap
     :members:
 
 

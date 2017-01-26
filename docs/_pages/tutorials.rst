@@ -35,8 +35,8 @@ Alternatively, you can load data from a json file (using the format defined `her
 .. _here: io.rst
 
 
-Port to NetworkX object
------------------------
+Using NetworkX
+--------------
 
 .. code-block:: python
 

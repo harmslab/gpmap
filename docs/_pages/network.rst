@@ -43,11 +43,10 @@ Along with all the methods from
 
 
     gpm.add_evolutionary_model(adaptive)
-    gpm.
 
 
 Interface
 ---------
 
-.. autoclass:: seqspace.graph.base.GenotypePhenotypeGraph
+.. autoclass:: gpmap.graph.base.GenotypePhenotypeGraph
     :members:
