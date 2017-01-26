@@ -1,7 +1,9 @@
 Evolution
 =========
 
-The ``evolution`` module handles
+The ``evolve`` subpackage provides an evolutionary component to GPMap. Inside this
+module are various tools to analyze, simulate, and model evolutionary trajectories
+through the genotype-phenotype map.
 
 Evolving Methods
 ----------------
@@ -122,7 +124,6 @@ the wildtype fitness and the new fitness using Gillespie's fixation model [1]_.
     ax.set_ylabel("$\pi$", fontsize=12)
     ax.set_title("Gillespie fixation probability")
     ax.legend(loc=2)
-
 
 
 References
