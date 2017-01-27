@@ -19,14 +19,15 @@ def get_neighbors(genotype, mutations):
     sites = list(genotype)
     neighbors = []
     for i, alphabet in mutations.items():
-        # Copy alphabet to avoid over-writing
-        alphabet = alphabet[:]
-        alphabet.remove(sites[i])
-        # Replace letters
-        for a in alphabet:
-            g = sites[:]
-            g[i] = a
-            neighbors.append("".join(g))
+        if alphabet is not None:
+            # Copy alphabet to avoid over-writing
+            alphabet = alphabet[:]
+            alphabet.remove(sites[i])
+            # Replace letters
+            for a in alphabet:
+                g = sites[:]
+                g[i] = a
+                neighbors.append("".join(g))
     return neighbors
 
 def get_forward_neighbors(source, current, mutations):
@@ -52,15 +53,16 @@ def get_forward_neighbors(source, current, mutations):
     hd = hamming_distance(source, current)
     neighbors = []
     for i, alphabet in mutations.items():
-        # Copy alphabet to avoid over-writing
-        alphabet = alphabet[:]
-        alphabet.remove(sites[i])
-        # Replace letters
-        for a in alphabet:
-            g = sites[:]
-            g[i] = a
-            if hamming_distance(source, g) > hd:
-                neighbors.append("".join(g))
+        if mutations is not None:
+            # Copy alphabet to avoid over-writing
+            alphabet = alphabet[:]
+            alphabet.remove(sites[i])
+            # Replace letters
+            for a in alphabet:
+                g = sites[:]
+                g[i] = a
+                if hamming_distance(source, g) > hd:
+                    neighbors.append("".join(g))
     return neighbors
 
 
@@ -122,13 +124,12 @@ def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, **kwa
         # Find neighbors and calculate the probability of transitioning (normalized)
         nb_args = args[:] + [current, gpm.mutations]
         neighbors = np.array(neighbors_method(*nb_args))
-        fitnesses = np.array([model(fitness0, mapping_p[n], **kwargs) for n in neighbors])
+        fitnesses = np.nan_to_num([model(fitness0, mapping_p[n], **kwargs) for n in neighbors])
         norm = fitnesses.sum()
         # Check for possible moves.
         if norm == 0:
-            raise Exception ("Simulation got stuck on the '" + current + "' genotype. "
-            "All neighbors are deleterious. \n"
-            "Path : " + str(visited))
+            raise Exception ("Monte Carlo simulation got stuck; neighbors are deleterious. \n"
+            "Current progress : " + str(visited))
         # Calculate a cumulative distribution to Monte Carlo sample neighbors.
         cumulative_dist = np.array([sum(fitnesses[:i+1])/norm for i in range(len(fitnesses))])
         # Monte Carlo number to sample
