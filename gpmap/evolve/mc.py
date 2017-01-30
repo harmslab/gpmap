@@ -69,7 +69,7 @@ def get_forward_neighbors(source, current, mutations):
     return neighbors
 
 
-def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, **kwargs):
+def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, return_bad=False, **kwargs):
     """Use a Monte Carlo approach to sample a single trajectory between a source
     genotype and a target genotype in a genotype-phenotype map.
 
@@ -81,6 +81,8 @@ def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, **kwa
     efficiency, it merely samples pathways from source to target. If you'd like
     a better sampling of the fitness landscape and its equilibrium states, try
     the monte_carlo_metropolis_criterion function.
+
+    If the trajectory doesn't make it to the target, an EvolverError is raised.
 
     Parameters
     ----------
@@ -98,6 +100,8 @@ def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, **kwa
     forward : bool (default True)
         Set to True to only consider forward moves. Slows down the get_neighbors
         call, but avoids longer paths.
+    return_bad : bool (default False)
+        if True, return any trajectories that were not finished.
 
     Keyword Arguments
     -----------------
@@ -129,10 +133,13 @@ def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, **kwa
         neighbors = np.array(neighbors_method(*nb_args))
         fitnesses = np.nan_to_num([model(fitness0, mapping_p[n], **kwargs) for n in neighbors])
         norm = fitnesses.sum()
-        # Check for possible moves.
+        # Check that some move is possible. If not, raise error.
         if norm == 0:
-            raise EvolverError ("Monte Carlo simulation got stuck; neighbors are deleterious. \n"
-            "Current progress : " + str(visited))
+            if return_bad:
+                return visited
+            else:
+                raise EvolverError ("Monte Carlo simulation got stuck; neighbors are deleterious. \n"
+                "Current progress : " + str(visited))
         # Calculate a cumulative distribution to Monte Carlo sample neighbors.
         cumulative_dist = np.array([sum(fitnesses[:i+1])/norm for i in range(len(fitnesses))])
         # Monte Carlo number to sample
