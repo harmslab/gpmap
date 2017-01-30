@@ -277,9 +277,12 @@ class GenotypePhenotypeMap(BaseMap):
         for i in range(0,len(self.mutations)):
             site = _wt[i]
             options = self.mutations[i]
-            for o in options:
-                if o != site:
-                    _mutant.append(o)
+            if options is None:
+                _mutant.append(_wt[i])
+            else:
+                for o in options:
+                    if o != site:
+                        _mutant.append(o)
         return "".join(_mutant)
 
     @property
