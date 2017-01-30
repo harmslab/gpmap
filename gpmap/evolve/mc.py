@@ -1,6 +1,9 @@
 import numpy as np
 from gpmap.utils import hamming_distance
 
+class EvolverError(Exception):
+    """Exception class for evolver methods"""
+
 def get_neighbors(genotype, mutations):
     """List all neighbors that are a single a mutation away from genotype.
 
@@ -53,7 +56,7 @@ def get_forward_neighbors(source, current, mutations):
     hd = hamming_distance(source, current)
     neighbors = []
     for i, alphabet in mutations.items():
-        if mutations is not None:
+        if alphabet is not None:
             # Copy alphabet to avoid over-writing
             alphabet = alphabet[:]
             alphabet.remove(sites[i])
@@ -128,7 +131,7 @@ def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, **kwa
         norm = fitnesses.sum()
         # Check for possible moves.
         if norm == 0:
-            raise Exception ("Monte Carlo simulation got stuck; neighbors are deleterious. \n"
+            raise EvolverError ("Monte Carlo simulation got stuck; neighbors are deleterious. \n"
             "Current progress : " + str(visited))
         # Calculate a cumulative distribution to Monte Carlo sample neighbors.
         cumulative_dist = np.array([sum(fitnesses[:i+1])/norm for i in range(len(fitnesses))])
@@ -140,7 +143,7 @@ def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, **kwa
         moves += 1
     # Check for convergence and return visited.
     if moves > max_moves:
-        raise Exception("Monte Carlo exceeded max number of moves.")
+        raise EvolverError("Monte Carlo exceeded max number of moves.")
     return visited
 
 def monte_carlo_metropolis_criterion(gpm, source, target, model, max_fails=1000, **kwargs):
@@ -201,5 +204,5 @@ def monte_carlo_metropolis_criterion(gpm, source, target, model, max_fails=1000,
             fails += 1
     # Check for convergence and return visited.
     if fails > max_fails:
-        raise Exception("Monte Carlo exceeded max number of moves.")
+        raise EvolverError("Monte Carlo exceeded max number of moves.")
     return visited
