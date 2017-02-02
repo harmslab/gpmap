@@ -171,7 +171,7 @@ class GenotypePhenotypeGraph(nx.DiGraph):
         # Get a matrix of fixation probabilities.
         matrix = np.nan_to_num( nx.attr_matrix(self, edge_attr="fixation",rc_order=self.gpm.indices))
         # scale fixation probabilities by the condition probability.
-        matrix = matrix / self.gpm.binary.length
+        matrix = matrix / self.gpm.binary.length #+ 1
         # Calculate the self probabilities (diagonal)
         for i in range(len(matrix)):
             matrix[i,i] = 1 - matrix[i].sum()

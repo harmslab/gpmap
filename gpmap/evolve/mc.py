@@ -123,33 +123,39 @@ def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, retur
         neighbors_method = get_neighbors
     # Begin Monte Carlo loop.
     visited = (source,)
-    moves = 0
-    while visited[-1] != target and moves <= max_moves:
+    nmoves = 0
+    while visited[-1] != target and nmoves <= max_moves:
         # Observe new genotype
         current = visited[-1]
         fitness0 = mapping_p[current]
-        # Find neighbors and calculate the probability of transitioning (normalized)
+        # Find neighbors
         nb_args = args[:] + [current, gpm.mutations]
         neighbors = np.array(neighbors_method(*nb_args))
-        fitnesses = np.nan_to_num([model(fitness0, mapping_p[n], **kwargs) for n in neighbors])
-        norm = fitnesses.sum()
+        moves = np.append(neighbors, current)
+        # calculate fixation probabilities
+        fixations = np.nan_to_num([model(fitness0, mapping_p[n], **kwargs) for n in neighbors])
+        # Calculate the probabilities of each possible transition
+        trans_prob = fixations / (len(neighbors) + 1)
+        # Calculate a self probability
+        self_prob = 1 - trans_prob.sum()
+        probs = np.append(trans_prob, self_prob)
         # Check that some move is possible. If not, raise error.
-        if norm == 0:
+        if self_prob == 1:
             if return_bad:
                 return visited
             else:
-                raise EvolverError ("Monte Carlo simulation got stuck; neighbors are deleterious. \n"
+                raise EvolverError("Monte Carlo simulation got stuck; neighbors are deleterious. \n"
                 "Current progress : " + str(visited))
         # Calculate a cumulative distribution to Monte Carlo sample neighbors.
-        cumulative_dist = np.array([sum(fitnesses[:i+1])/norm for i in range(len(fitnesses))])
+        cumulative_dist = np.array([sum(probs[:i+1]) for i in range(len(probs))]) * 100
         # Monte Carlo number to sample
-        mc_number = np.random.rand()
+        mc_number = np.random.uniform(0,100)
         # Make move
-        new = neighbors[cumulative_dist>=mc_number][0]
+        new = moves[cumulative_dist>=mc_number][0]
         visited += (new,)
-        moves += 1
+        nmoves += 1
     # Check for convergence and return visited.
-    if moves > max_moves:
+    if nmoves > max_moves:
         raise EvolverError("Monte Carlo exceeded max number of moves.")
     return visited
 
@@ -198,13 +204,13 @@ def monte_carlo_metropolis_criterion(gpm, source, target, model, max_fails=1000,
         current = visited[-1]
         fitness0 = mapping_p[current]
         # Find neighbors and calculate the probability of transitioning (normalized)
-        neighbors = np.array(get_neighbors(current, gpm.mutations))
+        moves = np.array(get_neighbors(current, gpm.mutations) + [current])
         # sample neighbors
-        mc_choice = np.random.choice(neighbors)
-        mc_fitness = model(fitness0, mapping_p[mc_choice], **kwargs)
+        mc_choice = np.random.choice(moves)
+        mc_fixation = model(fitness0, mapping_p[mc_choice], **kwargs)
         # Metropolis criterion
         mc_number = np.random.rand()
-        if mc_number < mc_fitness:
+        if mc_number < mc_fixation:
             visited += (mc_choice,)
         else:
             visited += (current,)
