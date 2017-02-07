@@ -1,7 +1,7 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from ..paths import flux, subflux
+from ..paths import flux
 from .base import network
 from .positions import flattened
 

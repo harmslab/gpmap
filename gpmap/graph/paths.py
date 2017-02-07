@@ -54,39 +54,12 @@ def paths_and_probabilities(G, source, target, transition_model=None, *args, **k
             pi *= transition_matrix[p[i],p[i+1]]
         # Append pi to probabilities
         probabilities.append(pi)
-
-    return paths, list(probabilities)
-
-
-def subflux(G, source, target, transition_model=None, *args, **kwargs):
-    """
-    """
-    # Iterate through all nodes
-    targets = list(G.nodes())
-    paths, probs = [], []
-    for target in targets:
-        subpaths, subprobs = paths_and_probabilities(G, source, target,
-            transition_model=transition_model,
-            *args,
-            **kwargs)
-        paths += subpaths
-        probs += subprobs
-    print(sum(probs))
-    # Calculate the normalization constant
-    #norm = sum(probs)
-    # Construct a dictionary for each edge and its flux
-    flux = OrderedDict([(edge,0) for edge in G.edges()])
-    for k in range(len(paths)):
-        path = paths[k]
-        prob = probs[k]
-        # walk through trajectory and add probabilities to each edge.
-        for last_i, node in enumerate(path[1:]):
-            i = path[last_i]
-            j = node
-            flux[(i,j)] += prob #/ norm
-    # Return edge probabilities as array.
-    return np.array(list(flux.values()))
-
+    # Return normalized probabilities. If sum(probabilities) is zero, return
+    # a vector of zeros.
+    if sum(probabilities) == 0 :
+        return paths, list(probabilities)
+    else:
+        return paths, list(np.array(probabilities)/sum(probabilities))
 
 def flux(G, source, target, transition_model=None, *args, **kwargs):
     """Calculate the probability at each edge, i.e. the flux of probability
@@ -106,8 +79,8 @@ def flux(G, source, target, transition_model=None, *args, **kwargs):
     paths, probs = paths_and_probabilities(G, source, target,
         transition_model=transition_model,
         *args,
-        **kwargs)
-    probs = probs / sum(probs)#.sum()
+        **kwargs
+    )
     # convert paths to tuples
     paths = [tuple(p) for p in paths]
     # map path to probability
