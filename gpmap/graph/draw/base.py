@@ -75,7 +75,7 @@ def network(G, scale=1, vertical=True, figsize=(5,5), **kwargs):
     ----------
     G : GenotypePhenotypeGraph object
         genotype-phenotype network to plot
-    scale : 
+    scale :
 
     """
     pos = positions.flattened(G, vertical=vertical, scale=scale)
