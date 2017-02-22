@@ -5,7 +5,7 @@ from ..paths import flux
 from .base import network
 from .positions import flattened
 
-def diff(G1, G2, source, target, node_scale=150, edge_scale=10, figsize=[2.5,2.5]):
+def diff(G1, G2, source, target, node_scale=150, edge_scale=10, figsize=[2.5,2.5], ax=None):
     """
     """
     # Sanity check
@@ -14,6 +14,11 @@ def diff(G1, G2, source, target, node_scale=150, edge_scale=10, figsize=[2.5,2.5
     #    "Make sure the nodes are the same in both networks. "
     #    "Maybe try sorting the genotypes in G2 to match G1?")
 
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    else:
+        fig=None
+        #fig = ax.get_figure()
     # Calculate fluxes
     flux1 = flux(G1, source, target)
     flux2 = flux(G2, source, target)
@@ -41,7 +46,6 @@ def diff(G1, G2, source, target, node_scale=150, edge_scale=10, figsize=[2.5,2.5
     positions = flattened(G1, vertical=True, scale=1)
 
     # Prepare plot
-    fig, ax = plt.subplots(figsize=figsize)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
@@ -52,7 +56,7 @@ def diff(G1, G2, source, target, node_scale=150, edge_scale=10, figsize=[2.5,2.5
     junk = nx.draw_networkx_nodes(G1, positions, ax=ax,
         nodelist=node_increase,
         node_size=node_scale * node_flux2[node_increase],
-        node_color="r",
+        node_color="b",
         linewidths=0,
     )
     # Overlay white center
@@ -66,7 +70,7 @@ def diff(G1, G2, source, target, node_scale=150, edge_scale=10, figsize=[2.5,2.5
     junk = nx.draw_networkx_nodes(G1, positions, ax=ax,
         nodelist=node_decrease,
         node_size=node_scale * node_flux1[node_decrease],
-        node_color="b",
+        node_color="r",
         linewidths=0,
     )
     # Overlay white center
@@ -86,25 +90,30 @@ def diff(G1, G2, source, target, node_scale=150, edge_scale=10, figsize=[2.5,2.5
     # plot edge increase
     junk = nx.draw_networkx_edges(G1, positions, ax=ax,
         edgelist=[edges[i] for i in edge_increase],
-        edge_color="r",
+        edge_color="b",
         width=edge_scale * abs(edge_diff[edge_increase]),
         arrows=False
     )
     # Plot edge decreases
     junk = nx.draw_networkx_edges(G1, positions, ax=ax,
         edgelist=[edges[i] for i in edge_decrease],
-        edge_color="b",
+        edge_color="r",
         width=edge_scale * abs(edge_diff[edge_decrease]),
         arrows=False
     )
     return fig, ax
 
 
-def edge_flux(G, source, target, width_scale=10, **settings):
+def edge_flux(G, source, target, width_scale=10, ax=None, **settings):
     """
     """
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    else:
+        fig=None
+        #fig = ax.get_figure()
     # Calculate fluxes on edges
-    flux = flux(G, source, target)
+    fluxes = flux(G, source, target)
 
     # Settings to the network
     defaults = dict(
@@ -119,5 +128,5 @@ def edge_flux(G, source, target, width_scale=10, **settings):
         l_alpha=0.0,
     )
     defaults.update(**settings)
-    fig, ax, pos = network(G, e_width = width_scale*fluxes, **settings)
+    fig, ax, pos = network(G, e_width = width_scale*fluxes, ax=ax, **settings)
     return fig, ax

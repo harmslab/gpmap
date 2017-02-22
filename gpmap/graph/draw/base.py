@@ -68,7 +68,7 @@ def path(G, pos, ax, path, scale=1, length=1, **kwargs):
     return ax
 
 @checkG
-def network(G, scale=1, vertical=True, figsize=(5,5), **kwargs):
+def network(G, scale=1, vertical=True, figsize=(5,5), ax=None, **kwargs):
     """Draw a generic plot for a genotype-phenotype map.
 
     Parameters
@@ -84,7 +84,12 @@ def network(G, scale=1, vertical=True, figsize=(5,5), **kwargs):
     for key, value in kwargs.items():
         options[key[0]][key[2:]] = value
     # init plotx
-    fig, ax = plt.subplots(figsize=figsize)
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    else:
+        fig=None
+        #fig = ax.get_figure()
+
     ax = edges(G, pos, ax, **options["e"])
     ax = nodes(G, pos, ax, **options["n"])
     ax = labels(G, pos, ax, **options["l"])

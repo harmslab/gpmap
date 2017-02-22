@@ -193,13 +193,26 @@ class GenotypePhenotypeMap(BaseMap):
         """Return metadata."""
         meta =  {
             "wildtype" : self.wildtype,
-            "genotypes" : list(self.genotypes),
-            "phenotypes" : list(self.phenotypes),
+            "genotypes" : self.genotypes,
+            "phenotypes" : self.phenotypes,
             "log_transform" : self.log_transform,
             "stdeviations" : self.stdeviations,
             "n_replicates" : self.n_replicates,
             "mutations" : self.mutations,
         }
+        return meta
+
+    def to_json(self, filename):
+        """Write genotype-phenotype map to json file.
+        """
+        # Get metadata and make sure values are lists.
+        data = self.metadata
+        for key, val in data.items():
+            if hasattr(val, "__iter__") and type(val) != dict:
+                data[key] = list(val)
+        # Write to file
+        with open(filename, "w") as f:
+            json.dump(data, f)
 
     def write(self, fname, items, sep="\t", **kwargs):
         """Write out items to a tab-separated file.
