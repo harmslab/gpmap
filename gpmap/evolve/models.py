@@ -13,5 +13,24 @@ def fixation(fitness1, fitness2, N=10e8, *args, **kwargs):
     denominator = 1 - np.exp(-N * sij)
     numerator = 1 - np.exp(- sij)
     # Calculate the fixation probability
-    fixation = numerator / denominator
+    if denominator == 0:
+        fixation = 0
+    else:
+        fixation = numerator / denominator
     return fixation
+
+def wright_fisher(fitness1, fitness2, N=10e8, *args, **kwargs):
+    """ Calculates a fixation probability using the Wright-Fisher process
+    (a birth-death process).
+
+    .. math::
+        p_{\\text{fixation}} = \\frac{1 - (\\frac{f_1}{f2})^{2}}{1 - (\\frac{f_1}{f2})^{2N}}
+    """
+    if fitness2 == 0:
+        return 0
+    else:
+        frac = fitness1 / fitness2
+        if frac == 1:
+            return 0
+        else:
+            return (1 - frac ** 2) / (1 - frac**(2*N))

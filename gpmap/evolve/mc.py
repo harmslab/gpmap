@@ -1,73 +1,8 @@
 import numpy as np
-from gpmap.utils import hamming_distance
+from .tools import get_forward_neighbors, get_neighbors
 
 class EvolverError(Exception):
     """Exception class for evolver methods"""
-
-def get_neighbors(genotype, mutations):
-    """List all neighbors that are a single a mutation away from genotype.
-
-    Parameters
-    ----------
-    genotype: str
-        reference genotype.
-    mutations : dict
-        sites (keys) mapped to an alphabet list in genotype space (values).
-
-    Returns
-    -------
-    neighbors : list
-        List of neighbor genotypes
-    """
-    sites = list(genotype)
-    neighbors = []
-    for i, alphabet in mutations.items():
-        if alphabet is not None:
-            # Copy alphabet to avoid over-writing
-            alphabet = alphabet[:]
-            alphabet.remove(sites[i])
-            # Replace letters
-            for a in alphabet:
-                g = sites[:]
-                g[i] = a
-                neighbors.append("".join(g))
-    return neighbors
-
-def get_forward_neighbors(source, current, mutations):
-    """List all neighbors that are a single a mutation away from genotype and
-    move away from the source.
-
-    Parameters
-    ----------
-    source : str
-        source genotype which determines the direction to be moving away.
-    current: str
-        reference genotype.
-    mutations : dict
-        sites (keys) mapped to an alphabet list in genotype space (values).
-
-    Returns
-    -------
-    neighbors : list
-        List of neighbor genotypes
-    """
-    s_sites = list(source)
-    sites = list(current)
-    hd = hamming_distance(source, current)
-    neighbors = []
-    for i, alphabet in mutations.items():
-        if alphabet is not None:
-            # Copy alphabet to avoid over-writing
-            alphabet = alphabet[:]
-            alphabet.remove(sites[i])
-            # Replace letters
-            for a in alphabet:
-                g = sites[:]
-                g[i] = a
-                if hamming_distance(source, g) > hd:
-                    neighbors.append("".join(g))
-    return neighbors
-
 
 def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, return_bad=False, **kwargs):
     """Use a Monte Carlo approach to sample a single trajectory between a source

@@ -2,6 +2,32 @@ import networkx as nx
 import numpy as np
 from collections import OrderedDict
 
+def path_probabilities(G, paths):
+    """Calculate the probabilities of a list of paths in a network G. G must have
+    a transition matrix attribute.
+    """
+    # Build a list of probabilities
+    probabilities = list()
+    # Iterate through all paths in paths-list
+    transition_matrix = G.transition_matrix
+    for p in paths:
+        path_length = len(p)
+        # Begin by giving this path a probability of 1.
+        pi = 1
+        # Iterate through edges and multiply by the
+        # transition probability of that edge.
+        for i in range(path_length-1):
+            pi *= transition_matrix[p[i],p[i+1]]
+        # Append pi to probabilities
+        probabilities.append(pi)
+    # Return normalized probabilities. If sum(probabilities) is zero, return
+    # a vector of zeros.
+    if sum(probabilities) == 0 :
+        return list(probabilities)
+    else:
+        return list(np.array(probabilities)/sum(probabilities))
+
+
 def paths_and_probabilities(G, source, target, transition_model=None, *args, **kwargs):
     """Find the most likely shortest path between a source and target.
 
