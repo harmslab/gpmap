@@ -69,14 +69,33 @@ def path(G, pos, ax, path, scale=1, length=1, **kwargs):
 
 @checkG
 def network(G, scale=1, vertical=True, figsize=(5,5), ax=None, **kwargs):
-    """Draw a generic plot for a genotype-phenotype map.
+    """Draw a standard networkx plot for a genotype-phenotype map. Flattens the
+    network so that each row of nodes has the same number of mutations from
+    wildtype.
 
     Parameters
     ----------
     G : GenotypePhenotypeGraph object
         genotype-phenotype network to plot
-    scale :
+    scale : float
+        scales the positions of the nodes in network
 
+    Keyword Arguments
+    -----------------
+    Netork drawing is constructed from three separate networkx function calls:
+    draw_networkx_edges, draw_networkx_nodes, and draw_networkx_node_labels. Keyword
+    arguments are parsed and passed as kwargs to these separate functions. To direct
+    these kwargs properly, edge kwargs should start with `e_`, node kwargs with
+    `n_`, and label kwargs with `l_`.
+
+    Returns
+    -------
+    fig : matplotlib Figure object
+        Figure object.
+    ax : matplotlib Axes object
+        Subplot axes object
+    pos : dictionary
+        positions for each node.
     """
     pos = positions.flattened(G, vertical=vertical, scale=scale)
     # separate keyword args.
