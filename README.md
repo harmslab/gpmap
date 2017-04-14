@@ -1,5 +1,5 @@
 
-#Python API for analyzing and manipulating genotype-phenotype maps
+# Python API for analyzing and manipulating genotype-phenotype maps
 
 
 [![Join the chat at https://gitter.im/harmslab/gpmap](https://badges.gitter.im/harmslab/gpmap.svg)](https://gitter.im/harmslab/gpmap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -10,6 +10,8 @@ Useful for creating network graphs (via NetworkX) from GP data. Subset, manipula
 extend, etc. GP maps. Calculate statistics, model evolutionary trajectories, predict
 phenotypes (in combination with the epistasis package). Efficient memory usage,
 using numpy arrays to store in memory.
+
+<img src="docs/_img/gpm.png">
 
 ## Basic example
 

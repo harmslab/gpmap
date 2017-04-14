@@ -4,6 +4,13 @@ from .tools import get_forward_neighbors, get_neighbors
 class EvolverError(Exception):
     """Exception class for evolver methods"""
 
+
+def monte_carlo_transition_matrix(T, A, B):
+    """
+    """
+    
+
+
 def monte_carlo(gpm, source, target, model, max_moves=1000, forward=False, return_bad=False, **kwargs):
     """Use a Monte Carlo approach to sample a single trajectory between a source
     genotype and a target genotype in a genotype-phenotype map.
