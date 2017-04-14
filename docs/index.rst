@@ -12,6 +12,8 @@ Subset, manipulate, extend, etc. genotype-phenotype maps easily. Calculate stati
 model evolutionary trajectories, predict phenotypes. Efficient memory usage,
 using numpy arrays to store in memory.
 
+.. image:: ../_img/gpm.png
+    :align: center
 
 .. toctree::
    :maxdepth: 2

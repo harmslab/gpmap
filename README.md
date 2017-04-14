@@ -11,7 +11,7 @@ extend, etc. GP maps. Calculate statistics, model evolutionary trajectories, pre
 phenotypes (in combination with the epistasis package). Efficient memory usage,
 using numpy arrays to store in memory.
 
-<img src="docs/_img/gpm.png">
+<img src="docs/_img/gpm.png" align="middle">
 
 ## Basic example
 
