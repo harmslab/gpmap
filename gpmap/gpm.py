@@ -78,18 +78,20 @@ class GenotypePhenotypeMap(BaseMap):
     ----------
     wildtype : string
         wildtype sequence.
-    genotypes: array-like
+    genotypes : array-like
         list of all genotypes in system. Must be a complete system.
-    phenotypes: array-like
+    phenotypes : array-like
         List of phenotypes in the same order as genotypes.
-    log_transform: boolean (default = False)
+    log_transform : boolean (default = False)
         Set to True to log tranform the phenotypes.
-    mutations: dict
+    mutations : dict
         Dictionary that maps each site indice to their possible substitution alphabet.
     n_replicates : int
         number of replicate measurements comprising the mean phenotypes
     logbase : callable log transformation function
         logarithm function to apply to phenotypes if log_transform is True.
+    include_binary : bool (default=True)
+        Construct a binary representation of the space.
     """
     def __init__(self, wildtype, genotypes, phenotypes,
         stdeviations=None,
@@ -97,6 +99,7 @@ class GenotypePhenotypeMap(BaseMap):
         mutations=None,
         n_replicates=1,
         logbase=np.log10,
+        include_binary=False,
         **kwargs):
 
         # Set mutations; if not given, assume binary space.
@@ -127,7 +130,9 @@ class GenotypePhenotypeMap(BaseMap):
         # Built the binary representation of the genotype-phenotype.
         # Constructs a complete sequence space and stores genotypes missing in the
         # data as an attribute, `missing_genotypes`.
-        self.binary = BinaryMap(self)
+        self._include_binary = build_binary
+        if self._include_binary:
+            self.binary = BinaryMap(self)
 
         # Construct the error maps
         self.stdeviations = stdeviations
@@ -244,7 +249,8 @@ class GenotypePhenotypeMap(BaseMap):
             indices_[i] = mapping[genotype]
         self._genotypes = self._genotypes[indices_]
         self._phenotypes = self._phenotypes[indices_]
-        self.binary._genotypes = self.binary._genotypes[indices_]
+        if self._include_binary:
+            self.binary._genotypes = self.binary._genotypes[indices_]
 
     def sort_missing(self, missing):
         """Sort the missing genotypes in the genotype-phenotype map.
@@ -256,7 +262,8 @@ class GenotypePhenotypeMap(BaseMap):
         for i, genotype in enumerate(missing):
             indices_[i] = mapping[genotype]
         self._missing_genotypes = self._missing_genotypes[indices_]
-        self.binary._missing_genotypes = self.binary._missing_genotypes[indices_]
+        if self._include_binary:
+            self.binary._missing_genotypes = self.binary._missing_genotypes[indices_]
 
     # ----------------------------------------------------------
     # Properties of the map
