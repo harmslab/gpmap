@@ -46,6 +46,7 @@ class Sample:
         self._gpm = gpm
         self.replicate_genotypes = replicate_genotypes
         self.replicate_phenotypes = replicate_phenotypes
+        self.n_replicates = replicate_genotypes.shape[1]
         try:
             self.genotypes = self.replicate_genotypes[:,0]
             self.phenotypes = np.mean(self.replicate_phenotypes, axis=1)
@@ -62,7 +63,7 @@ class Sample:
                 stdeviations=self.stdeviations,
                 log_transform=self._gpm.log_transform,
                 mutations=self._gpm.mutations,
-                n_replicates=self._gpm.n_replicates,
+                n_replicates=self.n_replicates,
                 logbase=self._gpm.logbase)
 
 
@@ -99,7 +100,7 @@ class GenotypePhenotypeMap(BaseMap):
         mutations=None,
         n_replicates=1,
         logbase=np.log10,
-        include_binary=False,
+        include_binary=True,
         **kwargs):
 
         # Set mutations; if not given, assume binary space.
@@ -130,7 +131,7 @@ class GenotypePhenotypeMap(BaseMap):
         # Built the binary representation of the genotype-phenotype.
         # Constructs a complete sequence space and stores genotypes missing in the
         # data as an attribute, `missing_genotypes`.
-        self._include_binary = build_binary
+        self._include_binary = include_binary
         if self._include_binary:
             self.binary = BinaryMap(self)
 

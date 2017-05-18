@@ -124,8 +124,7 @@ class BinaryMap(BaseMap):
         binary = np.empty(self._GPM.n, dtype="U" + str(self._length))
 
         # Sort the genotypes by looking for them in the data.
-        missing_genotypes = list()
-        missing_binary = list()
+        missing_genotypes, missing_binary = [], []
         for i in range(len(unsorted_genotypes)):
             # Keep and sort genotype if it exists in data.
             try:
