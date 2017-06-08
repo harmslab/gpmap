@@ -3,7 +3,7 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 from ..base import GenotypePhenotypeGraph
-from .ellipses import draw_networkx_nodes_ellipses as draw_networkx_nodes
+from .ellipses import draw_networkx_nodes_ellipses
 from . import positions
 
 def checkG(func):
@@ -35,13 +35,16 @@ def edges(G, pos, ax, **kwargs):
     return ax
 
 @checkG
-def nodes(G, pos, ax, cmap='plasma', color=None, colorbar=False, **kwargs):
+def nodes(G, pos, ax, cmap='plasma', color=None, colorbar=False, ellipses=True, **kwargs):
     """Draw nodes.
     """
     # Add color to nodes
     if color is None:
         color = np.array([float(G.node[n]["phenotype"]) for n in G.nodes()])
-    ax, nodes = draw_networkx_nodes(G, pos, ax=ax, color=color, cmap=cmap, **kwargs)
+    if ellipses:
+        ax, nodes = draw_networkx_nodes_ellipses(G, pos, ax=ax, color=color, cmap=cmap, **kwargs)
+    else:
+        nodes = nx.draw_networkx_nodes(G, pos, ax=ax, node_color=color, cmap=cmap, **kwargs)
     if colorbar is True:
         plt.colorbar(nodes, shrink=.3, aspect=5)
     return ax

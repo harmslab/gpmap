@@ -133,7 +133,7 @@ class GenotypePhenotypeMap(BaseMap):
         # data as an attribute, `missing_genotypes`.
         self._include_binary = include_binary
         if self._include_binary:
-            self.binary = BinaryMap(self)
+            self.binary = BinaryMap(self, self.wildtype)
 
         # Construct the error maps
         self.stdeviations = stdeviations

@@ -46,14 +46,25 @@ class BinaryMap(BaseMap):
     stdeviations : array
         standard deviations of genotype phenotype map.
     """
-    def __init__(self, GPM):
+    def __init__(self, GPM, reference):
         self._GPM = GPM
-        self._build()
+        self.reference = reference
         self.std = StandardDeviationMap(self)
         self.err = StandardErrorMap(self)
         self.transformed = False
         if self.log_transform:
             self.log = TransformMap(self)
+
+    @property
+    def reference(self):
+        """Reference genotype to define the binary representation with respect to."""
+        return self._reference
+
+    @reference.setter
+    def reference(self, reference):
+        """Set the reference genotype and rebuild the map."""
+        self._reference = reference
+        self._build()
 
     @property
     def n_replicates(self):
@@ -112,7 +123,7 @@ class BinaryMap(BaseMap):
     def _build(self):
         """Builds a binary representation of a GenotypePhenotypeMap object.
         """
-        self.encoding = encode_mutations(self._GPM.wildtype, self._GPM.mutations)
+        self.encoding = encode_mutations(self._reference, self._GPM.mutations)
         # Use encoding map to construct binary presentation for any type of alphabet
         unsorted_genotypes, unsorted_binary = construct_genotypes(self.encoding)
 
