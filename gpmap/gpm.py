@@ -16,7 +16,6 @@ import numpy as np
 from gpmap.base import BaseMap
 from gpmap.binary import BinaryMap
 from gpmap.transform import TransformMap
-from gpmap.graph import GenotypePhenotypeGraph
 from gpmap.errors import (StandardDeviationMap,
                             StandardErrorMap)
 
@@ -323,8 +322,12 @@ class GenotypePhenotypeMap(BaseMap):
 
     @property
     def complete_genotypes(self):
-        """All possible genotypes in the complete genotype space"""
-        return np.concatenate((self.genotypes, self.missing_genotypes))
+        """Array of sorted genotypes for the complete genotype space encoded by
+        the mutations dictionary.
+        """
+        arr = np.concatenate((self.genotypes, self.missing_genotypes))
+        genotypes = np.sort(arr)
+        return genotypes
 
     @property
     def phenotypes(self):
@@ -439,18 +442,6 @@ class GenotypePhenotypeMap(BaseMap):
         """Store error maps"""
         self.std = StandardDeviationMap(self)
         self.err = StandardErrorMap(self)
-
-    def _add_networkx(self, **kwargs):
-        """Construct NetworkX DiGraph object from GenotypePhenotypeMap."""
-        # Add a networkx graph object
-        self.Graph = GenotypePhenotypeGraph(self)
-        self.Graph._build(**kwargs)
-
-    def add_networkx(self, **kwargs):
-        """
-        """
-        self._add_networkx(**kwargs)
-        return self.Graph
 
     # ------------------------------------------------------------
     # Hidden methods for mapping object
