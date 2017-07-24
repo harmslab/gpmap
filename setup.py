@@ -6,9 +6,6 @@ except:
 # Packages and subpackages to install
 packages = [
     'gpmap',
-    'gpmap.evolve',
-    'gpmap.graph',
-    'gpmap.graph.draw',
     'gpmap.simulate'
 ]
 
