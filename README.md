@@ -38,8 +38,8 @@ nx.draw(G)
 
 To install this package, clone from source and use pip.
 ```
-git clone https://github.com/harmslab/seqspace
-cd seqspace
+git clone https://github.com/harmslab/gpmap
+cd gpmap
 pip install -e .
 ```
 
