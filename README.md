@@ -6,9 +6,8 @@
 [![Documentation Status](https://readthedocs.org/projects/gpmap/badge/?version=latest)](http://gpmap.readthedocs.io/en/latest/?badge=latest)
 
 This package defines a standard data-structure for genotype-phenotype (GP) map data.
-Useful for creating network graphs (via NetworkX) from GP data. Subset, manipulate,
-extend, etc. GP maps. Calculate statistics, model evolutionary trajectories, predict
-phenotypes (in combination with the epistasis package). Efficient memory usage,
+Subset, manipulate, extend, etc. GP maps. Calculate statistics, model evolutionary
+trajectories, predict phenotypes (in combination with the epistasis package). Efficient memory usage,
 using numpy arrays to store in memory.
 
 <img src="docs/_img/gpm.png" align="middle">
