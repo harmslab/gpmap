@@ -12,7 +12,7 @@ from collections import OrderedDict
 # Main class for building epistasis map
 # -------------------------------------
 
-class BaseMap:
+class BaseMap(object):
     """Base class for all maps in this file.
     """
     def _if_dict(self, dictionary):
