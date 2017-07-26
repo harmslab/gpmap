@@ -25,15 +25,6 @@ Load a dataset from disk.
 gpm = GenotypePhenotypeMap.from_json("data.json")
 ```
 
-Create a NetworkX graph from the genotype-phenotype map data.
-```python
-import networkx as nx
-
-gpm.add_network()
-G = gpm.Graph
-nx.draw(G)
-```
-
 ## Installation
 
 To install this package, clone from source and use pip.
@@ -47,5 +38,4 @@ pip install -e .
 
 The following modules are required. Also, the examples/tutorials are written in Jupyter notebooks and require IPython to be install.
 
-* [NetworkX](https://networkx.github.io/)
 * [Numpy](http://www.numpy.org/)
