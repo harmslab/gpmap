@@ -21,8 +21,6 @@ using numpy arrays to store in memory.
    _pages/gpm
    _pages/io
    _pages/tutorials
-   _pages/network
-   _pages/evolving
    _pages/simulate
 
 
