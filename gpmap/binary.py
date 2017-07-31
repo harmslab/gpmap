@@ -114,6 +114,7 @@ class BinaryMap(object):
 
         # Series of all possible genotypes and their binary representation
         bins = pd.Series(unsorted_binary, index=unsorted_genotypes)
+        # Sort data in alphabetical order using the actual genotypes (not binary representation)
         bins = bins.sort_index()
         self._complete_genotypes = bins.reset_index(drop=True)
         self._GPM._complete_genotypes = pd.Series(bins.index)

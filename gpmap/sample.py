@@ -1,8 +1,10 @@
+import numpy as np
+from . import gpm
 # ----------------------------------------------------------
 # Sampling from Genotype-phenotype
 # ----------------------------------------------------------
 
-class Sample:
+class Sample(object):
 
     def __init__(self, gpm, replicate_genotypes, replicate_phenotypes, indices=None):
         """Sample from simulated experiment """
@@ -22,7 +24,7 @@ class Sample:
 
     def get_gpm(self):
         """Return a Genotype-phenotype object from sample. """
-        return GenotypePhenotypeMap(self._gpm.wildtype, self.genotypes, self.phenotypes,
+        return gpm.GenotypePhenotypeMap(self._gpm.wildtype, self.genotypes, self.phenotypes,
                 stdeviations=self.stdeviations,
                 mutations=self._gpm.mutations,
                 n_replicates=self.n_replicates)
