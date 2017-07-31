@@ -8,7 +8,7 @@
 
 import numpy as np
 
-from gpmap.base import BaseMap
+from gpmap.mapping import BaseMap
 
 def upper_transform(mean, bound, logbase):
     """ Log transformation scaling.
@@ -71,10 +71,7 @@ class BaseErrorMap(BaseMap):
         if self._Map.stdeviations is None:
             return None
         else:
-            if self._Map.transformed:
-                return upper_transform(self._Map.phenotypes, self.wrapper(self._Map.stdeviations), logbase=self._Map.logbase)
-            else:
-                return self.wrapper(self._Map.stdeviations)
+            return self.wrapper(self._Map.stdeviations)
 
     @property
     def lower(self):
@@ -82,10 +79,7 @@ class BaseErrorMap(BaseMap):
         if self._Map.stdeviations is None:
             return None
         else:
-            if self._Map.transformed:
-                return lower_transform(self._Map.phenotypes, self.wrapper(self._Map.stdeviations), logbase=self._Map.logbase)
-            else:
-                return self.wrapper(self._Map.stdeviations)
+            return self.wrapper(self._Map.stdeviations)
 
 
 class StandardDeviationMap(BaseErrorMap):

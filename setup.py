@@ -17,8 +17,9 @@ setup(name='gpmap',
       packages=packages,
       url="https://github.com/harmslab/gpmap",
       install_requires=[
-          'networkx',
           'numpy',
+          'scipy',
+          'pandas'
       ],
       classifiers=[
             'Development Status :: 3 - Alpha',

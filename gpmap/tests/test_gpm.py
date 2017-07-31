@@ -13,7 +13,6 @@ class testGenotypePhenotypeMap(base.BaseTestClass):
         tools.assert_is_instance(gpm, GenotypePhenotypeMap)
         # Test elements align
         np.testing.assert_array_equal(gpm.genotypes, self.genotypes)
-        np.testing.assert_array_equal(gpm.phenotypes, np.log10(self.phenotypes))
 
     def test_init(self):
         """Test initialization of class"""
@@ -21,7 +20,6 @@ class testGenotypePhenotypeMap(base.BaseTestClass):
             self.wildtype,
             self.genotypes,
             self.phenotypes,
-            log_transform=self.log_transform,
             n_replicates=self.n_replicates,
             mutations=self.mutations
         )
@@ -32,27 +30,22 @@ class testGenotypePhenotypeMap(base.BaseTestClass):
         np.testing.assert_array_equal(gpm.phenotypes, self.phenotypes)
         tools.assert_is_instance(gpm.binary, BinaryMap)
 
-    def test_from_json(self):
+    def test_read_json(self):
         """Test reading from json"""
-        gpm = GenotypePhenotypeMap.from_json("data.json")
+        gpm = GenotypePhenotypeMap.read_json("data.json")
         # Test instance was created
         tools.assert_is_instance(gpm, GenotypePhenotypeMap)
         # Test elements align
         np.testing.assert_array_equal(gpm.genotypes, self.genotypes)
-        np.testing.assert_array_equal(gpm.log.phenotypes, np.log10(self.phenotypes))
 
     def test_length(self):
         """Test genotype length."""
-        gpm = GenotypePhenotypeMap.from_json("data.json")
+        gpm = GenotypePhenotypeMap.read_json("data.json")
         tools.assert_equal(self.GPM.length, 4)
 
     def test_n(self):
         """Test size"""
         tools.assert_equal(self.GPM.n, 2**4)
-
-    def test_log_phenotypes(self):
-        """Test non-log_transform to raw phenotypes"""
-        np.testing.assert_array_equal(self.GPM.log.phenotypes, np.log10(self.phenotypes))
 
     def test_std(self):
         """Test raw errors"""

@@ -6,9 +6,9 @@
 # Local imports
 # ----------------------------------------------------------
 import numpy as np
+import pandas as pd
 
-from gpmap.base import BaseMap
-from gpmap.transform import TransformMap
+from gpmap.mapping import BaseMap
 from gpmap.errors import StandardErrorMap, StandardDeviationMap
 from gpmap.utils import (hamming_distance,
                             binary_mutations_map,
@@ -16,7 +16,7 @@ from gpmap.utils import (hamming_distance,
                             encode_mutations,
                             construct_genotypes)
 
-class BinaryMap(BaseMap):
+class BinaryMap(object):
     """Object holds binary representation of phenotype.
 
     Parameters
@@ -51,9 +51,6 @@ class BinaryMap(BaseMap):
         self.wildtype = wildtype
         self.std = StandardDeviationMap(self)
         self.err = StandardErrorMap(self)
-        self.transformed = False
-        if self.log_transform:
-            self.log = TransformMap(self)
 
     @property
     def wildtype(self):
@@ -72,24 +69,9 @@ class BinaryMap(BaseMap):
         return self._GPM.n_replicates
 
     @property
-    def logbase(self):
-        """Get logbase."""
-        return self._GPM.logbase
-
-    @property
     def stdeviations(self):
         """Get standard deviations"""
         return self._GPM.stdeviations
-
-    @property
-    def tranformed(self):
-        """Get boolean for tranformed"""
-        return self._GPM.transformed
-
-    @property
-    def log_transform(self):
-        """Get boolean for log tranforming based on input model"""
-        return self._GPM.log_transform
 
     @property
     def length(self):
@@ -113,8 +95,8 @@ class BinaryMap(BaseMap):
 
     @property
     def complete_genotypes(self):
-        """All possible genotypes in the complete genotype space"""
-        return np.concatenate((self.genotypes, self.missing_genotypes))
+        """All possible genotypes in the complete genotype space."""
+        return self._complete_genotypes
 
     # ----------------------------------------------------------
     # Setter methods
@@ -130,24 +112,20 @@ class BinaryMap(BaseMap):
         # determine length of binary strings
         self._length = len(unsorted_binary[0])
 
-        # Sort binary representation to match genotypes
-        mapping = self._GPM.map("genotypes", "indices")
-        binary = np.empty(self._GPM.n, dtype="U" + str(self._length))
+        # Series of all possible genotypes and their binary representation
+        bins = pd.Series(unsorted_binary, index=unsorted_genotypes)
+        bins = bins.sort_index()
+        self._complete_genotypes = bins.reset_index(drop=True)
+        self._GPM._complete_genotypes = pd.Series(bins.index)
 
-        # Sort the genotypes by looking for them in the data.
-        missing_genotypes, missing_binary = [], []
-        for i in range(len(unsorted_genotypes)):
-            # Keep and sort genotype if it exists in data.
-            try:
-                index = mapping[unsorted_genotypes[i]]
-                binary[index] = unsorted_binary[i]
-            # If the genotype is not there.
-            except KeyError:
-                missing_genotypes.append(unsorted_genotypes[i])
-                missing_binary.append(unsorted_binary[i])
-        # Set the missing genotypes
-        self._GPM._missing_genotypes = np.array(missing_genotypes, dtype="U" + str(self._GPM._length))
-        self._missing_genotypes = np.array(missing_binary, dtype="U" + str(self._length))
+        ## Separate observed genotypes from missing genotypes
+        # Observed
+        genotypes = self._GPM.genotypes
+        self._genotypes = bins[genotypes].reset_index(drop=True)
 
-        # Set binary attributes to sorted genotypes
-        self._genotypes = binary
+        # Missing
+        mask = bins.isin(genotypes)
+        missing_genotypes = pd.Series(bins[~mask].index)
+        missing_binary = pd.Series(bins[~mask].values)
+        self._GPM._missing_genotypes = missing_genotypes
+        self._missing_genotypes = missing_binary

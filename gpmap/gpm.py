@@ -13,19 +13,10 @@ import numpy as np
 # ----------------------------------------------------------
 
 # import different maps into this module
-from gpmap.base import BaseMap
-from gpmap.binary import BinaryMap
-from gpmap.transform import TransformMap
-from gpmap.errors import (StandardDeviationMap,
-                            StandardErrorMap)
-
-from gpmap.stats import corrected_sterror
-
-# import utils used into module.
-from gpmap import utils
-
-from gpmap.plotting import PlottingContainer
+from . import mapping
 from . import utils
+from . import dataframe
+from . import sample
 
 # ----------------------------------------------------------
 # Exceptions
@@ -35,44 +26,12 @@ class LoadingException(Exception):
     """Error when loading Genotype Phenotype map data. """
 
 # ----------------------------------------------------------
-# Sampling from Genotype-phenotype
-# ----------------------------------------------------------
-
-class Sample:
-
-    def __init__(self, gpm, replicate_genotypes, replicate_phenotypes, indices=None):
-        """Sample from simulated experiment """
-        self._gpm = gpm
-        self.replicate_genotypes = replicate_genotypes
-        self.replicate_phenotypes = replicate_phenotypes
-        self.n_replicates = replicate_genotypes.shape[1]
-        try:
-            self.genotypes = self.replicate_genotypes[:,0]
-            self.phenotypes = np.mean(self.replicate_phenotypes, axis=1)
-            self.stdeviations = np.std(self.replicate_phenotypes, ddof=1, axis=1)
-        except IndexError:
-            self.genotypes = self.replicate_genotypes
-            self.phenotypes = self.replicate_phenotypes
-            self.stdeviations = self.replicate_phenotypes
-        self.indices = indices
-
-    def get_gpm(self):
-        """Return a Genotype-phenotype object from sample. """
-        return GenotypePhenotypeMap(self._gpm.wildtype, self.genotypes, self.phenotypes,
-                stdeviations=self.stdeviations,
-                log_transform=self._gpm.log_transform,
-                mutations=self._gpm.mutations,
-                n_replicates=self.n_replicates,
-                logbase=self._gpm.logbase)
-
-
-# ----------------------------------------------------------
 # Base class for constructing a genotype-phenotype map
 # ----------------------------------------------------------
 
-class GenotypePhenotypeMap(BaseMap):
+class GenotypePhenotypeMap(dataframe.GenotypePhenotypeDataFrame, mapping.BaseMap):
     """Main object for containing genotype-phenotype map data. Efficient memory storage,
-    fast-ish mapping, graphing, plotting, and simulations.
+    fast-ish mapping, graphing, and simulations.
 
     Parameters
     ----------
@@ -82,290 +41,13 @@ class GenotypePhenotypeMap(BaseMap):
         list of all genotypes in system. Must be a complete system.
     phenotypes : array-like
         List of phenotypes in the same order as genotypes.
-    log_transform : boolean (default = False)
-        Set to True to log tranform the phenotypes.
     mutations : dict
         Dictionary that maps each site indice to their possible substitution alphabet.
     n_replicates : int
         number of replicate measurements comprising the mean phenotypes
-    logbase : callable log transformation function
-        logarithm function to apply to phenotypes if log_transform is True.
     include_binary : bool (default=True)
         Construct a binary representation of the space.
     """
-    def __init__(self, wildtype, genotypes, phenotypes,
-        stdeviations=None,
-        log_transform=False,
-        mutations=None,
-        n_replicates=1,
-        logbase=np.log10,
-        include_binary=True,
-        **kwargs):
-
-        # Set mutations; if not given, assume binary space.
-        if mutations is not None:
-            # Make sure the keys in the mutations dict are integers, not strings.
-            self.mutations = dict([(int(key), val) for key, val in mutations.items()])
-        else:
-            mutant = utils.farthest_genotype(wildtype, genotypes)
-            mutations = utils.binary_mutations_map(wildtype, mutant)
-            self.mutations = mutations
-
-        # Check that logbase is a callable function
-        if hasattr(logbase, '__call__'):
-            self.logbase = logbase
-            self.base = utils.get_base(self.logbase)
-        else:
-            raise Exception("""Logbase must be a callable function to transform \
-            phenotypes.(i.e. np.log(...)).""")
-
-        # Set initial properties fo GPM
-        self.wildtype = wildtype
-        self.genotypes = np.array(genotypes)
-        self.log_transform = log_transform
-        self.transformed = False
-        self.phenotypes = np.array(phenotypes)
-        self.n_replicates = n_replicates
-
-        # Built the binary representation of the genotype-phenotype.
-        # Constructs a complete sequence space and stores genotypes missing in the
-        # data as an attribute, `missing_genotypes`.
-        self._include_binary = include_binary
-        if self._include_binary:
-            self.binary = BinaryMap(self, self.wildtype)
-
-        # Construct the error maps
-        self.stdeviations = stdeviations
-        self._add_error()
-        #self._construct_errors(stdeviations)
-
-        # Set up plotting subclass
-        self.plot = PlottingContainer(self)
-
-
-    # ----------------------------------------------------------
-    # Writing methods
-    # ----------------------------------------------------------
-
-    @property
-    def metadata(self):
-        """Return metadata."""
-        meta =  {
-            "wildtype" : self.wildtype,
-            "genotypes" : self.genotypes,
-            "phenotypes" : self.phenotypes,
-            "log_transform" : self.log_transform,
-            "stdeviations" : self.stdeviations,
-            "n_replicates" : self.n_replicates,
-            "mutations" : self.mutations,
-        }
-        return meta
-
-    def sort(self, genotypes):
-        """Sort the genotype-phenotype map using a list of genotypes.
-        """
-        if len(genotypes) != self.n:
-            raise Exception("""genotypes argument must be the same length.""")
-        mapping = self.map("genotypes", "indices")
-        indices_ = np.empty(self.n, dtype=int)
-        for i, genotype in enumerate(genotypes):
-            indices_[i] = mapping[genotype]
-        self._genotypes = self._genotypes[indices_]
-        self._phenotypes = self._phenotypes[indices_]
-        if self._include_binary:
-            self.binary._genotypes = self.binary._genotypes[indices_]
-
-    def sort_missing(self, missing):
-        """Sort the missing genotypes in the genotype-phenotype map.
-        """
-        if len(missing) != len(self.missing_genotypes):
-            raise Exception("""genotypes argument must be the same length.""")
-        mapping = dict(zip(self.missing_genotypes, range(len(self.missing_genotypes))))
-        indices_ = np.empty(len(missing), dtype=int)
-        for i, genotype in enumerate(missing):
-            indices_[i] = mapping[genotype]
-        self._missing_genotypes = self._missing_genotypes[indices_]
-        if self._include_binary:
-            self.binary._missing_genotypes = self.binary._missing_genotypes[indices_]
-
-    # ----------------------------------------------------------
-    # Properties of the map
-    # ----------------------------------------------------------
-
-    @property
-    def length(self):
-        """Get length of the genotypes. """
-        return self._length
-
-    @property
-    def n(self):
-        """Get number of genotypes, i.e. size of the genotype-phenotype map. """
-        return self._n
-
-    @property
-    def log_transform(self):
-        """Boolean argument telling whether space is log transformed. """
-        return self._log_transform
-
-    @property
-    def wildtype(self):
-        """Get reference genotypes for interactions. """
-        return self._wildtype
-
-    @property
-    def mutant(self):
-        """Get the farthest mutant in genotype-phenotype map."""
-        _mutant = []
-        _wt = self.wildtype
-        for i in range(0,len(self.mutations)):
-            site = _wt[i]
-            options = self.mutations[i]
-            if options is None:
-                _mutant.append(_wt[i])
-            else:
-                for o in options:
-                    if o != site:
-                        _mutant.append(o)
-        return "".join(_mutant)
-
-    @property
-    def mutations(self):
-        """Get the furthest genotype from the wildtype genotype. """
-        return self._mutations
-
-    @property
-    def genotypes(self):
-        """Get the genotypes of the system. """
-        return self._genotypes
-
-    @property
-    def missing_genotypes(self):
-        """Genotypes that are missing from the complete genotype-to-phenotype map."""
-        return self._missing_genotypes
-
-    @property
-    def complete_genotypes(self):
-        """Array of sorted genotypes for the complete genotype space encoded by
-        the mutations dictionary.
-        """
-        arr = np.concatenate((self.genotypes, self.missing_genotypes))
-        genotypes = np.sort(arr)
-        return genotypes
-
-    @property
-    def phenotypes(self):
-        """Get the phenotypes of the system. """
-        return self._phenotypes
-
-    @property
-    def stdeviations(self):
-        """Get stdeviations"""
-        return self._stdeviations
-
-    @property
-    def n_replicates(self):
-        """Return the number of replicate measurements made of the phenotype"""
-        return self._n_replicates
-
-    @property
-    def indices(self):
-        """Return numpy array of genotypes position. """
-        return self._indices
-
-    # ----------------------------------------------------------
-    # Setter methods
-    # ----------------------------------------------------------
-
-    @log_transform.setter
-    def log_transform(self, boolean):
-        self._log_transform = boolean
-        # log transform if log_transform = True. Raw phenotypes are stored in an separate object
-        if boolean is True:
-            self._add_transform()
-
-    @genotypes.setter
-    def genotypes(self, genotypes):
-        """Set genotypes from ordered list of sequences. """
-        self._n = len(genotypes)
-        self._length = len(genotypes[0])
-        self._genotypes = np.array(genotypes)
-        self._indices = np.arange(self.n)
-
-    @wildtype.setter
-    def wildtype(self, wildtype):
-        """Set the reference genotype among the mutants in the system. """
-        self._wildtype = wildtype
-
-    @mutations.setter
-    def mutations(self, mutations):
-        """ Set the mutation alphabet for all sites in wildtype genotype.
-
-        Examples
-        --------
-        `mutations = { site_number : alphabet }``. If the site
-        alphabet is note included, the model will assume binary
-        between wildtype and derived::
-
-            mutations = {
-                0: [alphabet],
-                1: [alphabet],
-
-            }
-        """
-        if type(mutations) != dict:
-            raise TypeError("mutations must be a dict")
-        # make sure keys are ints
-        _mutations = {}
-        for key, val in mutations.items():
-            _mutations[int(key)] = val
-        self._mutations = _mutations
-
-    @phenotypes.setter
-    def phenotypes(self, phenotypes):
-        """ Set phenotypes from ordered list of phenotypes
-
-        Parameters
-        ----------
-        phenotypes: array-like or dict
-            if array-like, it musted be ordered by genotype; if dict,
-            this method automatically orders the phenotypes into numpy
-            array.
-        """
-        if type(phenotypes) is dict:
-            _phenotypes = self._if_dict(phenotypes)
-        else:
-            if len(phenotypes) != len(self._genotypes):
-                raise ValueError("Number of phenotypes does not equal number of genotypes.")
-            else:
-                _phenotypes = phenotypes
-        self._phenotypes = np.array(_phenotypes)
-
-    @stdeviations.setter
-    def stdeviations(self, stdeviations):
-        """set stdeviations to array"""
-        if stdeviations is None:
-            self._stdeviations = None
-        else:
-            self._stdeviations = np.array(stdeviations)
-
-    @n_replicates.setter
-    def n_replicates(self, n_replicates):
-        """Set the number of replicate measurements taken of phenotypes"""
-        self._n_replicates = n_replicates
-
-    # ------------------------------------------------------------
-    # Hidden methods for mapping object
-    # ------------------------------------------------------------
-
-    def _add_transform(self):
-        """Store a log-transformed version of the genotype-phenotype map."""
-        self.log = TransformMap(self)
-
-    def _add_error(self):
-        """Store error maps"""
-        self.std = StandardDeviationMap(self)
-        self.err = StandardErrorMap(self)
-
     # ------------------------------------------------------------
     # Hidden methods for mapping object
     # ------------------------------------------------------------
@@ -425,7 +107,7 @@ class GenotypePhenotypeMap(BaseMap):
             phenotypes = np.array([self.phenotypes[i] for i in random_indices])
 
         # Create a sample object
-        samples = Sample(self, genotypes, phenotypes, random_indices)
+        samples = sample.Sample(self, genotypes, phenotypes, random_indices)
         return samples
 
     def subspace(self, genotype1, genotype2=None, mutations=None):

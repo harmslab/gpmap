@@ -18,9 +18,6 @@ class testBinaryMap(base.BaseTestClass):
         tools.assert_is_instance(self.binary._GPM, GenotypePhenotypeMap)
         tools.assert_is_instance(self.binary.std, StandardDeviationMap)
         tools.assert_is_instance(self.binary.err, StandardErrorMap)
-        tools.assert_false(self.binary.transformed)
-        tools.assert_true(self.binary.log.transformed)
-        np.testing.assert_array_equal(self.binary.log.phenotypes, np.log10(self.phenotypes))
         np.testing.assert_array_equal(self.binary.phenotypes, self.phenotypes)
 
     def test_length(self):
@@ -29,10 +26,6 @@ class testBinaryMap(base.BaseTestClass):
     def test_phenotypes(self):
         """Test non-log_transform to raw phenotypes"""
         np.testing.assert_array_equal(self.binary.phenotypes, self.phenotypes)
-
-    def test_log_phenotypes(self):
-        """Test non-log_transform to raw phenotypes"""
-        np.testing.assert_array_equal(self.binary.log.phenotypes, np.log10(self.phenotypes))
 
     def test_std(self):
         """Test raw errors"""
