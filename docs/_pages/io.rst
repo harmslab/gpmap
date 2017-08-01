@@ -1,12 +1,22 @@
 Read/Write
 ==========
 
-Accepted data format
---------------------
+The ``GenotypePhenotypeMap`` object is really just a container of Pandas Series that
+can be easily read/written as a DataFrame. Any tabular format (i.e. Excel files,
+csv, tsv, ...) can be read by the ``GenotypePhenotypeMap``. It requires two columns
+for genotypes and phenotypes, and optionally takes stdeviations and n_replicates as input.
 
-Currently, the ``epistasis`` package only takes JSON formated data as input to
-the epistasis model. We expect to get include more formats (i.e. csv/excel) moving
-forward, just haven't gotten around to it.
+read_csv
+--------
+
+
+
+read_excel
+----------
+
+
+read_json
+---------
 
 The only keys recognized by the json reader are:
 

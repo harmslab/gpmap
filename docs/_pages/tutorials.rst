@@ -33,13 +33,3 @@ Alternatively, you can load data from a json file (using the format defined `her
 
 
 .. _here: io.rst
-
-
-Using NetworkX
---------------
-
-.. code-block:: python
-
-    Graph = gpm.add_networkx()
-
-.. code-block:: python
