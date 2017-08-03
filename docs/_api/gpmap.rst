@@ -6,13 +6,7 @@ Subpackages
 
 .. toctree::
 
-    gpmap.evolve
-    gpmap.graph
     gpmap.simulate
-    gpmap.tests
-
-Submodules
-----------
 
 gpmap.base module
 -----------------

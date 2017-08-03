@@ -95,7 +95,11 @@ class BinaryMap(object):
 
     @property
     def complete_genotypes(self):
-        """All possible genotypes in the complete genotype space."""
+        """All possible genotypes in the complete genotype space.
+
+        Sorted in alphabetical order according to the GenotypePhenotypeMap.complete_genotypes
+        attribute.
+        """
         return self._complete_genotypes
 
     # ----------------------------------------------------------
@@ -103,7 +107,11 @@ class BinaryMap(object):
     # ----------------------------------------------------------
 
     def _build(self):
-        """Builds a binary representation of a GenotypePhenotypeMap object.
+        """Builds a binary representation of the genotypes in GenotypePhenotypeMap object.
+        Also enumerates genotypes not seen in the genotype-phenotype map and exposes two
+        new attributes, ``missing_genotypes`` and ``complete_genotypes``.
+
+        **NOTE**: the ``complete_genotypes`` are sorted in alphabetical order.
         """
         self.encoding = encode_mutations(self._wildtype, self._GPM.mutations)
         # Use encoding map to construct binary presentation for any type of alphabet

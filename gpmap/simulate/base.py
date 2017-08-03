@@ -21,7 +21,9 @@ def random_mutation_set(length, alphabet_size=2):
     # build mutations dictionary
     mutations = {}
     for i in range(length):
-        alphabet = utils.AMINO_ACIDS[:size[i]]
+        AA = utils.AMINO_ACIDS
+        random.shuffle(AA)
+        alphabet = AA[:size[i]]
         mutations[i] = alphabet
     return mutations
 

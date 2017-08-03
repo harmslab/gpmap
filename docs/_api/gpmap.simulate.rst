@@ -1,9 +1,6 @@
 gpmap.simulate package
 ======================
 
-Submodules
-----------
-
 gpmap.simulate.base module
 --------------------------
 
