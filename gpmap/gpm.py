@@ -81,7 +81,7 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         # Constructs a complete sequence space and stores genotypes missing in the
         # data as an attribute, `missing_genotypes`.
         if include_binary:
-            self.add_binary()
+            self.add_binary(self.wildtype)
 
         # Construct the error maps
         self._add_error()
@@ -356,9 +356,11 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         self.std = errors.StandardDeviationMap(self)
         self.err = errors.StandardErrorMap(self)
 
-    def add_binary(self):
-        """Add a BinaryMap to the GenotypePhenotypeMap"""
-        self.binary = binary.BinaryMap(self, self.wildtype)
+    def add_binary(self, wildtype):
+        """Add a BinaryMap to the GenotypePhenotypeMap. The wildtype determines
+        the encoding pattern. Wildtype sites are represented as 0's. 
+        """
+        self.binary = binary.BinaryMap(self, wildtype)
 
     # ------------------------------------------------------------
     # Hidden methods for mapping object
