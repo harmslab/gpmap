@@ -17,7 +17,9 @@ from gpmap.utils import (hamming_distance,
                             construct_genotypes)
 
 class BinaryMap(object):
-    """Object holds binary representation of phenotype.
+    """Constructs a binary representation of the genotype-phenotype map. Useful
+    for building networks, constructing epistasis models, and filling in genotype-
+    phenotype maps.
 
     Parameters
     ----------

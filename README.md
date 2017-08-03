@@ -21,7 +21,7 @@ from gpmap import GenotypePhenotypeMap
 
 Load a dataset from disk.
 ```python
-gpm = GenotypePhenotypeMap.from_json("data.json")
+gpm = GenotypePhenotypeMap.read_json("data.json")
 ```
 
 ## Installation

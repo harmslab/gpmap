@@ -167,13 +167,29 @@ class GenotypePhenotypeMap(mapping.BaseMap):
     # Writing methods
     # ----------------------------------------------------------
 
-    def to_excel(self, filename):
-        """"""
-        self.df.to_excel(filename)
+    def to_excel(self, filename, **kwargs):
+        """Write genotype-phenotype map to excel spreadsheet.
+
+        Keyword arguments are passed directly to Pandas dataframe to_excel method.
+
+        Parameters
+        ----------
+        filename : str
+            Name of file to write out.
+        """
+        self.df.to_excel(filename, **kwargs)
 
     def to_csv(self, filename):
-        """"""
-        self.df.to_csv(filename)
+        """Write genotype-phenotype map to csv spreadsheet.
+
+        Keyword arguments are passed directly to Pandas dataframe to_csv method.
+
+        Parameters
+        ----------
+        filename : str
+            Name of file to write out.
+        """
+        self.df.to_csv(filename, **kwargs)
 
     def to_json(self, filename):
         """Write genotype-phenotype map to json file.
@@ -193,7 +209,7 @@ class GenotypePhenotypeMap(mapping.BaseMap):
 
     @property
     def df(self):
-        """"""
+        """Genotype-phenotype data in a DataFrame."""
         # Build dataframe
         data = {item : getattr(self, item) for item in DATA_KEYS}
         return pd.DataFrame(data, columns=DATA_KEYS)
@@ -231,12 +247,12 @@ class GenotypePhenotypeMap(mapping.BaseMap):
 
     @property
     def mutations(self):
-        """Get the furthest genotype from the wildtype genotype. """
+        """Get the furthest genotype from the wildtype genotype."""
         return self._mutations
 
     @property
     def genotypes(self):
-        """Get the genotypes of the system. """
+        """Get the genotypes of the system."""
         return self._genotypes
 
     @property
@@ -249,8 +265,7 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         """Array of sorted genotypes for the complete genotype space encoded by
         the mutations dictionary.
 
-        Can only be set by
-
+        **NOTE** Can only be set by the BinaryMap object.
         """
         try:
             return self._complete_genotypes
@@ -413,7 +428,7 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         Parameters
         ----------
         genotype1 :
-            retu
+            wildtype genotype
         genotype2 :
             Farthest mutant sequence. Will assume from mutations dictionary if None
         mutations : dict
