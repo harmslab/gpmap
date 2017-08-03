@@ -6,15 +6,17 @@
 Introduction
 ============
 
-The `gpmap` package standardizes a data structure for genotype-phenotype (GP) maps.
+The **gpmap** package standardizes a data structure for genotype-phenotype (GP) maps.
 Subset, manipulate, extend, etc. genotype-phenotype maps easily. Calculate statistics,
 model evolutionary trajectories, predict phenotypes. Efficient memory usage and manipulation,
 using Pandas Dataframe/Series.
 
-This package includes methods to simulate various computatioanl genotype-phenotype maps
-present in the literature.
+This package includes modules for simulating computational genotype-phenotype maps
+using methods described in the literature. See the Simulating_ page.
 
-The GenotypePhenotypeMap object can is easily ported to network graphs (via NetworkX and GPGraph).
+.. _Simulating: _pages/simulate.html
+
+The GenotypePhenotypeMap object can be easily ported to network graphs (via NetworkX and GPGraph).
 
 .. image:: _img/gpm.png
     :align: center
@@ -23,9 +25,8 @@ The GenotypePhenotypeMap object can is easily ported to network graphs (via Netw
    :maxdepth: 2
 
    _pages/gpm
-   _pages/io
-   _pages/tutorials
    _pages/simulate
+   _pages/io
    _api/main.rst
 
 
