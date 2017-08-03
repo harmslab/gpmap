@@ -26,6 +26,7 @@ The GenotypePhenotypeMap object can is easily ported to network graphs (via Netw
    _pages/io
    _pages/tutorials
    _pages/simulate
+   _api/main.rst
 
 
 Indices and tables
