@@ -8,15 +8,14 @@ class MountFujiSimulation(GenotypePhenotypeMap):
     A Mount Fuji sets a "global" fitness peak (max) on a single genotype in the space.
     The fitness goes down as a function of hamming distance away from this genotype,
     called a "fitness field". The strength (or scale) of this field is linear and
-    depends on the parameters `field_strength`.
-
-    Roughness can be added to the Mount Fuji model using a random `roughness` parameter.
-    This assigns a random
+    depends on the parameters `field_strength`. Roughness can be added to the Mount
+    Fuji model using a random `roughness` parameter. This assigns a random
 
     .. math::
-        f(g) = \nu (g) - c \cdot d(g_0, g)
 
-    where $\nu$ is the roughness parameter, $c$ is the field strength, and $d$ is the
+        f(g) = \\nu (g) - c \cdot d(g_0, g)
+
+    where $\\nu$ is the roughness parameter, $c$ is the field strength, and $d$ is the
     hamming distance between genotype $g$ and the reference genotype.
 
     Parameters
