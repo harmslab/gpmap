@@ -3,6 +3,7 @@ import itertools as it
 
 from gpmap.gpm import GenotypePhenotypeMap
 from gpmap import utils
+from .base import random_mutation_set
 
 class NKSimulation(GenotypePhenotypeMap):
     """Generate genotype-phenotype map from NK fitness model. Creates a table with
@@ -45,8 +46,8 @@ class NKSimulation(GenotypePhenotypeMap):
         self.build()
 
     @classmethod
-    def from_length(cls, length, K, k_range=(0,1), *args, **kwargs):
-        """Build an NK model form
+    def from_length(cls, length, K, k_range=(0,1),  alphabet_size=2, *args, **kwargs):
+        """Build a genotype phenotype map from an NK model with length N.
 
         Parameters
         ----------
@@ -60,6 +61,7 @@ class NKSimulation(GenotypePhenotypeMap):
         self : NKSimulation
         """
         mutations = dict([(i,["0","1"]) for i in range(length)])
+        #mutations = random_mutation_set(length, alphabet_size=alphabet_size)
         wildtype = "".join([m[0] for m in mutations.values()])
         self = cls(wildtype, mutations, K, k_range=k_range, *args, **kwargs)
         return self

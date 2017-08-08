@@ -1,6 +1,7 @@
 import numpy as np
 from gpmap.gpm import GenotypePhenotypeMap
 from gpmap import utils
+from .base import random_mutation_set
 
 class MountFujiSimulation(GenotypePhenotypeMap):
     """Constructs a genotype-phenotype map from a Mount Fuji model. [1]_
@@ -49,7 +50,7 @@ class MountFujiSimulation(GenotypePhenotypeMap):
         self.build()
 
     @classmethod
-    def from_length(cls, length, field_strength=1, *args, **kwargs):
+    def from_length(cls, length, field_strength=1,  alphabet_size=2, *args, **kwargs):
         """ Create a simulate genotype-phenotype map from a given genotype length.
 
         Parameters
@@ -63,7 +64,8 @@ class MountFujiSimulation(GenotypePhenotypeMap):
         -------
         self : GenotypePhenotypeSimulation
         """
-        mutations = dict([(i,["0","1"]) for i in range(length)])
+        #mutations = dict([(i,["0","1"]) for i in range(length)])
+        mutations = random_mutation_set(length, alphabet_size=alphabet_size)
         wildtype = "".join([m[0] for m in mutations.values()])
         self = cls(wildtype, mutations, field_strength=field_strength, *args, **kwargs)
         return self
