@@ -135,7 +135,7 @@ class BinaryMap(object):
         self._genotypes = bins[genotypes].reset_index(drop=True)
 
         # Missing
-        mask = bins.isin(genotypes)
+        mask = bins.isin(bins[genotypes])
         missing_genotypes = pd.Series(bins[~mask].index)
         missing_binary = pd.Series(bins[~mask].values)
         self._GPM._missing_genotypes = missing_genotypes
