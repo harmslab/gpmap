@@ -131,7 +131,7 @@ def list_binary(length):
     return np.array(["".join(seq) for seq in it.product("01", repeat=length)])
 
 def enumerate_space(wildtype, mutant, binary=True):
-    """ Generate binary genotype space between two sequences.
+    """Enumerate a binary genotype list between two sequences.
 
     Parameters
     ----------
@@ -142,10 +142,10 @@ def enumerate_space(wildtype, mutant, binary=True):
 
     Returns
     -------
-    sequence_space: list
+    genotypes : list
         List of all sequence combinations between the two sequences.
-    binary_representation: list (optional)
-        In
+    binary : list (optional)
+        List of binary representations.
 
     Example
     -------
@@ -168,10 +168,10 @@ def enumerate_space(wildtype, mutant, binary=True):
     # Enumerate mutations flipping combinations
     combinations = np.array([list(j) for i in range(1,n_mut+1) for j in it.combinations(rev_mutations, i)])
     # Initialize empty arrays
-    sequence_space = np.empty(size, dtype="<U" + str(len(wildtype)))
+    genotypes = np.empty(size, dtype="<U" + str(len(wildtype)))
     binaries = np.empty(size, dtype="<U" + str(n_mut))
     # Population first element with wildtypes
-    sequence_space[0] = wildtype
+    genotypes[0] = wildtype
     binaries[0] = binary_wt
     # Iterate through mutations combinations and build binary representations
     counter = 1
@@ -181,14 +181,14 @@ def enumerate_space(wildtype, mutant, binary=True):
         for el in c:
             sequence[el] = mutant[el]   # Sequence version of mutant
             b[mutation_map[el]] = '1'            # Binary version of mutant
-        sequence_space[counter] = "".join(sequence)
+        genotypes[counter] = "".join(sequence)
         binaries[counter] = "".join(b)
         counter += 1
 
     if binary:
-        return sequence_space, binaries
+        return genotypes, binaries
     else:
-        return sequence_space
+        return genotypes
 
 
 def encode_mutations(wildtype, mutations):
@@ -302,6 +302,8 @@ def mutations_to_genotypes(wildtype, mutations):
 
     Parameters
     ----------
+    wildtype : str
+        wildtype genotype (as string).
     mutations : dict
         A mapping dict with site numbers as keys and lists of mutations as values.
 
