@@ -188,7 +188,7 @@ def enumerate_space(wildtype, mutant, binary=True):
     if binary:
         return sequence_space, binaries
     else:
-        return sequence_spaces
+        return sequence_space
 
 
 def encode_mutations(wildtype, mutations):
