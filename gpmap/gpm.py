@@ -339,7 +339,7 @@ class GenotypePhenotypeMap(mapping.BaseMap):
 
     @stdeviations.setter
     def stdeviations(self, stdeviations):
-        """set stdeviations to array"""
+        """set stdeviations to array. If a single value, it is assumed that all stdeviations are equal."""
         self._stdeviations = pd.Series(stdeviations, index=self.index)
 
     @n_replicates.setter
