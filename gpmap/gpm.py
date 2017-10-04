@@ -179,7 +179,7 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         """
         self.df.to_excel(filename, **kwargs)
 
-    def to_csv(self, filename):
+    def to_csv(self, filename, **kwargs):
         """Write genotype-phenotype map to csv spreadsheet.
 
         Keyword arguments are passed directly to Pandas dataframe to_csv method.
@@ -194,11 +194,19 @@ class GenotypePhenotypeMap(mapping.BaseMap):
     def to_json(self, filename):
         """Write genotype-phenotype map to json file.
         """
-        # Get metadata and make sure values are lists.
-        data = self.metadata
+        # Get metadata.
+        data = dict(wildtype=self.wildtype,
+            genotypes=self.genotypes,
+            phenotypes=self.phenotypes,
+            stdeviations=self.stdeviations,
+            mutations=self.mutations,
+            n_replicates=self.n_replicates)
+            
+        # Numpys to list
         for key, val in data.items():
             if hasattr(val, "__iter__") and type(val) != dict:
                 data[key] = list(val)
+                
         # Write to file
         with open(filename, "w") as f:
             json.dump(data, f)
