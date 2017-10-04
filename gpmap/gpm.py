@@ -196,17 +196,12 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         """
         # Get metadata.
         data = dict(wildtype=self.wildtype,
-            genotypes=self.genotypes,
-            phenotypes=self.phenotypes,
-            stdeviations=self.stdeviations,
+            genotypes=list(self.genotypes),
+            phenotypes=list(self.phenotypes),
+            stdeviations=list(self.stdeviations),
             mutations=self.mutations,
-            n_replicates=self.n_replicates)
-            
-        # Numpys to list
-        for key, val in data.items():
-            if hasattr(val, "__iter__") and type(val) != dict:
-                data[key] = list(val)
-                
+            n_replicates=list(self.n_replicates.astype(float)))
+
         # Write to file
         with open(filename, "w") as f:
             json.dump(data, f)
