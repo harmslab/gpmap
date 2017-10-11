@@ -36,8 +36,7 @@ def mask(gpm, mask_fraction):
         raise Exception("n_replicates are not a valid dtype.")
         
     # return Subset genotype
-    return true_mask_fraction,
-        GenotypePhenotypeMap(
+    return true_mask_fraction, GenotypePhenotypeMap(
             gpm.wildtype,
             gpm.genotypes[index].reset_index(drop=True),
             gpm.phenotypes[index].reset_index(drop=True),
