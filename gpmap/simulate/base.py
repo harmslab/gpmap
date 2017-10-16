@@ -37,8 +37,7 @@ class GenotypePhenotypeSimulation(GenotypePhenotypeMap):
         super(GenotypePhenotypeSimulation, self).__init__(wildtype, genotypes,
             phenotypes,
             *args,
-            **kwargs,
-        )
+            **kwargs)
         self.set_random(range=range)
 
     def set_random(self, range=(0,1)):

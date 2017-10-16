@@ -44,8 +44,7 @@ class MountFujiSimulation(GenotypePhenotypeMap):
         super(MountFujiSimulation, self).__init__(wildtype, genotypes,
             phenotypes,
             *args,
-            **kwargs,
-        )
+            **kwargs)
         self._field_strength = field_strength
         self.build()
 

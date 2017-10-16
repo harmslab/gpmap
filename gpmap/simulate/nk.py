@@ -38,8 +38,7 @@ class NKSimulation(GenotypePhenotypeMap):
         super(NKSimulation, self).__init__(wildtype, genotypes,
             phenotypes,
             *args,
-            **kwargs,
-        )
+            **kwargs)
         self.set_order(K)
         self.set_random_values(k_range=k_range)
         # Build the genotype-phenotype map.

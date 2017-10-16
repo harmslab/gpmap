@@ -15,11 +15,16 @@ import pandas as pd
 # ----------------------------------------------------------
 
 # import different maps into this module
-from . import mapping
-from . import utils
-from . import sample
-from . import errors
-from . import binary
+import gpmap.mapping as mapping
+import gpmap.utils as utils
+import gpmap.sample as sample
+import gpmap.errors as errors
+import gpmap.binary as binary
+# 
+# from . import utils
+# from . import sample
+# from . import errors
+# from . import binary
 
 DATA_KEYS = ("genotypes", "phenotypes", "stdeviations", "n_replicates")
 OPTIONAL_KEYS = ("stdeviations", "n_replicates")
