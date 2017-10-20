@@ -1,9 +1,9 @@
 import numpy as np
 from gpmap.gpm import GenotypePhenotypeMap
 from gpmap import utils
-from .base import random_mutation_set
+from .base import random_mutation_set, BaseSimulation
 
-class MountFujiSimulation(GenotypePhenotypeMap):
+class MountFujiSimulation(BaseSimulation):
     """Constructs a genotype-phenotype map from a Mount Fuji model. [1]_
 
     A Mount Fuji sets a "global" fitness peak (max) on a single genotype in the space.
@@ -27,7 +27,7 @@ class MountFujiSimulation(GenotypePhenotypeMap):
         mutations alphabet for each site
     field_strength : float
         field strength
-    roughness_range : tuple
+    roughness : tuple
         range of the randomly drawn roughness values to use.
 
 
@@ -37,37 +37,13 @@ class MountFujiSimulation(GenotypePhenotypeMap):
     _ [1] Szendro, Ivan G., et al. "Quantitative analyses of empirical fitness landscapes."
         Journal of Statistical Mechanics: Theory and Experiment 2013.01 (2013): P01005.
     """
-    def __init__(self, wildtype, mutations, field_strength=1, range=(0,1), *args, **kwargs):
-        # build genotypes
-        genotypes = utils.mutations_to_genotypes(wildtype, mutations)
-        phenotypes = np.empty(len(genotypes), dtype=float)
-        super(MountFujiSimulation, self).__init__(wildtype, genotypes,
-            phenotypes,
-            *args,
-            **kwargs)
+    def __init__(self, wildtype, mutations, field_strength=1, roughness=None, *args, **kwargs):
+        # Call parent class.
+        super(MountFujiSimulation, self).__init__(wildtype, mutations, *args, **kwargs)
+        # Set the field strength and roughness
         self._field_strength = field_strength
+        self.set_roughness(roughness)
         self.build()
-
-    @classmethod
-    def from_length(cls, length, field_strength=1,  alphabet_size=2, *args, **kwargs):
-        """ Create a simulate genotype-phenotype map from a given genotype length.
-
-        Parameters
-        ----------
-        length : int
-            length of genotypes
-        alphabet_size : int (optional)
-            alphabet size
-
-        Returns
-        -------
-        self : GenotypePhenotypeSimulation
-        """
-        #mutations = dict([(i,["0","1"]) for i in range(length)])
-        mutations = random_mutation_set(length, alphabet_size=alphabet_size)
-        wildtype = "".join([m[0] for m in mutations.values()])
-        self = cls(wildtype, mutations, field_strength=field_strength, *args, **kwargs)
-        return self
 
     @property
     def hamming(self):

@@ -22,7 +22,7 @@ def mask(gpm, mask_fraction):
     number_to_choose = int((1-mask_fraction) * gpm.n)
     
     # Calculate the true fraction (since this is a discrete space.)
-    true_mask_fraction = float(number_to_choose)/gpm.n
+    true_mask_fraction = 1 - float(number_to_choose)/gpm.n
     
     # Randomly choose genotypes
     index = np.random.choice(gpm.index, number_to_choose, replace=False)

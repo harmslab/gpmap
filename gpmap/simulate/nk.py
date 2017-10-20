@@ -3,9 +3,9 @@ import itertools as it
 
 from gpmap.gpm import GenotypePhenotypeMap
 from gpmap import utils
-from .base import random_mutation_set
+from .base import random_mutation_set, BaseSimulation
 
-class NKSimulation(GenotypePhenotypeMap):
+class NKSimulation(BaseSimulation):
     """Generate genotype-phenotype map from NK fitness model. Creates a table with
     binary sub-sequences that determine the order of epistasis in the model.
 
@@ -32,38 +32,11 @@ class NKSimulation(GenotypePhenotypeMap):
         array of values in the NK table.
     """
     def __init__(self, wildtype, mutations, K, k_range=(0,1), *args, **kwargs):
-        # build genotypes
-        genotypes = utils.mutations_to_genotypes(wildtype, mutations)
-        phenotypes = np.empty(len(genotypes), dtype=float)
-        super(NKSimulation, self).__init__(wildtype, genotypes,
-            phenotypes,
-            *args,
-            **kwargs)
+        super(NKSimulation, self).__init__(wildtype, mutations, *args, **kwargs)
+        # Set parameters
         self.set_order(K)
-        self.set_random_values(k_range=k_range)
-        # Build the genotype-phenotype map.
+        self.set_random_values(k_range=k_range)    
         self.build()
-
-    @classmethod
-    def from_length(cls, length, K, k_range=(0,1),  alphabet_size=2, *args, **kwargs):
-        """Build a genotype phenotype map from an NK model with length N.
-
-        Parameters
-        ----------
-        length : int
-            length of genotypes
-        K : int
-            Order of epistasis in NK model.
-
-        Returns
-        -------
-        self : NKSimulation
-        """
-        mutations = dict([(i,["0","1"]) for i in range(length)])
-        #mutations = random_mutation_set(length, alphabet_size=alphabet_size)
-        wildtype = "".join([m[0] for m in mutations.values()])
-        self = cls(wildtype, mutations, K, k_range=k_range, *args, **kwargs)
-        return self
 
     @property
     def nk_table(self):

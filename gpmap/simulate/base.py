@@ -27,23 +27,17 @@ def random_mutation_set(length, alphabet_size=2):
         mutations[i] = alphabet
     return mutations
 
-class GenotypePhenotypeSimulation(GenotypePhenotypeMap):
+class BaseSimulation(GenotypePhenotypeMap):
     """ Build a simulated GenotypePhenotypeMap. Generates random phenotypes.
     """
-    def __init__(self, wildtype, mutations, range=(0,1), *args, **kwargs):
+    def __init__(self, wildtype, mutations, *args, **kwargs):
         # build genotypes
         genotypes = utils.mutations_to_genotypes(wildtype, mutations)
         phenotypes = np.empty(len(genotypes), dtype=float)
-        super(GenotypePhenotypeSimulation, self).__init__(wildtype, genotypes,
+        super(BaseSimulation, self).__init__(wildtype, genotypes,
             phenotypes,
             *args,
-            **kwargs)
-        self.set_random(range=range)
-
-    def set_random(self, range=(0,1)):
-        """ Get a set of random
-        """
-        self.phenotypes = np.random.uniform(range[0], range[1], size=self.n)
+            **kwargs)  
 
     @classmethod
     def from_length(cls, length, alphabet_size=2, *args, **kwargs):
@@ -64,3 +58,21 @@ class GenotypePhenotypeSimulation(GenotypePhenotypeMap):
         wildtype = "".join([m[0] for m in mutations.values()])
         self = cls(wildtype, mutations, *args, **kwargs)
         return self
+    
+    def set_stdeviations(self, sigma):
+        """Add standard deviations to the simulated phenotypes, which can then be
+        used for sampling error in the genotype-phenotype map.
+
+        Parameters
+        ----------
+        sigma : float or array-like
+            Adds standard deviations to the phenotypes. If float, all phenotypes
+            are given the same stdeviations. Else, array must be same length as
+            phenotypes and will be assigned to each phenotype.
+        """
+        stdeviations = np.ones(len(self.phenotypes)) * sigma
+        self.stdeviations = stdeviations
+        return self
+    
+    def build(self):
+        raise Exception("must be implemented in subclass.")
