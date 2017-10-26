@@ -13,4 +13,4 @@ class RandomPhenotypesSimulation(BaseSimulation):
     def build(self):
         """Build phenotypes"""
         low, high = self.phenotype_range[0], self.phenotype_range[1]
-        self.phenotypes = np.random.uniform(low, high, size=self.genotypes)
+        self.phenotypes = np.random.uniform(low, high, size=len(self.genotypes))
