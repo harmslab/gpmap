@@ -5,18 +5,21 @@ import math
 # Unbiased calculations of sample statistics to error statistics
 # -----------------------------------------------------------------------
 
+
 def c4_correction(n_samples):
     """Return the correction scalar for calculating standard deviation from a normal distribution. """
-    k1 = round(n_samples/2.0, 4)
-    k2 = round((n_samples-1)/2.0, 4)
+    k1 = round(n_samples / 2.0, 4)å
+    k2 = round((n_samples - 1) / 2.0, 4)
 
     # If the number of samples is < 100, calculate a correction scalar.
     if n_samples < 100:
 
         if k1.is_integer():
-            c4 = np.sqrt(2.0/(math.pi*(2*k1-1)))*((2**(2*k1-2)*math.factorial(k1-1)**2)/math.factorial(2*k1-2))
+            c4 = np.sqrt(2.0 / (math.pi * (2 * k1 - 1))) * ((2**(2 * k1 - 2) *
+                                                             math.factorial(k1 - 1)**2) / math.factorial(2 * k1 - 2))
         elif k2.is_integer():
-            c4 = np.sqrt(math.pi/k2)*(math.factorial(2*k2-1)/(2**(2*k2-1)*math.factorial(k2-1)**2))
+            c4 = np.sqrt(math.pi / k2) * (math.factorial(2 * k2 - 1) /
+                                          (2**(2 * k2 - 1) * math.factorial(k2 - 1)**2))
         else:
             raise Exception("""Non-integer value for correction term, c4.""")
 
@@ -91,7 +94,8 @@ def corrected_std(var, n_samples=2):
         c4 = 1
     else:
         c4 = c4_correction(n_samples)
-    return _std/c4
+    return _std / c4
+
 
 def corrected_sterror(var, n_samples=2):
     """Calculate an unbiased standard error from a BIASED standard deviation. """
@@ -100,10 +104,10 @@ def corrected_sterror(var, n_samples=2):
     # If sample size is 1, no correction applies
     if n_samples > 100:
         _std = np.sqrt(_var)
-        sterr = _std/np.sqrt(n_samples)
+        sterr = _std / np.sqrt(n_samples)
     else:
         _std = np.sqrt(_var)
-        sterr = _std/np.sqrt(n_samples)
+        sterr = _std / np.sqrt(n_samples)
         #_std = corrected_std(_var, n_samples=n_samples)
         #sterr = _std/np.sqrt(n_samples)
 

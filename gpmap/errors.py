@@ -10,6 +10,7 @@ import numpy as np
 
 from gpmap.mapping import BaseMap
 
+
 def upper_transform(mean, bound, logbase):
     """ Log transformation scaling.
 
@@ -28,7 +29,8 @@ def upper_transform(mean, bound, logbase):
     so log(bound) = log(1 + bound/Ymean)
        log(bound) = log(1 - bound/Ymean)
     """
-    return abs(logbase((mean + bound) /mean))
+    return abs(logbase((mean + bound) / mean))
+
 
 def lower_transform(mean, bound, logbase):
     """ Log transformation scaling.
@@ -49,7 +51,7 @@ def lower_transform(mean, bound, logbase):
     so log(bound) = log(1 + bound/Ymean)
        log(bound) = log(1 - bound/Ymean)
     """
-    return abs(logbase( mean / (mean - bound) ))
+    return abs(logbase(mean / (mean - bound)))
 
 
 class BaseErrorMap(BaseMap):
@@ -58,11 +60,13 @@ class BaseErrorMap(BaseMap):
 
     If a lower bound is given, use it instead of -variances.
     """
+
     def __init__(self, Map):
         self._Map = Map
 
     def wrapper(self, bound, **kwargs):
-        """Wrapper function that changes variances to whatever bound desired. """
+        """Wrapper function that changes variances to whatever bound desired.
+        """
         raise Exception(""" Must be implemented in a subclass """)
 
     @property
@@ -88,8 +92,9 @@ class StandardDeviationMap(BaseErrorMap):
         """Wrapper function to convert Variances if necessary"""
         return bounds
 
+
 class StandardErrorMap(BaseErrorMap):
 
     def wrapper(self, bounds):
         """Wrapper function to convert Variances if necessary"""
-        return bounds/np.sqrt(self._Map.n_replicates)
+        return bounds / np.sqrt(self._Map.n_replicates)

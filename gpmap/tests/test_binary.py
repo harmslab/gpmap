@@ -1,7 +1,6 @@
 import numpy as np
 import nose.tools as tools
 
-
 from . import base
 from ..gpm import GenotypePhenotypeMap
 from ..errors import StandardErrorMap, StandardDeviationMap

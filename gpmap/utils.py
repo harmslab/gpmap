@@ -14,15 +14,17 @@ import warnings
 
 DNA = ["A", "C", "G", "T"]
 
-AMINO_ACIDS = ["D","T", "S", "E", "P", "G", "A", "C", "V", "M", "I",
-                "L", "Y", "F", "H", "K", "R", "W", "Q", "N"]
+AMINO_ACIDS = ["D", "T", "S", "E", "P", "G", "A", "C", "V", "M", "I",
+               "L", "Y", "F", "H", "K", "R", "W", "Q", "N"]
 
 # -------------------------------------------------------
 # Wrappers for methods that use optional imports
 # -------------------------------------------------------
 
+
 def ipywidgets_missing(function):
-    """Wrapper checks that ipython widgets are install before trying to render them.
+    """Wrapper checks that ipython widgets are install before trying to
+    render them.
     """
     def wrapper(*args, **kwargs):
         try:
@@ -32,13 +34,17 @@ def ipywidgets_missing(function):
 
         except ImportError:
             warnings.filterwarnings("once")
-            warnings.warn("""Looks like `ipywidgets` is not installed, so widgets can't be constructed. Install before using this method.""", ImportWarning)
+            warnings.warn(
+                """Looks like `ipywidgets` is not installed, so widgets can't "
+                "be constructed. Install before using this method.""",
+                ImportWarning)
 
     return wrapper
 
 # -------------------------------------------------------
 # Useful methods for genotype-phenotype spaces
 # -------------------------------------------------------
+
 
 def get_base(logbase):
     """Get base from logbase
@@ -54,6 +60,7 @@ def get_base(logbase):
     testval = 10
     return np.exp(np.log(testval) / logbase(testval))
 
+
 def hamming_distance(s1, s2):
     """Return the Hamming distance between equal-length sequences """
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
@@ -64,12 +71,13 @@ def sample_phenotypes(phenotypes, errors, n=1):
     samples = np.random.randn(len(phenotypes), n)
     # Apply phenotype scale and variance
     for i in range(n):
-        samples[:,i] = np.multiply(samples[:,i], errors) + phenotypes
+        samples[:, i] = np.multiply(samples[:, i], errors) + phenotypes
     return samples
 
 # -------------------------------------------------------
 # Utilities for searching sequence space
 # -------------------------------------------------------
+
 
 def find_differences(s1, s2):
     """Return the index of differences between two sequences."""
@@ -78,6 +86,7 @@ def find_differences(s1, s2):
         if s1[i] != s2[i]:
             indices.append(i)
     return indices
+
 
 def farthest_genotype(reference, genotypes):
     """Find the genotype in the system that differs at the most sites. """
@@ -88,6 +97,7 @@ def farthest_genotype(reference, genotypes):
             mutations = int(differs)
             mutant = str(genotype)
     return mutant
+
 
 def binary_mutations_map(wildtype, mutant):
     """Construct a site-to-binary-mutations dict between two sequences.
@@ -125,10 +135,12 @@ def binary_mutations_map(wildtype, mutant):
 # Space enumerations
 # -------------------------------------------------------
 
+
 def list_binary(length):
     """List all binary strings with given length.
     """
     return np.array(["".join(seq) for seq in it.product("01", repeat=length)])
+
 
 def enumerate_space(wildtype, mutant, binary=True):
     """Enumerate a binary genotype list between two sequences.
@@ -155,18 +167,20 @@ def enumerate_space(wildtype, mutant, binary=True):
 
     # Check that wildtype and mutant are the same length
     if len(wildtype) != len(mutant):
-        raise IndexError("ancestor_sequence and derived sequence must be the same length.")
+        raise IndexError("ancestor_sequence and derived sequence must be the "
+                         "same length.")
 
     # Count mutations and keep indices
     mutations = find_differences(wildtype, mutant)
     n_mut = len(mutations)
     binary_wt = "".zfill(n_mut)
     size = 2**n_mut
-    rev_mutations = [mutations[i] for i in range(n_mut-1, -1, -1)]
+    rev_mutations = [mutations[i] for i in range(n_mut - 1, -1, -1)]
     mutation_map = dict(zip(mutations, range(n_mut)))
 
     # Enumerate mutations flipping combinations
-    combinations = np.array([list(j) for i in range(1,n_mut+1) for j in it.combinations(rev_mutations, i)])
+    combinations = np.array([list(j) for i in range(1, n_mut + 1)
+                             for j in it.combinations(rev_mutations, i)])
     # Initialize empty arrays
     genotypes = np.empty(size, dtype="<U" + str(len(wildtype)))
     binaries = np.empty(size, dtype="<U" + str(n_mut))
@@ -224,31 +238,33 @@ def encode_mutations(wildtype, mutations):
         else:
             # copy alphabet to avoid removing items in main object.
             alphabet_cp = alphabet[:]
-            n = len(alphabet_cp)-1 # number of mutation neighbors
-            wt_site = wildtype[site_number] # wildtype letter
+            n = len(alphabet_cp) - 1  # number of mutation neighbors
+            wt_site = wildtype[site_number]  # wildtype letter
 
             # Build a binary representation of mutation alphabet
-            indiv_encode = OrderedDict({wt_site: "0"*n})
+            indiv_encode = OrderedDict({wt_site: "0" * n})
             alphabet_ = alphabet_cp[:]
             alphabet_.remove(wt_site)
 
             for i in range(n):
-                binary = list("0"*n)
+                binary = list("0" * n)
                 binary[i] = "1"
                 indiv_encode[alphabet_[i]] = "".join(binary)
             encoding[site_number] = indiv_encode
 
     return encoding
 
+
 def construct_genotypes(encoding):
-    """Constructs binary representation of genotype map given a specific alphabet
-    for each site.
+    """Constructs binary representation of genotype map given a specific
+    alphabet for each site.
 
     Parameters
     ----------
     encoding: OrderedDict of OrderDicts
         Encoding dictionary that maps site number to mutation-binary map.
-        *NOTE* If site does not mutate, value is set to wildtype site string (not dictionary).
+        *NOTE* If site does not mutate, value is set to wildtype site string
+        (not dictionary).
 
     Returns
     -------
@@ -280,7 +296,7 @@ def construct_genotypes(encoding):
 
             # Make copies of previous sites' genotypes
             # for appending next sites binary combinations
-            for i in range(n_copies-1):
+            for i in range(n_copies - 1):
                 genotypes += copy_genotypes
                 binary += copy_binary
 
@@ -289,8 +305,8 @@ def construct_genotypes(encoding):
             skips = 0
             for key, val in encoding[site].items():
                 for i in range(n_genotypes):
-                    genotypes[skips*n_genotypes + i] += key
-                    binary[skips*n_genotypes + i] += val
+                    genotypes[skips * n_genotypes + i] += key
+                    binary[skips * n_genotypes + i] += val
                 skips += 1
 
     return genotypes, binary
@@ -305,7 +321,8 @@ def mutations_to_genotypes(wildtype, mutations):
     wildtype : str
         wildtype genotype (as string).
     mutations : dict
-        A mapping dict with site numbers as keys and lists of mutations as values.
+        A mapping dict with site numbers as keys and lists of mutations as
+        values.
 
     Returns
     -------

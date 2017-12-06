@@ -12,9 +12,11 @@ from collections import OrderedDict
 # Main class for building epistasis map
 # -------------------------------------
 
+
 class BaseMap(object):
     """Base class for all maps in this file.
     """
+
     def _if_dict(self, dictionary):
         """ If setter method is passed a dictionary with genotypes as keys,
         use those keys to populate array of elements in order
