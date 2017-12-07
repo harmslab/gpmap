@@ -142,13 +142,13 @@ class GenotypePhenotypeMap(mapping.BaseMap):
     @property
     def genotypes(self):
         """Get the genotypes of the system."""
-        return self.data.genotypes
+        return self.data.genotypes.values
 
     @property
     def missing_genotypes(self):
         """Genotypes that are missing from the complete genotype-to-phenotype
         map."""
-        return self.missing_data.genotypes
+        return self.missing_data.genotypes.values
 
     @property
     def complete_genotypes(self):
@@ -158,7 +158,7 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         **NOTE** Can only be set by the BinaryMap object.
         """
         try:
-            return self.complete_data.genotypes
+            return self.complete_data.genotypes.values
         except AttributeError:
             raise AttributeError("Looks like a BinaryMap has not been built "
                                  "yet for this map. Do this before asking for "
@@ -167,22 +167,22 @@ class GenotypePhenotypeMap(mapping.BaseMap):
     @property
     def phenotypes(self):
         """Get the phenotypes of the system. """
-        return self.data.phenotypes
+        return self.data.phenotypes.values
 
     @property
     def stdeviations(self):
         """Get stdeviations"""
-        return self.data.stdeviations
+        return self.data.stdeviations.values
 
     @property
     def n_replicates(self):
         """Return the number of replicate measurements made of the phenotype"""
-        return self.data.n_replicates
+        return self.data.n_replicates.values
 
     @property
     def index(self):
         """Return numpy array of genotypes position. """
-        return self.data.index
+        return self.data.index.values
 
     def _add_error(self):
         """Store error maps"""

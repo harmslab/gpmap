@@ -1,14 +1,14 @@
 
-# Python API for analyzing and manipulating genotype-phenotype maps
+# GPMap
 
+*A Python API for managing genotype-phenotype map dat*
 
 [![Join the chat at https://gitter.im/harmslab/gpmap](https://badges.gitter.im/harmslab/gpmap.svg)](https://gitter.im/harmslab/gpmap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Documentation Status](https://readthedocs.org/projects/gpmap/badge/?version=latest)](http://gpmap.readthedocs.io/en/latest/?badge=latest)
 
-This package defines a standard data-structure for genotype-phenotype (GP) map data.
-Subset, manipulate, extend, etc. GP maps. Calculate statistics, model evolutionary
-trajectories, predict phenotypes (in combination with the epistasis package). Efficient memory usage,
-using numpy arrays to store in memory.
+Defines a flexible object for managing genotype-phenotype (GP) map data. At it's core,
+`gpmap` stores the data in Pandas DataFrames and thus, interacts seamlessly with the
+PyData egosystem.
 
 <img src="docs/_img/gpm.png" align="middle">
 
@@ -38,3 +38,4 @@ pip install -e .
 The following modules are required. Also, the examples/tutorials are written in Jupyter notebooks and require IPython to be install.
 
 * [Numpy](http://www.numpy.org/)
+* [Pandas](https://pandas.pydata.org/)

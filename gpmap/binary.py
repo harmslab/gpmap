@@ -76,12 +76,12 @@ class BinaryMap(object):
     @property
     def n_replicates(self):
         """Get number of replicates"""
-        return self.gpm.data.n_replicates
+        return self.gpm.data.n_replicates.values
 
     @property
     def stdeviations(self):
         """Get standard deviations"""
-        return self.gpm.data.stdeviations
+        return self.gpm.data.stdeviations.values
 
     @property
     def length(self):
@@ -91,17 +91,17 @@ class BinaryMap(object):
     @property
     def genotypes(self):
         """Get Binary representation of genotypes. """
-        return self.gpm.data.binary
+        return self.gpm.data.binary.values
 
     @property
     def phenotypes(self):
         """Get phenotypes of the map."""
-        return self.gpm.phenotypes
+        return self.gpm.data.phenotypes.values
 
     @property
     def missing_genotypes(self):
         """Binary genotypes missing in the dataset """
-        return self.gpm.missing_data.binary
+        return self.gpm.missing_data.binary.values
 
     @property
     def complete_genotypes(self):
