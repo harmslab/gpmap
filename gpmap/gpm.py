@@ -88,7 +88,7 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         # Store data in DataFrame
         data = dict(
             genotypes=genotypes,
-            phenotype=phenotypes,
+            phenotypes=phenotypes,
             n_replicates=n_replicates,
             stdeviations=stdeviations
         )
