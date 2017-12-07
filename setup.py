@@ -10,7 +10,7 @@ packages = [
 ]
 
 setup(name='gpmap',
-      version='0.3.0',
+      version='0.3.1',
       description='Data-structure for analyzing genotype-phenotype map data.',
       author='Zach Sailer',
       author_email='zachsailer@gmail.com',
