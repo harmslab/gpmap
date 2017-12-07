@@ -12,7 +12,7 @@ PyData egosystem.
 
 To visualize genotype-phenotype objects created by GPMap, checkout [GPGraph](https://github.com/Zsailer/gpgraph).
 
-<img src="docs/_img/gpm.png" align="middle">
+<img src="docs/_img/gpm.png"> <img src="docs/_img/dataframe.png" width="400">
 
 ## Basic example
 
@@ -21,7 +21,28 @@ Import the package's base object.
 from gpmap import GenotypePhenotypeMap
 ```
 
-Load a dataset from disk.
+Pass your data to the object.
+```python
+
+# Data
+wildtype = "AAA"
+genotypes = ["AAA", "AAT", "ATA", "TAA", "ATT", "TAT", "TTA", "TTT"]
+phenotypes = [0.1, 0.2, 0.2, 0.6, 0.4, 0.6, 1.0, 1.1]
+stdeviations = [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+
+# Initialize the object
+gpm = GenotypePhenotypeMap(wildtype,
+                           genotypes,
+                           phenotypes,
+                           stdeviations=stdeviations)
+
+# Check out the data.
+gpm.data
+```
+<img src="docs/_img/dataframe.png" width="350">
+
+
+Or load a dataset from disk.
 ```python
 gpm = GenotypePhenotypeMap.read_json("data.json")
 ```
