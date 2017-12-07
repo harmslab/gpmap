@@ -23,7 +23,46 @@ import gpmap.binary as binary
 
 
 class GenotypePhenotypeMap(mapping.BaseMap):
-    """
+    """Object for containing genotype-phenotype map data.
+
+    Parameters
+    ----------
+    wildtype : string
+        wildtype sequence.
+
+    genotypes : array-like
+        list of all genotypes in system. Must be a complete system.
+
+    phenotypes : array-like
+        List of phenotypes in the same order as genotypes.
+
+    mutations : dict
+        Dictionary that maps each site indice to their possible substitution
+        alphabet.
+
+    n_replicates : int
+        number of replicate measurements comprising the mean phenotypes
+
+    include_binary : bool (default=True)
+        Construct a binary representation of the space.
+
+    Attributes
+    ----------
+    data : pandas.DataFrame
+        The core data object. Columns are 'genotypes', 'phenotypes',
+        'n_replicates', 'stdeviations', and (option) 'binary'.
+
+    complete_data : pandas.DataFrame (optional, created by BinaryMap)
+        A dataframe mapping the complete set of genotypes possible, given
+        the mutations dictionary. Two columns: 'genotypes' and 'binary'.
+
+    missing_data : pandas.DataFrame (optional, created by BinaryMap)
+        A dataframe containing the set of missing genotypes; complte_data -
+        data. Two columns: 'genotypes' and 'binary'.
+
+    binary : BinaryMap
+        object that gives you (the user) access to the binary representation
+        of the map.
     """
     def __init__(self, wildtype, genotypes, phenotypes,
                  stdeviations=None,
