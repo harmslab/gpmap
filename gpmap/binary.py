@@ -18,40 +18,10 @@ from gpmap.utils import (hamming_distance,
 
 
 class BinaryMap(object):
-    """Constructs a binary representation of the genotype-phenotype map. Useful
-    for building networks, constructing epistasis models, and filling in
-    genotype-phenotype maps.
-
-    Parameters
-    ----------
-    GPM : GenotypePhenotypeMap object
-        The genotype phenotype map object to translate as Binary.
-
-    Attributes
-    ----------
-    length : int
-        length of the binary sequences
-    genotypes : np.array
-        array of binary genotype strings, ordered the same as input from GPM.
-    missing_genotypes : np.array
-        other genotypes possible by mutations, not given in the data. These are
-        often the genotypes to predict.
-    complete_genotypes : np.array
-        genotypes + missing_genotypes
-    phenotypes : np.array
-        phenotypes given by GPM, in the same order as GPM.
-    encoding : dict
-        mapping dictionary that takes
-    n_replicates : int
-        number of replicates.
-    logbase : callable
-        function for log transforming an array or value.
-    stdeviations : array
-        standard deviations of genotype phenotype map.
     """
-
-    def __init__(self, GPM, wildtype):
-        self._GPM = GPM
+    """
+    def __init__(self, gpm, wildtype):
+        self.gpm = gpm
         self.wildtype = wildtype
         self.std = StandardDeviationMap(self)
         self.err = StandardErrorMap(self)
@@ -70,32 +40,32 @@ class BinaryMap(object):
     @property
     def n_replicates(self):
         """Get number of replicates"""
-        return self._GPM.n_replicates
+        return self.gpm.data.n_replicates
 
     @property
     def stdeviations(self):
         """Get standard deviations"""
-        return self._GPM.stdeviations
+        return self.gpm.data.stdeviations
 
     @property
     def length(self):
         """Get length of binary strings in space. """
-        return self._length
+        return len(self.gpm.data.binary[0])
 
     @property
     def genotypes(self):
         """Get Binary representation of genotypes. """
-        return self._genotypes
+        return self.gpm.data.binary
 
     @property
     def phenotypes(self):
         """Get phenotypes of the map."""
-        return self._GPM.phenotypes
+        return self.gpm.phenotypes
 
     @property
     def missing_genotypes(self):
         """Binary genotypes missing in the dataset """
-        return self._missing_genotypes
+        return self.gpm.missing_data.binary
 
     @property
     def complete_genotypes(self):
@@ -104,11 +74,7 @@ class BinaryMap(object):
         Sorted in alphabetical order according to the
         GenotypePhenotypeMap.complete_genotypes attribute.
         """
-        return self._complete_genotypes
-
-    # ----------------------------------------------------------
-    # Setter methods
-    # ----------------------------------------------------------
+        return self.gpm.complete_data.binary
 
     def _build(self):
         """Builds a binary representation of the genotypes in
@@ -118,40 +84,34 @@ class BinaryMap(object):
 
         **NOTE**: the ``complete_genotypes`` are sorted in alphabetic order.
         """
-        self.encoding = encode_mutations(self._wildtype, self._GPM.mutations)
+        self.encoding = encode_mutations(self._wildtype, self.gpm.mutations)
         # Use encoding map to construct binary presentation for any type of
         # alphabet
         unsorted_genotypes, unsorted_binary = construct_genotypes(
             self.encoding)
 
-        # determine length of binary strings
-        self._length = len(unsorted_binary[0])
+        data = {'genotypes': unsorted_genotypes,
+                'binary': unsorted_binary}
 
-        # Series of all possible genotypes and their binary representation
-        bins = pd.Series(unsorted_binary, index=unsorted_genotypes)
-        # Sort data in alphabetical order using the actual genotypes
-        # (not binary representation)
-        bins = bins.sort_index()
+        gpm = self.gpm
+        gpm.complete_data = pd.DataFrame(data)
+        gpm.complete_data.sort_values('genotypes', inplace=True)
+        gpm.complete_data.reset_index(drop=True, inplace=True)
 
-        # Aliases for (some) clarity below.
-        binary = self
-        true = self._GPM
+        # Mapping genotypes to index
+        mapping = dict(zip(gpm.complete_data.genotypes,
+                           gpm.complete_data.index))
 
-        # Build complete genotype map
-        binary._complete_genotypes = bins.reset_index(drop=True)
-        true._complete_genotypes = pd.Series(bins.index)
-        mapping = {g: i for i, g in true._complete_genotypes.iteritems()}
+        # Get index
+        observed_index = [mapping[g] for g in gpm.data.genotypes]
+        missing_index = set(gpm.complete_data.index).difference(observed_index)
 
-        # Build observed genotype map
-        obs_index = np.array([mapping[g] for g in true._genotypes])
-        true._genotypes = pd.Series(true._complete_genotypes, index=obs_index)
-        binary._genotypes = pd.Series(binary._complete_genotypes,
-                                      index=obs_index)
+        # Reset index of main data.
+        gpm.data.index = observed_index
+        # Add a column for binary representation of genotypes.
+        gpm.data['binary'] = pd.Series(gpm.complete_data.binary,
+                                       index=observed_index)
 
-        # Missing
-        arr = np.arange(len(bins))
-        missing_index = np.delete(arr, obs_index)
-        true._missing_genotypes = pd.Series(true._complete_genotypes,
-                                            index=missing_index)
-        binary._missing_genotypes = pd.Series(binary._complete_genotypes,
-                                              index=missing_index)
+        # Create a dataframe for the missing data.
+        gpm.missing_data = pd.DataFrame(gpm.complete_data,
+                                        index=missing_index)
