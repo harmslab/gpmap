@@ -103,6 +103,127 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         # Construct the error maps
         self._add_error()
 
+    @classmethod
+    def read_dataframe(cls, wildtype, dataframe, **kwargs):
+        """Construct a GenotypePhenotypeMap from a dataframe."""
+        # Required arguments
+        df = DataFrames
+        genotypes = df["genotypes"]
+        phenotypes = df["phenotypes"]
+
+        # Search for optional columns
+        other_items = {}
+        for key in OPTIONAL_KEYS:
+            try:
+                other_items[key] = df[key]
+            except KeyError:
+                pass
+
+        # Initialize object.
+        self = cls(wildtype, genotypes, phenotypes, **other_items)
+        return self
+
+    @classmethod
+    def read_excel(cls, wildtype, fname, **kwargs):
+        """"""
+        df = pd.read_excel(fname)
+        self = cls.read_dataframe(wildtype, df)
+        return self
+
+    @classmethod
+    def read_csv(cls, fname, **kwargs):
+        """"""
+        df = pd.read_csv(fname)
+        self = cls.read_dataframe(wildtype, df)
+        return self
+
+    @classmethod
+    def read_json(cls, filename, **kwargs):
+        """Load a genotype-phenotype map directly from a json file.
+        The JSON metadata must include the following attributes
+
+        Note
+        ----
+        Keyword arguments override input that is loaded from the JSON file.
+        """
+        # Open, json load, and close a json file
+        f = open(filename, "r")
+        data = json.load(f)
+        f.close()
+
+        # Grab all properties from data-structure
+        necessary_args = ["wildtype", "genotypes", "phenotypes"]
+        options = {
+            "genotypes": [],
+            "phenotypes": [],
+            "wildtype": [],
+            "stdeviations": None,
+            "mutations": None,
+            "n_replicates": 1,
+        }
+        # Get all options for map and order them
+        for key in options:
+            # See if options are in json data
+            try:
+                options[key] = data[key]
+            except KeyError:
+                pass
+        # Override any properties with manually entered kwargs passed directly
+        # into method
+        options.update(kwargs)
+        args = []
+        for arg in necessary_args:
+            val = options.pop(arg)
+            args.append(val)
+        # Create an instance
+        gpm = cls(args[0], args[1], args[2], **options)
+        return gpm
+
+    # ----------------------------------------------------------
+    # Writing methods
+    # ----------------------------------------------------------
+
+    def to_excel(self, filename, **kwargs):
+        """Write genotype-phenotype map to excel spreadsheet.
+
+        Keyword arguments are passed directly to Pandas dataframe to_excel
+        method.
+
+        Parameters
+        ----------
+        filename : str
+            Name of file to write out.
+        """
+        self.df.to_excel(filename, **kwargs)
+
+    def to_csv(self, filename, **kwargs):
+        """Write genotype-phenotype map to csv spreadsheet.
+
+        Keyword arguments are passed directly to Pandas dataframe to_csv
+        method.
+
+        Parameters
+        ----------
+        filename : str
+            Name of file to write out.
+        """
+        self.df.to_csv(filename, **kwargs)
+
+    def to_json(self, filename):
+        """Write genotype-phenotype map to json file.
+        """
+        # Get metadata.
+        data = dict(wildtype=self.wildtype,
+                    genotypes=list(self.genotypes),
+                    phenotypes=list(self.phenotypes),
+                    stdeviations=list(self.stdeviations),
+                    mutations=self.mutations,
+                    n_replicates=list(self.n_replicates.astype(float)))
+
+        # Write to file
+        with open(filename, "w") as f:
+            json.dump(data, f)
+
     @property
     def length(self):
         """Get length of the genotypes. """
