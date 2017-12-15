@@ -107,20 +107,13 @@ class GenotypePhenotypeMap(mapping.BaseMap):
     def read_dataframe(cls, wildtype, dataframe, **kwargs):
         """Construct a GenotypePhenotypeMap from a dataframe."""
         # Required arguments
-        df = DataFrames
-        genotypes = df["genotypes"]
-        phenotypes = df["phenotypes"]
-
-        # Search for optional columns
-        other_items = {}
-        for key in OPTIONAL_KEYS:
-            try:
-                other_items[key] = df[key]
-            except KeyError:
-                pass
-
-        # Initialize object.
-        self = cls(wildtype, genotypes, phenotypes, **other_items)
+        df = dataframe
+        self = cls(wildtype,
+                   df.genotypes,
+                   df.phenotypes,
+                   stdeviations=df.stdeviations,
+                   n_replicates=df.n_replicates,
+                   **kwargs)
         return self
 
     @classmethod
