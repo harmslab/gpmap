@@ -8,7 +8,7 @@ import math
 
 def c4_correction(n_samples):
     """Return the correction scalar for calculating standard deviation from a normal distribution. """
-    k1 = round(n_samples / 2.0, 4)å
+    k1 = round(n_samples / 2.0, 4)
     k2 = round((n_samples - 1) / 2.0, 4)
 
     # If the number of samples is < 100, calculate a correction scalar.
