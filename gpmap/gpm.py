@@ -19,7 +19,6 @@ import gpmap.mapping as mapping
 import gpmap.utils as utils
 import gpmap.sample as sample
 import gpmap.errors as errors
-import gpmap.binary as binary
 
 
 class GenotypePhenotypeMap(mapping.BaseMap):
@@ -98,13 +97,13 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         # Constructs a complete sequence space and stores genotypes missing
         # in the data as an attribute, `missing_genotypes`.
         if include_binary:
-            self.add_binary(self.wildtype)
+            self.add_binary()
 
         # Construct the error maps
         self._add_error()
 
     @classmethod
-    def read_dataframe(cls, wildtype, dataframe, **kwargs):
+    def read_dataframe(cls, dataframe, wildtype, **kwargs):
         """Construct a GenotypePhenotypeMap from a dataframe."""
         # Required arguments
         df = dataframe
@@ -117,17 +116,17 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         return self
 
     @classmethod
-    def read_excel(cls, wildtype, fname, **kwargs):
+    def read_excel(cls, fname, wildtype, **kwargs):
         """"""
         df = pd.read_excel(fname)
-        self = cls.read_dataframe(wildtype, df)
+        self = cls.read_dataframe(df, wildtype)
         return self
 
     @classmethod
-    def read_csv(cls, fname, **kwargs):
+    def read_csv(cls, fname, wildtype, **kwargs):
         """"""
         df = pd.read_csv(fname)
-        self = cls.read_dataframe(wildtype, df)
+        self = cls.read_dataframe(df, wildtype)
         return self
 
     @classmethod
@@ -249,6 +248,14 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         return "".join(_mutant)
 
     @property
+    def complete_data(self):
+        """"""
+        return pd.merge(self._complete_data, self.data,
+                        on=['genotypes', 'binary'],
+                        how='outer')
+        #return pd.merge((self._complete_data, self.data),)
+
+    @property
     def mutations(self):
         """Get the furthest genotype from the wildtype genotype."""
         return self._mutations
@@ -259,24 +266,31 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         return self.data.genotypes.values
 
     @property
+    def binary(self):
+        """Binary representation of genotypes."""
+        return self.data.binary.values
+
+    @property
     def missing_genotypes(self):
         """Genotypes that are missing from the complete genotype-to-phenotype
         map."""
         return self.missing_data.genotypes.values
 
     @property
-    def complete_genotypes(self):
-        """Array of sorted genotypes for the complete genotype space encoded by
-        the mutations dictionary.
+    def missing_binary(self):
+        """Binary representation of missing genotypes"""
+        return self.missing_data.binary.values
 
-        **NOTE** Can only be set by the BinaryMap object.
+    @property
+    def complete_genotypes(self):
+        """Both missing and observed genotypes.
         """
-        try:
-            return self.complete_data.genotypes.values
-        except AttributeError:
-            raise AttributeError("Looks like a BinaryMap has not been built "
-                                 "yet for this map. Do this before asking for "
-                                 "the complete_genotypes.")
+        return self.complete_data.genotypes.values
+
+    @property
+    def complete_binary(self):
+        """Complete set of genotypes as binary representation."""
+        return self.complete_data.binary.values
 
     @property
     def phenotypes(self):
@@ -303,8 +317,44 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         self.std = errors.StandardDeviationMap(self)
         self.err = errors.StandardErrorMap(self)
 
-    def add_binary(self, wildtype):
-        """Add a BinaryMap to the GenotypePhenotypeMap. The wildtype determines
-        the encoding pattern. Wildtype sites are represented as 0's.
+    def add_binary(self):
+        """Build a binary representation of set of
+        genotypes. Also the full set of genotypes, and creates two new
+        DataFrames: 'missing_data' and 'complete_data'.
+
+        Also reindexes `data` based on `complete_data`.
         """
-        self.binary = binary.BinaryMap(self, wildtype)
+        # Encode mutations as binary rep.
+        encoding = utils.encode_mutations(self.wildtype, self.mutations)
+
+        # Use encoding map to construct binary presentation
+        unsorted_genotypes, unsorted_binary = utils.construct_genotypes(
+            encoding)
+
+        # New data object.
+        data = {'genotypes': unsorted_genotypes,
+                'binary': unsorted_binary}
+
+        # Store the complete genotype space in a DataFrame.
+        self._complete_data = pd.DataFrame(data)
+        self._complete_data.sort_values('genotypes', inplace=True)
+        self._complete_data.reset_index(drop=True, inplace=True)
+
+        # Mapping genotypes to index
+        mapping = dict(zip(self._complete_data.genotypes,
+                           self._complete_data.index))
+
+        # Get index of observed genotypes and missing genotypes.
+        observed_index = [mapping[g] for g in self.data.genotypes]
+        missing_index = set(self._complete_data.index).difference(
+            observed_index)
+
+        # Reset index of main data.
+        self.data.index = observed_index
+        # Add a column for binary representation of genotypes.
+        self.data['binary'] = pd.Series(self._complete_data.binary,
+                                        index=observed_index)
+
+        # Create a dataframe for the missing data.
+        self.missing_data = pd.DataFrame(self.complete_data,
+                                         index=missing_index)
