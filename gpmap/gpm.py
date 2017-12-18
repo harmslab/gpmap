@@ -15,13 +15,12 @@ import pandas as pd
 # ----------------------------------------------------------
 
 # import different maps into this module
-import gpmap.mapping as mapping
 import gpmap.utils as utils
 import gpmap.sample as sample
 import gpmap.errors as errors
 
 
-class GenotypePhenotypeMap(mapping.BaseMap):
+class GenotypePhenotypeMap(object):
     """Object for containing genotype-phenotype map data.
 
     Parameters
@@ -53,7 +52,8 @@ class GenotypePhenotypeMap(mapping.BaseMap):
 
     complete_data : pandas.DataFrame (optional, created by BinaryMap)
         A dataframe mapping the complete set of genotypes possible, given
-        the mutations dictionary. Two columns: 'genotypes' and 'binary'.
+        the mutations dictionary. Contains all columns in `data`. Any missing
+        data is reported as NaN.
 
     missing_data : pandas.DataFrame (optional, created by BinaryMap)
         A dataframe containing the set of missing genotypes; complte_data -
@@ -101,6 +101,10 @@ class GenotypePhenotypeMap(mapping.BaseMap):
 
         # Construct the error maps
         self._add_error()
+
+    def map(self, attr1, attr2):
+        """Dictionary that maps attr1 to attr2."""
+        return dict(zip(getattr(self, attr1), getattr(self, attr2)))
 
     @classmethod
     def read_dataframe(cls, dataframe, wildtype, **kwargs):
@@ -201,18 +205,24 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         """
         self.df.to_csv(filename, **kwargs)
 
-    def to_json(self, filename):
-        """Write genotype-phenotype map to json file.
+    def to_dict(self, complete=False):
+        """Write genotype-phenotype map to dict."""
+        if complete:
+            data = self.complete_data.to_dict('list')
+        else:
+            data = self.data.to_dict('list')
+        # Get metadata.
+        data.update(wildtype=self.wildtype, mutations=self.mutations)
+        return data
+
+    def to_json(self, filename, complete=False):
+        """Write genotype-phenotype map to json file. If no filename is given
+        returns
         """
         # Get metadata.
-        data = dict(wildtype=self.wildtype,
-                    genotypes=list(self.genotypes),
-                    phenotypes=list(self.phenotypes),
-                    stdeviations=list(self.stdeviations),
-                    mutations=self.mutations,
-                    n_replicates=list(self.n_replicates.astype(float)))
+        data = self.to_dict(complete=complete)
 
-        # Write to file
+        # Write to json file.
         with open(filename, "w") as f:
             json.dump(data, f)
 
@@ -253,7 +263,6 @@ class GenotypePhenotypeMap(mapping.BaseMap):
         return pd.merge(self._complete_data, self.data,
                         on=['genotypes', 'binary'],
                         how='outer')
-        #return pd.merge((self._complete_data, self.data),)
 
     @property
     def mutations(self):

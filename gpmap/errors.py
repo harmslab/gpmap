@@ -8,8 +8,6 @@
 
 import numpy as np
 
-from gpmap.mapping import BaseMap
-
 
 def upper_transform(mean, bound, logbase):
     """ Log transformation scaling.
@@ -54,7 +52,7 @@ def lower_transform(mean, bound, logbase):
     return abs(logbase(mean / (mean - bound)))
 
 
-class BaseErrorMap(BaseMap):
+class BaseErrorMap(object):
     """ Object to attach to seqspace objects for managing errors, standard
     deviations, and their log transforms.
 
