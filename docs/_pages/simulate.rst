@@ -1,5 +1,5 @@
-Simulating
-==========
+Simulating genotype-phenotype maps
+==================================
 
 The GPMap package comes with a suite of objects to simulate genotype-phenotype
 maps following models in the literature. They are found in the ``gpmap.simulate``
@@ -9,8 +9,8 @@ All Simulation objects inherit the ``GenotypePhenotypeMap`` object as their base
 class. Thus, anything you can do with a GenotypePhenotypeMap, you can do with the
 simulation objects.
 
-NK model
---------
+NK landscape
+------------
 
 Construct a genotype-phenotype map using Kauffman's NK Model. [1]_
 The NK fitness landscape is created using a table with binary, length-K,
@@ -30,8 +30,8 @@ for the 01011 genotype, select the following sub-sequences from an NK table:
     # Create an instance of the model. Using `from_length` makes this easy.
     gpm = NKSimulation.from_length(6, K=3)
 
-House of Cards model
---------------------
+House of Cards landscape
+------------------------
 
 Construct a 'House of Cards' fitness landscape. This is a limit of the NK model
 where :math:`K=N`. It represents a fitness landscape with maximum roughness.
@@ -46,8 +46,8 @@ where :math:`K=N`. It represents a fitness landscape with maximum roughness.
     gpm = HouseOfCardsSimulation.from_length(6)
 
 
-Mount Fuji model
-----------------
+Mount Fuji landscape
+--------------------
 
 Construct a genotype-phenotype map from a Mount Fuji model. [2]_
 

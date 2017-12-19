@@ -1,16 +1,20 @@
 import numpy as np
-import nose.tools as tools
-
+import pytest
 
 from . import base
 from ..gpm import GenotypePhenotypeMap
-from ..binary import BinaryMap
+
+
+@pytest.fixture()
+def tmp_gpm_file():
+    pass
+
 
 class testGenotypePhenotypeMap(base.BaseTestClass):
 
     def _test_attributes(self, gpm):
         # Test instance was created
-        tools.assert_is_instance(gpm, GenotypePhenotypeMap)
+        assert isinstance(gpm, GenotypePhenotypeMap)
         # Test elements align
         np.testing.assert_array_equal(gpm.genotypes, self.genotypes)
 
@@ -28,7 +32,6 @@ class testGenotypePhenotypeMap(base.BaseTestClass):
         # Test elements align
         np.testing.assert_array_equal(gpm.genotypes, self.genotypes)
         np.testing.assert_array_equal(gpm.phenotypes, self.phenotypes)
-        tools.assert_is_instance(gpm.binary, BinaryMap)
 
     def test_read_json(self):
         """Test reading from json"""

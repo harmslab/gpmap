@@ -1,23 +1,7 @@
-gpmap\.binary module
---------------------
-
-.. automodule:: gpmap.binary
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 gpmap\.errors module
 --------------------
 
 .. automodule:: gpmap.errors
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-gpmap\.mapping module
----------------------
-
-.. automodule:: gpmap.mapping
     :members:
     :undoc-members:
     :show-inheritance:

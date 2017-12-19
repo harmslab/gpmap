@@ -3,28 +3,51 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Introduction
-============
+``gpmap``
+=========
 
-The **gpmap** package standardizes a data structure for genotype-phenotype (GP) maps.
-Subset, manipulate, extend, etc. genotype-phenotype maps easily. Calculate statistics,
-model evolutionary trajectories, predict phenotypes. Efficient memory usage and manipulation,
-using Pandas Dataframe/Series.
-
-This package includes modules for simulating computational genotype-phenotype maps
-using methods described in the literature. See the Simulating_ page.
-
-.. _Simulating: _pages/simulate.html
-
-The GenotypePhenotypeMap object can be easily ported to network graphs (via NetworkX and GPGraph).
+The Pandas DataFrame for genotype-phenotype (GP) map data.
 
 .. image:: _img/gpm.png
     :align: center
 
+
+The ``GenotypePhenotypeMap`` is a core object for a suite of packages written
+in the `Harms Lab`_. It organizes and standardizes genotype-phenotype map data.
+
+.. _`Harms Lab`: https://github.com/harmslab
+
+Basic Example
+-------------
+
+.. code-block:: python
+
+  # Import the GenotypePhenotypeMap
+  from gpmap import GenotypePhenotypeMap
+
+  # The data
+  wildtype = 'AA'
+  genotypes = ['AA', 'AT', 'TA', 'TT']
+  phenotypes = [0.1, 0.5, 0.2, 0.8]
+  stdeviations = [0.05, 0.05, 0.05, 0.05]
+
+  # Initialize a GenotypePhenotype object
+  gpm = GenotypePhenotypeMap(wildtype, genotypes, phenotypes,
+                             stdeviations=stdeviations)
+
+  # Show the dataFrame
+  gpm.data
+
+.. image:: _img/basic-example-df.png
+    :width: 350px
+
+
+Documentation
+-------------
+
 .. toctree::
    :maxdepth: 2
 
-   _pages/gpm
    _pages/simulate
    _pages/io
    _api/main.rst
