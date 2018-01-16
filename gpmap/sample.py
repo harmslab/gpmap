@@ -7,7 +7,7 @@ from .gpm import GenotypePhenotypeMap
 
 
 def sample_genotypes(gpm, fraction=1.0):
-    """Return new GenotypePhenotypeMap that's a sampling of given
+    """Return new GenotypePhenotypeMap that's a genotype sampling of given
     GenotypePhenotypeMap. Samples without replacement.
 
     The fraction will round to the lowest whole number of genotypes.
@@ -31,7 +31,10 @@ def sample_genotypes(gpm, fraction=1.0):
                                 n_replicates=d.n_replicates[index])
 
 def sample_phenotypes(gpm, n_replicates=1):
-    """
+    """Return new GenotypePhenotypeMap that's a phenotype sampling of given
+    GenotypePhenotypeMap. Samples without replacement.
+
+    Samples from normal distributions around each phenotype.
     """
     d = gpm.data
 
