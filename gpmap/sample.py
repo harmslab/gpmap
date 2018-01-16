@@ -1,35 +1,52 @@
 import numpy as np
-import gpmap
+from .gpm import GenotypePhenotypeMap
 
 # ----------------------------------------------------------
 # Sampling from Genotype-phenotype
 # ----------------------------------------------------------
 
 
-class Sample(object):
+def sample_genotypes(gpm, fraction=1.0):
+    """Return new GenotypePhenotypeMap that's a sampling of given
+    GenotypePhenotypeMap. Samples without replacement.
 
-    def __init__(self, gpm, replicate_genotypes, replicate_phenotypes,
-                 indices=None):
-        """Sample from simulated experiment """
-        self._gpm = gpm
-        self.replicate_genotypes = replicate_genotypes
-        self.replicate_phenotypes = replicate_phenotypes
-        self.n_replicates = replicate_genotypes.shape[1]
-        try:
-            self.genotypes = self.replicate_genotypes[:, 0]
-            self.phenotypes = np.mean(self.replicate_phenotypes, axis=1)
-            self.stdeviations = np.std(self.replicate_phenotypes, ddof=1,
-                                       axis=1)
-        except IndexError:
-            self.genotypes = self.replicate_genotypes
-            self.phenotypes = self.replicate_phenotypes
-            self.stdeviations = self.replicate_phenotypes
-        self.indices = indices
+    The fraction will round to the lowest whole number of genotypes.
+    """
+    # Shorten gpm.data
+    d = gpm.data
 
-    def get_gpm(self):
-        """Return a Genotype-phenotype object from sample. """
-        return gpmap.gpm.GenotypePhenotypeMap(self._gpm.wildtype,
-                                              self.genotypes, self.phenotypes,
-                                              stdeviations=self.stdeviations,
-                                              mutations=self._gpm.mutations,
-                                              n_replicates=self.n_replicates)
+    # Determine size
+    n = len(d)
+    size = int(fraction * n)
+
+    # Sample genotypes
+    index = np.random.choice(d.index, size=size, replace=False)
+
+    # Return GenotypePhenotypeMap
+    return GenotypePhenotypeMap(gpm.wildtype,
+                                d.genotypes[index],
+                                d.phenotypes[index],
+                                mutations=gpm.mutations,
+                                stdeviations=d.stdeviations[index],
+                                n_replicates=d.n_replicates[index])
+
+def sample_phenotypes(gpm, n_replicates=1):
+    """
+    """
+    d = gpm.data
+
+    # Draw samples
+    samples = np.random.normal(loc=d.phenotypes,
+                               scale=d.stdeviations,
+                               size=(n_replicates, len(d.phenotypes)))
+
+    phenotypes = np.mean(samples, axis=0)
+    stdeviations = np.std(samples, axis=0)
+
+    # Return GenotypePhenotypeMap
+    return GenotypePhenotypeMap(gpm.wildtype,
+                                d.genotypes,
+                                phenotypes,
+                                mutations=gpm.mutations,
+                                stdeviations=stdeviations,
+                                n_replicates=n_replicates)
