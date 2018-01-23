@@ -84,7 +84,9 @@ class MountFujiSimulation(BaseSimulation):
 
     def build(self):
         """Construct phenotypes using a rough Mount Fuji model."""
-        self.data.phenotypes = self.roughness - self.field_strength * self.hamming
+        self.data.phenotypes = (self.roughness) - (self.field_strength
+                                                   * self.hamming)
+
 
     def set_roughness(self, range=None):
         """Create a set of random values to add to the mount Fuji.

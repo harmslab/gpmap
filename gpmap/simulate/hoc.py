@@ -10,6 +10,6 @@ class HouseOfCardsSimulation(NKSimulation):
         super(NKSimulation, self).__init__(wildtype, mutations, *args,
                                            **kwargs)
         # Set parameters
-        self.set_order(self.binary.length)
+        self.set_order(len(self.binary[0]))
         self.set_random_values(k_range=k_range)
         self.build()

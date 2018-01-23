@@ -108,16 +108,16 @@ class NKSimulation(BaseSimulation):
             f_total = 0
             for j in range(self.length):
                 if j - pre_neighbor < 0:
-                    pre = self.genotypes[i][-pre_neighbor:]
-                    post = self.genotypes[i][j:neighbor + j + 1]
+                    pre = self.binary[i][-pre_neighbor:]
+                    post = self.binary[i][j:neighbor + j + 1]
                     f = "".join(pre) + "".join(post)
                 elif j + neighbor > self.length - 1:
-                    pre = self.genotypes[i][j - pre_neighbor:j + 1]
-                    post = self.genotypes[i][0:neighbor]
+                    pre = self.binary[i][j - pre_neighbor:j + 1]
+                    post = self.binary[i][0:neighbor]
                     f = "".join(pre) + "".join(post)
                 else:
                     f = "".join(
-                        self.genotypes[i][j - pre_neighbor:j + neighbor + 1])
+                        self.binary[i][j - pre_neighbor:j + neighbor + 1])
                 f_total += nk_table[f]
             phenotypes[i] = f_total
-        self.phenotypes = phenotypes
+        self.data.phenotypes = phenotypes
