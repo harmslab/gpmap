@@ -16,7 +16,6 @@ import pandas as pd
 
 # import different maps into this module
 import gpmap.utils as utils
-import gpmap.sample as sample
 import gpmap.errors as errors
 
 
