@@ -339,3 +339,19 @@ def mutations_to_genotypes(wildtype, mutations):
     sequences = it.product(*mutations_)
     genotypes = ["".join(s) for s in sequences]
     return genotypes
+
+
+def genotypes_to_mutations(genotypes):
+    """Create mutations dictionary from a list of mutations.
+    """
+    # Sequences to array
+    arr = np.array([list(g) for g in genotypes])
+
+    # Mutations dict
+    mutations = {i: None for i in range(arr.shape[1])}
+
+    # Find unique residues at all sites.
+    for i, col in enumerate(arr.T):
+        mutations[i] = list(np.unique(col))
+
+    return mutations

@@ -202,7 +202,7 @@ class GenotypePhenotypeMap(object):
         filename : str
             Name of file to write out.
         """
-        self.df.to_csv(filename, **kwargs)
+        self.data.to_csv(filename, **kwargs)
 
     def to_dict(self, complete=False):
         """Write genotype-phenotype map to dict."""
