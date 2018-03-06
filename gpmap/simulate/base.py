@@ -40,6 +40,7 @@ class BaseSimulation(GenotypePhenotypeMap):
         super(BaseSimulation, self).__init__(wildtype,
                                              genotypes,
                                              phenotypes,
+                                             mutations=mutations,
                                              *args,
                                              **kwargs)
 

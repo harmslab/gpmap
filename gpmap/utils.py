@@ -1,3 +1,20 @@
+__doc__ = """Utility functions for managing genotype-phenotype map data
+and conversions.
+
+Glossary:
+--------
+mutations : doct
+    keys are site numbers in the genotypes. Values are alphabet of mutations at
+    that sites
+
+encoding : dict
+    keys are site numbers in genotype. Values are dictionaries mapping each
+    mutation to its binary representation.
+
+
+
+"""
+
 # -------------------------------------------------------
 # Miscellaneous Python functions for random task
 # -------------------------------------------------------
@@ -355,3 +372,17 @@ def genotypes_to_mutations(genotypes):
         mutations[i] = list(np.unique(col))
 
     return mutations
+
+
+def genotypes_to_binary(wildtype, genotypes, mutations):
+    """Get binary representation of genotypes w.r.t. to wildtype."""
+    # Encoding dictionary
+    encoding = encode_mutations(wildtype, mutations)
+
+    binary = []
+    for g in genotypes:
+        b = ''
+        for site, mutation in enumerate(g):
+            b += encoding[site][mutation]
+        binary.append(b)
+    return binary

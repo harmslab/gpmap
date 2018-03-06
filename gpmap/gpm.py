@@ -66,7 +66,6 @@ class GenotypePhenotypeMap(object):
                  stdeviations=None,
                  mutations=None,
                  n_replicates=1,
-                 include_binary=True,
                  **kwargs):
 
         # Set mutations; if not given, assume binary space.
@@ -92,11 +91,8 @@ class GenotypePhenotypeMap(object):
         )
         self.data = pd.DataFrame(data)
 
-        # Built the binary representation of the genotype-phenotype.
-        # Constructs a complete sequence space and stores genotypes missing
-        # in the data as an attribute, `missing_genotypes`.
-        if include_binary:
-            self.add_binary()
+        # Add binary representation
+        self.add_binary()
 
         # Construct the error maps
         self._add_error()
@@ -278,27 +274,27 @@ class GenotypePhenotypeMap(object):
         """Binary representation of genotypes."""
         return self.data.binary.values
 
-    @property
-    def missing_genotypes(self):
-        """Genotypes that are missing from the complete genotype-to-phenotype
-        map."""
-        return self.missing_data.genotypes.values
-
-    @property
-    def missing_binary(self):
-        """Binary representation of missing genotypes"""
-        return self.missing_data.binary.values
-
-    @property
-    def complete_genotypes(self):
-        """Both missing and observed genotypes.
-        """
-        return self.complete_data.genotypes.values
-
-    @property
-    def complete_binary(self):
-        """Complete set of genotypes as binary representation."""
-        return self.complete_data.binary.values
+    # @property
+    # def missing_genotypes(self):
+    #     """Genotypes that are missing from the complete genotype-to-phenotype
+    #     map."""
+    #     return self.missing_data.genotypes.values
+    #
+    # @property
+    # def missing_binary(self):
+    #     """Binary representation of missing genotypes"""
+    #     return self.missing_data.binary.values
+    #
+    # @property
+    # def complete_genotypes(self):
+    #     """Both missing and observed genotypes.
+    #     """
+    #     return self.complete_data.genotypes.values
+    #
+    # @property
+    # def complete_binary(self):
+    #     """Complete set of genotypes as binary representation."""
+    #     return self.complete_data.binary.values
 
     @property
     def phenotypes(self):
@@ -326,43 +322,52 @@ class GenotypePhenotypeMap(object):
         self.err = errors.StandardErrorMap(self)
 
     def add_binary(self):
-        """Build a binary representation of set of
-        genotypes. Also the full set of genotypes, and creates two new
-        DataFrames: 'missing_data' and 'complete_data'.
-
-        Also reindexes `data` based on `complete_data`.
+        """Build a binary representation of set of genotypes.
         """
-        # Encode mutations as binary rep.
-        encoding = utils.encode_mutations(self.wildtype, self.mutations)
+        # Construct a binary representation for each genotype
+        binary = utils.genotypes_to_binary(self.wildtype,
+            self.genotypes,
+            self.mutations
+        )
 
-        # Use encoding map to construct binary presentation
-        unsorted_genotypes, unsorted_binary = utils.construct_genotypes(
-            encoding)
+        # Add this as a column to the map.
+        self.data['binary'] = binary
 
-        # New data object.
-        data = {'genotypes': unsorted_genotypes,
-                'binary': unsorted_binary}
 
-        # Store the complete genotype space in a DataFrame.
-        self._complete_data = pd.DataFrame(data)
-        self._complete_data.sort_values('genotypes', inplace=True)
-        self._complete_data.reset_index(drop=True, inplace=True)
-
-        # Mapping genotypes to index
-        mapping = dict(zip(self._complete_data.genotypes,
-                           self._complete_data.index))
-
-        # Get index of observed genotypes and missing genotypes.
-        observed_index = [mapping[g] for g in self.data.genotypes]
-        missing_index = set(self._complete_data.index).difference(
-            observed_index)
-
-        # Reset index of main data.
-        self.data.index = observed_index
-        # Add a column for binary representation of genotypes.
-        self.data['binary'] = pd.Series(self._complete_data.binary,
-                                        index=observed_index)
-
-        # Create a dataframe for the missing data.
-        self.missing_data = pd.DataFrame(self.complete_data,
-                                         index=missing_index)
+        #
+        #
+        #
+        # # Encode mutations as binary rep.
+        # encoding = utils.encode_mutations(self.wildtype, self.mutations)
+        #
+        # # Use encoding map to construct binary presentation
+        # unsorted_genotypes, unsorted_binary = utils.construct_genotypes(
+        #     encoding)
+        #
+        # # New data object.
+        # data = {'genotypes': unsorted_genotypes,
+        #         'binary': unsorted_binary}
+        #
+        # # Store the complete genotype space in a DataFrame.
+        # self._complete_data = pd.DataFrame(data)
+        # self._complete_data.sort_values('genotypes', inplace=True)
+        # self._complete_data.reset_index(drop=True, inplace=True)
+        #
+        # # Mapping genotypes to index
+        # mapping = dict(zip(self._complete_data.genotypes,
+        #                    self._complete_data.index))
+        #
+        # # Get index of observed genotypes and missing genotypes.
+        # observed_index = [mapping[g] for g in self.data.genotypes]
+        # missing_index = set(self._complete_data.index).difference(
+        #     observed_index)
+        #
+        # # Reset index of main data.
+        # self.data.index = observed_index
+        # # Add a column for binary representation of genotypes.
+        # self.data['binary'] = pd.Series(self._complete_data.binary,
+        #                                 index=observed_index)
+        #
+        # # Create a dataframe for the missing data.
+        # self.missing_data = pd.DataFrame(self.complete_data,
+        #                                  index=missing_index)
