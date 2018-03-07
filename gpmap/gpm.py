@@ -253,13 +253,6 @@ class GenotypePhenotypeMap(object):
         return "".join(_mutant)
 
     @property
-    def complete_data(self):
-        """"""
-        return pd.merge(self._complete_data, self.data,
-                        on=['genotypes', 'binary'],
-                        how='outer')
-
-    @property
     def mutations(self):
         """Get the furthest genotype from the wildtype genotype."""
         return self._mutations
@@ -273,28 +266,6 @@ class GenotypePhenotypeMap(object):
     def binary(self):
         """Binary representation of genotypes."""
         return self.data.binary.values
-
-    # @property
-    # def missing_genotypes(self):
-    #     """Genotypes that are missing from the complete genotype-to-phenotype
-    #     map."""
-    #     return self.missing_data.genotypes.values
-    #
-    # @property
-    # def missing_binary(self):
-    #     """Binary representation of missing genotypes"""
-    #     return self.missing_data.binary.values
-    #
-    # @property
-    # def complete_genotypes(self):
-    #     """Both missing and observed genotypes.
-    #     """
-    #     return self.complete_data.genotypes.values
-    #
-    # @property
-    # def complete_binary(self):
-    #     """Complete set of genotypes as binary representation."""
-    #     return self.complete_data.binary.values
 
     @property
     def phenotypes(self):
@@ -332,42 +303,3 @@ class GenotypePhenotypeMap(object):
 
         # Add this as a column to the map.
         self.data['binary'] = binary
-
-
-        #
-        #
-        #
-        # # Encode mutations as binary rep.
-        # encoding = utils.encode_mutations(self.wildtype, self.mutations)
-        #
-        # # Use encoding map to construct binary presentation
-        # unsorted_genotypes, unsorted_binary = utils.construct_genotypes(
-        #     encoding)
-        #
-        # # New data object.
-        # data = {'genotypes': unsorted_genotypes,
-        #         'binary': unsorted_binary}
-        #
-        # # Store the complete genotype space in a DataFrame.
-        # self._complete_data = pd.DataFrame(data)
-        # self._complete_data.sort_values('genotypes', inplace=True)
-        # self._complete_data.reset_index(drop=True, inplace=True)
-        #
-        # # Mapping genotypes to index
-        # mapping = dict(zip(self._complete_data.genotypes,
-        #                    self._complete_data.index))
-        #
-        # # Get index of observed genotypes and missing genotypes.
-        # observed_index = [mapping[g] for g in self.data.genotypes]
-        # missing_index = set(self._complete_data.index).difference(
-        #     observed_index)
-        #
-        # # Reset index of main data.
-        # self.data.index = observed_index
-        # # Add a column for binary representation of genotypes.
-        # self.data['binary'] = pd.Series(self._complete_data.binary,
-        #                                 index=observed_index)
-        #
-        # # Create a dataframe for the missing data.
-        # self.missing_data = pd.DataFrame(self.complete_data,
-        #                                  index=missing_index)
