@@ -118,14 +118,14 @@ class GenotypePhenotypeMap(object):
     def read_excel(cls, fname, wildtype, **kwargs):
         """"""
         df = pd.read_excel(fname)
-        self = cls.read_dataframe(df, wildtype)
+        self = cls.read_dataframe(df, wildtype, **kwargs)
         return self
 
     @classmethod
     def read_csv(cls, fname, wildtype, **kwargs):
         """"""
         df = pd.read_csv(fname)
-        self = cls.read_dataframe(df, wildtype)
+        self = cls.read_dataframe(df, wildtype, **kwargs)
         return self
 
     @classmethod

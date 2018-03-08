@@ -375,7 +375,38 @@ def genotypes_to_mutations(genotypes):
 
 
 def genotypes_to_binary(wildtype, genotypes, mutations):
-    """Get binary representation of genotypes w.r.t. to wildtype."""
+    """Get binary representation of genotypes w.r.t. to wildtype.
+
+    Parameters
+    ----------
+    wildtype : str
+        wildtype sequence.
+
+    genotypes : list
+        List of genotypes to transform.
+
+    mutations : dict
+        mutations dictionary that maps sites to mutations.
+
+    Returns
+    -------
+    binary : list
+        list of binary representations.
+    """
+    # ---------- Sanity Checks ---------------
+    # 1. Check genotypes are all same length
+    length_of_genotypes = [len(g) for g in genotypes]
+    length = length_of_genotypes[0]
+
+    if len(set(length_of_genotypes)) > 1:
+        raise Exception("Genotypes are not all the same length.")
+
+    if len(wildtype) != length:
+        raise Exception("Wildtype is not the same length as genotypes.")
+
+    if len(mutations) != length:
+        raise Exception("mutations dict is not the same length as genotypes.")
+
     # Encoding dictionary
     encoding = encode_mutations(wildtype, mutations)
 
