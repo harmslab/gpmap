@@ -16,7 +16,7 @@ class MountFujiSimulation(BaseSimulation):
 
     .. math::
 
-        f(g) = \\nu (g) - c \cdot d(g_0, g)
+        f(g) = \\nu (g) + c \cdot d(g_0, g)
 
     where $\\nu$ is the roughness parameter, $c$ is the field strength,
     and $d$ is the hamming distance between genotype $g$ and the
@@ -84,7 +84,7 @@ class MountFujiSimulation(BaseSimulation):
 
     def build(self):
         """Construct phenotypes using a rough Mount Fuji model."""
-        self.data.phenotypes = (self.roughness) - (self.field_strength
+        self.data.phenotypes = (self.roughness) + (self.field_strength
                                                    * self.hamming)
 
 
