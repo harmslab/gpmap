@@ -71,10 +71,11 @@ hamming distance between genotype :math:`g` and the reference genotype.
     from gpmap.simulate import MountFujiSimulation
 
     # Create an instance of the model. Using `from_length` makes this easy.
-    gpm = MountFujiSimulation.from_length(6)
+    gpm = MountFujiSimulation.from_length(6
+        roughness_width=0.5,
+        roughness_dist='normal'
+    )
 
-    # add roughness, sampling from a range of values.
-    gpm.set_roughness(range=(-1,1))
 
 References
 ----------
