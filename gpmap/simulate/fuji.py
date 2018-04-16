@@ -202,7 +202,11 @@ class MountFujiSimulation(BaseSimulation):
         self._field_strength = c
         self.build()
 
+    @property
+    def scale(self):
+        """Mt. Fuji phenotypes without noise."""
+        return self.field_strength * self.hamming
+
     def build(self):
         """Construct phenotypes using a rough Mount Fuji model."""
-        self.data.phenotypes = (self.roughness) + (self.field_strength
-                                                   * self.hamming)
+        self.data.phenotypes = self.roughness + self.scale
