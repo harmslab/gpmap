@@ -115,6 +115,18 @@ class GenotypePhenotypeMap(object):
         return self
 
     @classmethod
+    def read_pickle(cls, filename, **kwargs):
+        """Read GenotypePhenotypeMap from pickle"""
+        with open(filename, 'rb') as f:
+            self = pickle.load(f)
+
+        # Check input
+        if not isinstance(self, GenotypePhenotypeMap):
+            raise Exception("Pickle file does not contain a GenotypePhenotypeMap.")
+
+        return self
+
+    @classmethod
     def read_excel(cls, fname, wildtype, **kwargs):
         """"""
         df = pd.read_excel(fname)
@@ -173,6 +185,12 @@ class GenotypePhenotypeMap(object):
     # ----------------------------------------------------------
     # Writing methods
     # ----------------------------------------------------------
+
+    def to_pickle(self, filename, **kwargs):
+        """Write GenotypePhenotypeMap object to a pickle file.
+        """
+        with open(filename, 'wb') as f:
+            pickle.dump(self, f)
 
     def to_excel(self, filename, **kwargs):
         """Write genotype-phenotype map to excel spreadsheet.
