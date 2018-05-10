@@ -127,16 +127,28 @@ class GenotypePhenotypeMap(object):
         return self
 
     @classmethod
-    def read_excel(cls, fname, wildtype, **kwargs):
+    def read_csv(cls, fname, wildtype, **kwargs):
         """"""
-        df = pd.read_excel(fname)
+        dtypes = dict(
+            genotypes=str,
+            phenotypes=float,
+            stdeviations=float,
+            n_replicates=int
+        )
+        df = pd.read_csv(fname, dtype=dtypes)
         self = cls.read_dataframe(df, wildtype, **kwargs)
         return self
 
     @classmethod
-    def read_csv(cls, fname, wildtype, **kwargs):
+    def read_excel(cls, fname, wildtype, **kwargs):
         """"""
-        df = pd.read_csv(fname)
+        dtypes = dict(
+            genotypes=str,
+            phenotypes=float,
+            stdeviations=float,
+            n_replicates=int
+        )
+        df = pd.read_excel(fname, dtype=dtypes)
         self = cls.read_dataframe(df, wildtype, **kwargs)
         return self
 
@@ -203,7 +215,7 @@ class GenotypePhenotypeMap(object):
         filename : str
             Name of file to write out.
         """
-        self.df.to_excel(filename, **kwargs)
+        self.data.to_excel(filename, **kwargs)
 
     def to_csv(self, filename, **kwargs):
         """Write genotype-phenotype map to csv spreadsheet.
