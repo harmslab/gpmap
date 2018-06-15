@@ -414,6 +414,7 @@ def genotypes_to_binary(wildtype, genotypes, mutations):
     for g in genotypes:
         b = ''
         for site, mutation in enumerate(g):
-            b += encoding[site][mutation]
+            if mutations[site] is not None:
+                b += encoding[site][mutation]
         binary.append(b)
     return binary
