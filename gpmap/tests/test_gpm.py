@@ -1,16 +1,14 @@
 # import numpy as np
 # import pytest
 #
-# from . import base
 # from ..gpm import GenotypePhenotypeMap
-#
 #
 # @pytest.fixture()
 # def tmp_gpm_file():
 #     pass
 #
 #
-# class testGenotypePhenotypeMap(base.BaseTestClass):
+# class testGenotypePhenotypeMap:
 #
 #     def _test_attributes(self, gpm):
 #         # Test instance was created
@@ -35,7 +33,7 @@
 #
 #     def test_read_json(self):
 #         """Test reading from json"""
-#         gpm = GenotypePhenotypeMap.read_json("data.json")
+#         # gpm = GenotypePhenotypeMap.read_json("data.json")
 #         # Test instance was created
 #         tools.assert_is_instance(gpm, GenotypePhenotypeMap)
 #         # Test elements align

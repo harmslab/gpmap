@@ -111,7 +111,17 @@ def test_genotypes_to_mutations():
     assert dicts_are_same(mutations, MUTATIONS)
 
 
-def test_genotyeps_to_binary():
+def test_genotypes_to_binary():
+    """Test get_missing_genotypes function."""
     binary = utils.genotypes_to_binary(WILDTYPE, GENOTYPES, MUTATIONS)
 
     assert lists_are_same(binary, BINARY)
+
+
+def test_get_missing_genotypes():
+    """Test get_missing_genotypes function."""
+    known_, missing_ = GENOTYPES[0:4], GENOTYPES[4:]
+
+    missing = utils.get_missing_genotypes(known_, MUTATIONS)
+
+    assert lists_are_same(missing, missing_)

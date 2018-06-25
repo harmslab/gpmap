@@ -265,3 +265,30 @@ def genotypes_to_binary(wildtype, genotypes, mutations):
                 b += encoding[site][mutation]
         binary.append(b)
     return binary
+
+
+def get_missing_genotypes(genotypes, mutations):
+    """Get a list of genotypes not found in the given genotypes list.
+
+    Parameters
+    ----------
+    genotypes : list
+        List of genotypes.
+
+    mutations : dict
+        Mutation dictionary
+
+    Return
+    ------
+    missing_genotypes : list
+        List of genotypes not found in genotypes list.
+    """
+    # Need a wildtype--doesn't matter what it is.
+    wildtype = "".join([sites[0] for sites in mutations.values()])
+
+    # Get all genotypes.
+    all_genotypes = mutations_to_genotypes(wildtype, mutations)
+
+    # Find genotypes not found in genotypes list.
+    missing_genotypes = set(all_genotypes).difference(set(genotypes))
+    return list(missing_genotypes)
