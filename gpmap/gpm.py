@@ -75,8 +75,8 @@ class GenotypePhenotypeMap(object):
             self._mutations = dict([(int(key), val)
                                    for key, val in mutations.items()])
         else:
-            mutant = utils.farthest_genotype(wildtype, genotypes)
-            mutations = utils.binary_mutations_map(wildtype, mutant)
+            # Get mutations dict from genotypes.
+            mutations = utils.genotypes_to_mutations(wildtype, genotypes)
             self._mutations = mutations
 
         # Set wildtype.
