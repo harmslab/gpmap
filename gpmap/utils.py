@@ -176,17 +176,18 @@ def mutations_to_encoding(wildtype, mutations):
     return encoding
 
 
-def mutations_to_genotypes(wildtype, mutations):
+def mutations_to_genotypes(mutations, wildtype=None):
     """Use a mutations dictionary to construct an array of genotypes composed
     of those mutations.
 
     Parameters
     ----------
-    wildtype : str
-        wildtype genotype (as string).
     mutations : dict
         A mapping dict with site numbers as keys and lists of mutations as
         values.
+
+    wildtype : str
+        wildtype genotype (as string).
 
     Returns
     -------
@@ -267,7 +268,7 @@ def genotypes_to_binary(wildtype, genotypes, mutations):
     return binary
 
 
-def get_missing_genotypes(genotypes, mutations):
+def get_missing_genotypes(genotypes, mutations=None):
     """Get a list of genotypes not found in the given genotypes list.
 
     Parameters
@@ -275,7 +276,7 @@ def get_missing_genotypes(genotypes, mutations):
     genotypes : list
         List of genotypes.
 
-    mutations : dict
+    mutations : dict (optional)
         Mutation dictionary
 
     Return
@@ -283,11 +284,14 @@ def get_missing_genotypes(genotypes, mutations):
     missing_genotypes : list
         List of genotypes not found in genotypes list.
     """
+    if mutations is None:
+        mutations = genotypes_to_mutations(genotypes)
+
     # Need a wildtype--doesn't matter what it is.
     wildtype = "".join([sites[0] for sites in mutations.values()])
 
     # Get all genotypes.
-    all_genotypes = mutations_to_genotypes(wildtype, mutations)
+    all_genotypes = mutations_to_genotypes(mutations, wildtype)
 
     # Find genotypes not found in genotypes list.
     missing_genotypes = set(all_genotypes).difference(set(genotypes))
