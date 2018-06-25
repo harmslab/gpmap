@@ -272,63 +272,6 @@ def encode_mutations(wildtype, mutations):
     return encoding
 
 
-def construct_genotypes(encoding):
-    """Constructs binary representation of genotype map given a specific
-    alphabet for each site.
-
-    Parameters
-    ----------
-    encoding: OrderedDict of OrderDicts
-        Encoding dictionary that maps site number to mutation-binary map.
-        *NOTE* If site does not mutate, value is set to wildtype site string
-        (not dictionary).
-
-    Returns
-    -------
-    genotypes: list
-        list of genotypes
-    binary: list
-        list of binary represention of genotypes
-    """
-    binary = [""]
-    genotypes = [""]
-    for site in encoding:
-        # If the site is not mutating, just add wildtype encoding
-        if type(encoding[site]) is str:
-            # Parameters that are needed for looping
-            n_genotypes = len(genotypes)
-
-            # Enumerate all possible configurations to append
-            # wildtype site to genotypes. Binary sequences stay the same.
-            for i in range(n_genotypes):
-                genotypes[i] += encoding[site]
-
-        # else, apply binary encoding scheme for that mutation.
-        else:
-            # Parameters that are needed for looping
-            n_genotypes = len(genotypes)
-            n_copies = len(encoding[site])
-            copy_genotypes = list(genotypes)
-            copy_binary = list(binary)
-
-            # Make copies of previous sites' genotypes
-            # for appending next sites binary combinations
-            for i in range(n_copies - 1):
-                genotypes += copy_genotypes
-                binary += copy_binary
-
-            # Enumerate all possible configurations to append
-            # next sites binary combinations to old
-            skips = 0
-            for key, val in encoding[site].items():
-                for i in range(n_genotypes):
-                    genotypes[skips * n_genotypes + i] += key
-                    binary[skips * n_genotypes + i] += val
-                skips += 1
-
-    return genotypes, binary
-
-
 def mutations_to_genotypes(wildtype, mutations):
     """Use a mutations dictionary to construct an array of genotypes composed
     of those mutations.
