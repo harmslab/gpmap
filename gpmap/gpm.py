@@ -18,6 +18,16 @@ import pandas as pd
 import gpmap.utils as utils
 import gpmap.errors as errors
 
+def display(repr):
+
+    def inner(self):
+        repr(self)
+
+        from IPython.display import display
+        display(self.data)
+
+    return inner
+
 
 class GenotypePhenotypeMap(object):
     """Object for containing genotype-phenotype map data.
@@ -96,6 +106,10 @@ class GenotypePhenotypeMap(object):
 
         # Construct the error maps
         self._add_error()
+
+    def _repr_html_(self):
+        """Represent the GenotypePhenotypeMap as an html table."""
+        return self.data.to_html()
 
     def map(self, attr1, attr2):
         """Dictionary that maps attr1 to attr2."""
