@@ -76,7 +76,7 @@ class GenotypePhenotypeMap(object):
                                    for key, val in mutations.items()])
         else:
             # Get mutations dict from genotypes.
-            mutations = utils.genotypes_to_mutations(wildtype, genotypes)
+            mutations = utils.genotypes_to_mutations(genotypes)
             self._mutations = mutations
 
         # Set wildtype.
@@ -269,6 +269,12 @@ class GenotypePhenotypeMap(object):
     def wildtype(self):
         """Get reference genotypes for interactions. """
         return self._wildtype
+
+    @wildtype.setter
+    def wildtype(self, wildtype):
+        """If a wildtype is given after init, rebuild binary genotypes."""
+        self._wildtype = wildtype
+        self.add_binary()
 
     @property
     def mutant(self):
