@@ -75,8 +75,8 @@ class GenotypePhenotypeMap(object):
             self._mutations = dict([(int(key), val)
                                    for key, val in mutations.items()])
         else:
-            mutant = utils.farthest_genotype(wildtype, genotypes)
-            mutations = utils.binary_mutations_map(wildtype, mutant)
+            # Get mutations dict from genotypes.
+            mutations = utils.genotypes_to_mutations(genotypes)
             self._mutations = mutations
 
         # Set wildtype.
@@ -96,6 +96,10 @@ class GenotypePhenotypeMap(object):
 
         # Construct the error maps
         self._add_error()
+
+    def _repr_html_(self):
+        """Represent the GenotypePhenotypeMap as an html table."""
+        return self.data.to_html()
 
     def map(self, attr1, attr2):
         """Dictionary that maps attr1 to attr2."""
@@ -265,6 +269,12 @@ class GenotypePhenotypeMap(object):
     def wildtype(self):
         """Get reference genotypes for interactions. """
         return self._wildtype
+
+    @wildtype.setter
+    def wildtype(self, wildtype):
+        """If a wildtype is given after init, rebuild binary genotypes."""
+        self._wildtype = wildtype
+        self.add_binary()
 
     @property
     def mutant(self):

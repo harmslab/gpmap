@@ -48,6 +48,8 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
+   _pages/quick-start
+   _pages/helpful
    _pages/simulate
    _pages/io
    _api/main.rst

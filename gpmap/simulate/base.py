@@ -35,7 +35,7 @@ class BaseSimulation(GenotypePhenotypeMap):
 
     def __init__(self, wildtype, mutations, *args, **kwargs):
         # build genotypes
-        genotypes = utils.mutations_to_genotypes(wildtype, mutations)
+        genotypes = utils.mutations_to_genotypes(mutations, wildtype=wildtype)
         phenotypes = np.empty(len(genotypes), dtype=float)
         super(BaseSimulation, self).__init__(wildtype,
                                              genotypes,

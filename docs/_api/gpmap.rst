@@ -6,14 +6,6 @@ gpmap\.errors module
     :undoc-members:
     :show-inheritance:
 
-gpmap\.sample module
---------------------
-
-.. automodule:: gpmap.sample
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 gpmap\.stats module
 -------------------
 

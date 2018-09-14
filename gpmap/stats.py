@@ -5,6 +5,20 @@ import math
 # Unbiased calculations of sample statistics to error statistics
 # -----------------------------------------------------------------------
 
+def coverage(gpm):
+    # Get binary representation
+    binary = gpm.binary
+
+    # Determine shape of obs matrix
+    shape = (len(binary), len(binary[0]))
+
+    # Initialize obs matrix
+    obs_matrix = np.array([np.array(list(b)) for b in binary], dtype=int)
+
+    # Compute the average times each mutation is observed
+    observations = obs_matrix.sum(axis=0)
+
+
 
 def c4_correction(n_samples):
     """Return the correction scalar for calculating standard deviation from a normal distribution. """

@@ -44,6 +44,8 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'IPython.sphinxext.ipython_directive',
+    'IPython.sphinxext.ipython_console_highlighting',
     'sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon'
