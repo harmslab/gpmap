@@ -4,7 +4,7 @@ from gpmap import utils
 from gpmap.gpm import GenotypePhenotypeMap
 
 
-def random_mutation_set(length, alphabet_size=2):
+def random_mutation_set(length, alphabet_size=2, type='AA'):
     """Generate a random mutations dictionary for simulations.
 
     Parameters
@@ -14,17 +14,23 @@ def random_mutation_set(length, alphabet_size=2):
     alphabet_size : int or list
         alphabet size at each site. if list is given, will make site i have
         size alphab_size[i].
+    type : 'AA' or "DNA'
+        Use amino acid alphabet or DNA alphabet
     """
-    if type(alphabet_size) == int:
+
+    if isinstance(alphabet_size, int):
         size = [alphabet_size for i in range(length)]
     else:
         size = alphabet_size
     # build mutations dictionary
     mutations = {}
     for i in range(length):
-        AA = utils.AMINO_ACIDS
-        random.shuffle(AA)
-        alphabet = AA[:size[i]]
+        if type == 'AA':
+            A = utils.AMINO_ACIDS
+        elif type == 'DNA':
+            A = utils.DNA
+        random.shuffle(A)
+        alphabet = A[:size[i]]
         mutations[i] = alphabet
     return mutations
 
