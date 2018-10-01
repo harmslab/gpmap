@@ -99,7 +99,7 @@ def test_mutations_to_encoding():
 
 def test_mutations_to_genotypes():
     """Test mutations to genotypes function."""
-    genotypes = utils.mutations_to_genotypes(WILDTYPE, MUTATIONS)
+    genotypes = utils.mutations_to_genotypes(MUTATIONS, wildtype=WILDTYPE)
 
     assert lists_are_same(genotypes, GENOTYPES)
 

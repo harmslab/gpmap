@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "*"
+scipy = "*"
+pandas = "*"
+pytest = "*"
+gpmap = {editable = true, path = "."}
+
+[dev-packages]
+gpmap = {editable = true, path = "."}
+
+[requires]
+python_version = "3.7"

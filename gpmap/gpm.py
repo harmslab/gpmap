@@ -343,3 +343,17 @@ class GenotypePhenotypeMap(object):
 
         # Add this as a column to the map.
         self.data['binary'] = binary
+
+    def get_missing_genotypes(self):
+        """Get all genotypes missing from the complete genotype-phenotype map."""
+        return utils.get_missing_genotypes(
+            self.genotypes,
+            mutations=self.mutations
+        )
+
+    def get_all_possible_genotypes(self):
+        """Get the complete set of genotypes possible. There is no particular order
+        to the genotypes. Consider sorting.
+        """
+        # Get all genotypes.
+        return mutations_to_genotypes(self.mutations, wildtype=self.wildtype)
