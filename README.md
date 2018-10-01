@@ -49,12 +49,28 @@ gpm = GenotypePhenotypeMap.read_json("data.json")
 
 ## Installation
 
-To install this package, clone from source and use pip.
+**Users**
+This simplest way to install this package is using pip:
+```
+pip install gpmap
+```
+
+**Developers**
+The recommended way to install this package fro development is using `pipenv`.
+
+1. Clone this repository:
 ```
 git clone https://github.com/harmslab/gpmap
-cd gpmap
-pip install -e .
 ```
+2. Install the package using pipenv.
+```
+cd gpmap
+pipenv install --dev -e .
+```
+3. Run tests using pytest
+```
+pytest
+
 
 ## Dependencies
 

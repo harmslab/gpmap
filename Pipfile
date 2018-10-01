@@ -8,8 +8,10 @@ numpy = "*"
 scipy = "*"
 pandas = "*"
 pytest = "*"
+gpmap = {editable = true, path = "."}
 
 [dev-packages]
+gpmap = {editable = true, path = "."}
 
 [requires]
 python_version = "3.7"
