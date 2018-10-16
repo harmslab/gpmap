@@ -7,6 +7,10 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+.DS_Store
+docs/.DS_Store
+gpmap/.DS_Store
+gpmap/simulate/.DS_Store
 .Python
 env/
 build/

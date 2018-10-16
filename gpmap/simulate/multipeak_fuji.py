@@ -14,7 +14,13 @@ class MultiPeakMountFujiSimulation(BaseSimulation):
     from this genotype, called a "fitness field". The strength (or scale) of
     this field is linear and depends on the parameters `field_strength`.
     Roughness can be added to the Mount Fuji model using a random
-    `roughness` parameter. This assigns a random
+    `roughness` parameter. This adds a random value (positive or negative)
+    to each of the fitnesses. The multi-peak Mount Fuji model defines
+    multiple fitness peaks across the map. Each of the peaks defines a
+    fitness for every node as described above, but in the end, all but the
+    highest fitness value will be discarded, i.e. the fitness of each node
+    is defined by the nearest peak.
+
 
     .. math::
 
@@ -41,6 +47,30 @@ class MultiPeakMountFujiSimulation(BaseSimulation):
     roughness_dist : str, 'normal'
         Distribution used to create noise around phenotypes.
 
+    peak_n : int.
+        The desired number of peaks in map. (Is only guaranteed if roughness_width is 0, else ruggedness might lead to
+        additional local fitness peaks.)
+
+    min_dist : int, None (default = 2).
+        Minimal distance between any two peaks.
+
+    max_dist : int, None (default = None).
+        Maximal distance between any two peaks. If None, maximal distance is going to be the largest possible distance,
+        i.e. 5 in a 5-site map.
+
+    a_state : int, None (default = None).
+        State that is guaranteed to become a peak. If None, a_state is going to be the wildtype genotype.
+        This is done to have to well separated peaks that span the whole map. If unwanted, set any node as a_state
+        and/or b_state.
+
+    b_state : int, None (default = None).
+        State that is guaranteed to become a peak. If None, b_state is going to be the farthest genotype from wildtype.
+        This is done to have to well separated peaks that span the whole map. If unwanted, set any node as a_state
+        and/or b_state.
+
+    peaks : list, None (default = None).
+        A list of nodes that will be defined as peaks. If None, peaks will be defined randomly using the other arguments
+        as criteria.
 
     References
     ----------
@@ -62,6 +92,7 @@ class MultiPeakMountFujiSimulation(BaseSimulation):
             max_dist=None,
             a_state=None,
             b_state=None,
+            peaks=None,
             *args,
             **kwargs):
         # Call parent class.
@@ -73,6 +104,7 @@ class MultiPeakMountFujiSimulation(BaseSimulation):
         self._roughness_dist = roughness_dist
         self._roughness = None
         self._peak_n = peak_n
+        self._peaks = peaks
         self._min_dist = min_dist
         self._max_dist = max_dist
         self._a_state = a_state
@@ -149,19 +181,24 @@ class MultiPeakMountFujiSimulation(BaseSimulation):
 
     @property
     def peaks(self):
-        """Find n peaks that meet the max_dist/min_dist requirement"""
-        self._peaks = [self.b_state, self.a_state]
-        while len(self._peaks) < self.peak_n:
-            proposed = random.choice(self.genotypes)  # Propose a new peak.
-            add = False
-            for peak in self._peaks:
-                if utils.hamming_distance(peak, proposed) >= self.min_dist <= self.max_dist:  # Check dist. requirements
-                    add = True
-                else:
-                    break
-            if add:
-                self._peaks.append(proposed)
-        return self._peaks
+        if self._peaks:
+            return self._peaks
+        else:
+            """Find n peaks that meet the max_dist/min_dist requirement"""
+            self._peaks = [self.b_state, self.a_state]
+            while len(self._peaks) < self.peak_n:
+                proposed = random.choice(self.genotypes)  # Propose a new peak.
+                add = False
+                for peak in self._peaks:
+                    dist = utils.hamming_distance(peak, proposed)
+                    if dist >= self.min_dist and dist <= self.max_dist:  # Check dist. requirements
+                        add = True
+                    else:
+                        add = False
+                        break
+                if add:
+                    self._peaks.append(proposed)
+            return self._peaks
 
     @property
     def hamming(self):
