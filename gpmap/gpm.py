@@ -79,6 +79,9 @@ class GenotypePhenotypeMap(object):
             mutations = utils.genotypes_to_mutations(genotypes)
             self._mutations = mutations
 
+        # Leftover kwargs become metadata that is ignored.
+        self.metadata = kwargs
+
         # Set wildtype.
         self._wildtype = wildtype
 
@@ -166,37 +169,33 @@ class GenotypePhenotypeMap(object):
         Keyword arguments override input that is loaded from the JSON file.
         """
         # Open, json load, and close a json file
-        f = open(filename, "r")
-        data = json.load(f)
-        f.close()
+        with open(filename, "r") as f:        
+            metadata = json.load(f)
+            data = metadata["data"]
 
-        # Grab all properties from data-structure
-        necessary_args = ["wildtype", "genotypes", "phenotypes"]
-        options = {
-            "genotypes": [],
-            "phenotypes": [],
-            "wildtype": [],
-            "stdeviations": None,
-            "mutations": None,
-            "n_replicates": 1,
-        }
-        # Get all options for map and order them
-        for key in options:
-            # See if options are in json data
-            try:
-                options[key] = data[key]
-            except KeyError:
-                pass
-        # Override any properties with manually entered kwargs passed directly
-        # into method
-        options.update(kwargs)
-        args = []
-        for arg in necessary_args:
-            val = options.pop(arg)
-            args.append(val)
+        if "wildtype" in metadata:
+            wildtype = metadata["wildtype"]
+            metadata.pop("wildtype")
+
+        # Check keys in dictionary.
+        if not all(key in data for key in ["genotypes", "phenotypes", "stdeviations", "n_replicates"]):
+            raise Exception('The "data" field must have the following keys: '
+                            'genotypes", "phenotypes", "stdeviations", "n_replicates"')
+
         # Create an instance
-        gpm = cls(args[0], args[1], args[2], **options)
+        gpm = cls(
+            wildtype,
+            data["genotypes"],
+            data["phenotypes"],
+            stdeviations=data["stdeviations"],
+            n_replicates=data["n_replicates"],
+            **metadata
+        )
         return gpm
+
+    @classmethod
+    def from_dict(self, data):
+        """"""
 
     # ----------------------------------------------------------
     # Writing methods
@@ -240,9 +239,14 @@ class GenotypePhenotypeMap(object):
             data = self.complete_data.to_dict('list')
         else:
             data = self.data.to_dict('list')
-        # Get metadata.
-        data.update(wildtype=self.wildtype, mutations=self.mutations)
-        return data
+
+        metadata = {
+            "wildtype": self.wildtype,
+            "mutations": self.mutations,
+            "data": data
+        }
+        metadata.update(**self.metadata)
+        return metadata
 
     def to_json(self, filename, complete=False):
         """Write genotype-phenotype map to json file. If no filename is given
