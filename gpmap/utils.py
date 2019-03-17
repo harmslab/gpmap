@@ -296,3 +296,16 @@ def get_missing_genotypes(genotypes, mutations=None):
     # Find genotypes not found in genotypes list.
     missing_genotypes = set(all_genotypes).difference(set(genotypes))
     return list(missing_genotypes)
+
+def length_to_mutations(length, alphabet=["0", "1"]):
+    """Build a mutations dictionary for a given alphabet
+    
+    Parameters
+    ----------
+    length : int
+        length of the genotypes
+
+    alphabet : list
+        List of mutations at each site.  
+    """
+    return {i: alphabet for i in range(length)}
