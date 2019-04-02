@@ -207,7 +207,7 @@ class GenotypePhenotypeMap(object):
         with open(filename, 'wb') as f:
             pickle.dump(self, f)
 
-    def to_excel(self, filename, **kwargs):
+    def to_excel(self, filename=None, **kwargs):
         """Write genotype-phenotype map to excel spreadsheet.
 
         Keyword arguments are passed directly to Pandas dataframe to_excel
@@ -220,7 +220,7 @@ class GenotypePhenotypeMap(object):
         """
         self.data.to_excel(filename, **kwargs)
 
-    def to_csv(self, filename, **kwargs):
+    def to_csv(self, filename=None, **kwargs):
         """Write genotype-phenotype map to csv spreadsheet.
 
         Keyword arguments are passed directly to Pandas dataframe to_csv
@@ -248,7 +248,7 @@ class GenotypePhenotypeMap(object):
         metadata.update(**self.metadata)
         return metadata
 
-    def to_json(self, filename, complete=False):
+    def to_json(self, filename=None, complete=False):
         """Write genotype-phenotype map to json file. If no filename is given
         returns
         """
@@ -256,8 +256,11 @@ class GenotypePhenotypeMap(object):
         data = self.to_dict(complete=complete)
 
         # Write to json file.
-        with open(filename, "w") as f:
-            json.dump(data, f)
+        if filename is None:
+            return json.dumps(data)
+        else:
+            with open(filename, "w") as f:
+                json.dump(data, f)
 
     @property
     def length(self):
