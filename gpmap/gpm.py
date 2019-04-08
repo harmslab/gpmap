@@ -28,10 +28,11 @@ class GenotypePhenotypeMap(object):
         wildtype sequence.
 
     genotypes : array-like
-        list of all genotypes in system. Must be a complete system.
+        list of all genotypes in system.
 
     phenotypes : array-like
-        List of phenotypes in the same order as genotypes.
+        List of phenotypes in the same order as genotypes.  If None,
+        all genotypes are assigned a phenotype = 1.0.
 
     mutations : dict
         Dictionary that maps each site indice to their possible substitution
@@ -62,11 +63,16 @@ class GenotypePhenotypeMap(object):
         object that gives you (the user) access to the binary representation
         of the map.
     """
-    def __init__(self, wildtype, genotypes, phenotypes,
+    def __init__(self, wildtype, genotypes,
+                 phenotypes=None,
                  stdeviations=None,
                  mutations=None,
                  n_replicates=1,
                  **kwargs):
+
+        # Assign dummy phenotypes
+        if phenotypes is None:
+            phenotypes = np.ones(len(genotypes),dtype=np.float)
 
         # Set mutations; if not given, assume binary space.
         if mutations is not None:
@@ -169,7 +175,7 @@ class GenotypePhenotypeMap(object):
         Keyword arguments override input that is loaded from the JSON file.
         """
         # Open, json load, and close a json file
-        with open(filename, "r") as f:        
+        with open(filename, "r") as f:
             metadata = json.load(f)
             data = metadata["data"]
 
