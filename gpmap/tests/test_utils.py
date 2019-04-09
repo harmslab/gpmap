@@ -113,7 +113,8 @@ def test_genotypes_to_mutations():
 
 def test_genotypes_to_binary():
     """Test get_missing_genotypes function."""
-    binary = utils.genotypes_to_binary(WILDTYPE, GENOTYPES, MUTATIONS)
+    encoding_table = utils.get_encoding_lookup_table(WILDTYPE, MUTATIONS)
+    binary = utils.genotypes_to_binary(GENOTYPES, encoding_table)
 
     assert lists_are_same(binary, BINARY)
 

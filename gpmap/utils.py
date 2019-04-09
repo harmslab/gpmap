@@ -24,6 +24,7 @@ import numpy as np
 from scipy.misc import comb
 from collections import OrderedDict
 import warnings
+import pandas as pd
 
 # -------------------------------------------------------
 # Mutation alphabets
@@ -126,6 +127,109 @@ def list_binary(length):
     return np.array(["".join(seq) for seq in it.product("01", repeat=length)])
 
 
+def get_encoding_lookup_table(wildtype, mutations):
+    """This function constructs a lookup table (pandas.DataFrame) for mutations
+    in a given mutations dictionary. This table encodes mutations with a binary representation.
+    """
+    # Initialize table
+    table = []
+    mutation_index_counter = 0
+    binary_index_counter = 0
+    for genotype_index, alphabet in mutations.items():
+        # Type check genotype_index
+        genotype_index = int(genotype_index)
+
+        # Handle sites that don't mutate.
+        if alphabet is None:
+            # Create a row for the encoding lookup table.
+            table.append(dict(
+                genotype_index=genotype_index,
+                mutation_letter=wildtype[site_number],
+                binary_repr="",
+                binary_index_start=None,
+                binary_index_stop=None,
+                mutation_index=None
+            ))
+
+        # Determine mapping for all other sites.
+        else:
+            # copy alphabet to avoid removing items in main object.
+            alphabet_cp = alphabet[:]
+            n = len(alphabet_cp) - 1  # number of mutation neighbors
+            binary_index = binary_index_counter
+
+            # Set wildtype state at a given genotype_index.
+            wt_site = wildtype[genotype_index]
+            table.append(dict(
+                genotype_index=genotype_index,
+                mutation_letter=wt_site,
+                binary_repr="0" * n,
+                binary_index_start=binary_index,
+                binary_index_stop=binary_index+n,
+                mutation_index=None
+            ))
+
+            # Copy alphabet again to prevent indexing error.
+            alphabet_ = alphabet_cp[:]
+            alphabet_.remove(wt_site)
+
+            # Add all possible mutations at given site 
+            for j in range(n):
+                binary_repr = list("0" * n)
+                binary_repr[j] = "1"
+                binary_repr = "".join(binary_repr)
+                table.append(dict(
+                    genotype_index=genotype_index,
+                    mutation_letter=alphabet_[j],
+                    binary_repr=binary_repr,
+                    binary_index_start=binary_index,
+                    binary_index_stop=binary_index+n,
+                    mutation_index=mutation_index_counter + 1
+                ))
+                mutation_index_counter += 1
+            binary_index_counter += n
+
+    # Turn table into DataFrame.    
+    df = pd.DataFrame(table)
+    return df
+
+
+def genotypes_to_binary(genotypes, encoding_table):
+    """Using an encoding table (see `get_encoding_lookup_table` 
+    function), build a set of binary genotypes.
+
+    Parameters
+    ----------
+    genotypes : 
+        List of the genotypes to encode.
+    encoding_table : 
+        DataFrame that encodes the binary representation of
+        each mutation in the list of genotypes. (See the 
+        `get_encoding_lookup_table`).
+    """
+    # ---------- Sanity Checks ---------------
+    # 1. Check genotypes are all same length
+    length_of_genotypes = [len(g) for g in genotypes]
+    length = length_of_genotypes[0]
+
+    if len(set(length_of_genotypes)) > 1:
+        raise Exception("Genotypes are not all the same length.")
+        
+    binary = []
+    # Alias for encoding table
+    t = encoding_table
+    for g in genotypes:
+        b = ['' for i in range(t.binary_index_stop.max())]
+        for genotype_index, mutation_letter in enumerate(g):
+            row = t[(
+              (t.genotype_index == genotype_index) &
+              (t.mutation_letter == mutation_letter)  
+            )]
+            b[int(row.binary_index_start):int(row.binary_index_stop)] = row.binary_repr
+        binary.append("".join(b))
+    return binary
+
+
 def mutations_to_encoding(wildtype, mutations):
     """ Encoding map for genotype-to-binary
 
@@ -220,52 +324,6 @@ def genotypes_to_mutations(genotypes):
         mutations[i] = list(np.unique(col))
 
     return mutations
-
-
-def genotypes_to_binary(wildtype, genotypes, mutations):
-    """Get binary representation of genotypes w.r.t. to wildtype.
-
-    Parameters
-    ----------
-    wildtype : str
-        wildtype sequence.
-
-    genotypes : list
-        List of genotypes to transform.
-
-    mutations : dict
-        mutations dictionary that maps sites to mutations.
-
-    Returns
-    -------
-    binary : list
-        list of binary representations.
-    """
-    # ---------- Sanity Checks ---------------
-    # 1. Check genotypes are all same length
-    length_of_genotypes = [len(g) for g in genotypes]
-    length = length_of_genotypes[0]
-
-    if len(set(length_of_genotypes)) > 1:
-        raise Exception("Genotypes are not all the same length.")
-
-    if len(wildtype) != length:
-        raise Exception("Wildtype is not the same length as genotypes.")
-
-    if len(mutations) != length:
-        raise Exception("mutations dict is not the same length as genotypes.")
-
-    # Encoding dictionary
-    encoding = mutations_to_encoding(wildtype, mutations)
-
-    binary = []
-    for g in genotypes:
-        b = ''
-        for site, mutation in enumerate(g):
-            if mutations[site] is not None:
-                b += encoding[site][mutation]
-        binary.append(b)
-    return binary
 
 
 def get_missing_genotypes(genotypes, mutations=None):
