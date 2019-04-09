@@ -61,6 +61,9 @@ class GenotypePhenotypeMap(object):
     binary : BinaryMap
         object that gives you (the user) access to the binary representation
         of the map.
+
+    encoding_table:
+        Pandas DataFrame showing how mutations map to binary representation.
     """
     def __init__(self, wildtype, genotypes, phenotypes,
                  stdeviations=None,
