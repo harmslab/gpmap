@@ -383,4 +383,4 @@ class GenotypePhenotypeMap(object):
         to the genotypes. Consider sorting.
         """
         # Get all genotypes.
-        return mutations_to_genotypes(self.mutations, wildtype=self.wildtype)
+        return utils.mutations_to_genotypes(self.mutations, wildtype=self.wildtype)

@@ -144,10 +144,11 @@ def get_encoding_lookup_table(wildtype, mutations):
             # Create a row for the encoding lookup table.
             table.append(dict(
                 genotype_index=genotype_index,
-                mutation_letter=wildtype[site_number],
+                genotype_letter=wildtype[genotype_index],
+                mutation_letter=None,
                 binary_repr="",
-                binary_index_start=None,
-                binary_index_stop=None,
+                binary_index_start=binary_index,
+                binary_index_stop=binary_index,
                 mutation_index=None
             ))
 
@@ -162,6 +163,7 @@ def get_encoding_lookup_table(wildtype, mutations):
             wt_site = wildtype[genotype_index]
             table.append(dict(
                 genotype_index=genotype_index,
+                genotype_letter=wt_site,
                 mutation_letter=wt_site,
                 binary_repr="0" * n,
                 binary_index_start=binary_index,
@@ -180,6 +182,7 @@ def get_encoding_lookup_table(wildtype, mutations):
                 binary_repr = "".join(binary_repr)
                 table.append(dict(
                     genotype_index=genotype_index,
+                    genotype_letter=wt_site,
                     mutation_letter=alphabet_[j],
                     binary_repr=binary_repr,
                     binary_index_start=binary_index,
@@ -191,6 +194,10 @@ def get_encoding_lookup_table(wildtype, mutations):
 
     # Turn table into DataFrame.    
     df = pd.DataFrame(table)
+    df.genotype_index = df.genotype_index.astype('Int64')
+    df.mutation_index = df.mutation_index.astype('Int64')
+    df.binary_index_start = df.binary_index_start.astype('Int64')
+    df.binary_index_stop = df.binary_index_stop.astype('Int64')
     return df
 
 
@@ -218,14 +225,12 @@ def genotypes_to_binary(genotypes, encoding_table):
     binary = []
     # Alias for encoding table
     t = encoding_table
+    mapper = dict(zip(zip(t.genotype_index, t.mutation_letter), t.binary_repr))
     for g in genotypes:
-        b = ['' for i in range(t.binary_index_stop.max())]
+        b = []
         for genotype_index, mutation_letter in enumerate(g):
-            row = t[(
-              (t.genotype_index == genotype_index) &
-              (t.mutation_letter == mutation_letter)  
-            )]
-            b[int(row.binary_index_start):int(row.binary_index_stop)] = row.binary_repr
+            chunk = mapper[(genotype_index, mutation_letter)]
+            b.append(chunk)
         binary.append("".join(b))
     return binary
 
