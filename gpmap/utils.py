@@ -144,7 +144,7 @@ def get_encoding_lookup_table(wildtype, mutations):
             # Create a row for the encoding lookup table.
             table.append(dict(
                 genotype_index=genotype_index,
-                genotype_letter=wildtype[genotype_index],
+                wildtype_letter=wildtype[genotype_index],
                 mutation_letter=None,
                 binary_repr="",
                 binary_index_start=binary_index,
@@ -163,7 +163,7 @@ def get_encoding_lookup_table(wildtype, mutations):
             wt_site = wildtype[genotype_index]
             table.append(dict(
                 genotype_index=genotype_index,
-                genotype_letter=wt_site,
+                wildtype_letter=wt_site,
                 mutation_letter=wt_site,
                 binary_repr="0" * n,
                 binary_index_start=binary_index,
@@ -182,7 +182,7 @@ def get_encoding_lookup_table(wildtype, mutations):
                 binary_repr = "".join(binary_repr)
                 table.append(dict(
                     genotype_index=genotype_index,
-                    genotype_letter=wt_site,
+                    wildtype_letter=wt_site,
                     mutation_letter=alphabet_[j],
                     binary_repr=binary_repr,
                     binary_index_start=binary_index,
