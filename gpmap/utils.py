@@ -127,7 +127,7 @@ def list_binary(length):
     return np.array(["".join(seq) for seq in it.product("01", repeat=length)])
 
 
-def get_encoding_lookup_table(wildtype, mutations):
+def get_encoding_table(wildtype, mutations):
     """This function constructs a lookup table (pandas.DataFrame) for mutations
     in a given mutations dictionary. This table encodes mutations with a binary representation.
     """
@@ -202,7 +202,7 @@ def get_encoding_lookup_table(wildtype, mutations):
 
 
 def genotypes_to_binary(genotypes, encoding_table):
-    """Using an encoding table (see `get_encoding_lookup_table` 
+    """Using an encoding table (see `get_encoding_table` 
     function), build a set of binary genotypes.
 
     Parameters
@@ -212,7 +212,7 @@ def genotypes_to_binary(genotypes, encoding_table):
     encoding_table : 
         DataFrame that encodes the binary representation of
         each mutation in the list of genotypes. (See the 
-        `get_encoding_lookup_table`).
+        `get_encoding_table`).
     """
     # ---------- Sanity Checks ---------------
     # 1. Check genotypes are all same length

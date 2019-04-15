@@ -5,48 +5,123 @@ GPMap comes with many helpful functions for enumerating genotype-phenotype maps.
 This page provides a simple list of those functions.
 
 - :ref:`get-all-genotypes-from-mutations`
+- :ref:`missing-genotypes`
 - :ref:`genotypes-to-mutations`
 - :ref:`genotypes-to-binary`
-- :ref:`missing-genotypes`
+- :ref:`get-encoding-table`
 
 .. _get-all-genotypes-from-mutations:
 
 Get all genotypes from mutations
 --------------------------------
 
-.. ipython::
+.. code-block:: python
 
-  In [1]: from gpmap.utils import genotypes_to_mutations
+  from gpmap.utils import genotypes_to_mutations
 
-  In [2]: genotypes = [
-     ...:     "AAA",
-     ...:     "AAB",
-     ...:     "ABA",
-     ...:     "BAA",
-     ...:     "ABB",
-     ...:     "BAB",
-     ...:     "BBA",
-     ...:     "BBB"
-     ...: ]
+  wildtype = "AAA"
+  genotypes = [
+      "AAA",
+      "AAB",
+      "ABA",
+      "BAA",
+      "ABB",
+      "BAB",
+      "BBA",
+      "BBB"
+  ]
 
-  In [3]: genotypes_to_mutations(genotypes)
-  Out[3]: {0: ['A', 'B'], 1: ['A', 'B'], 2: ['A', 'B']}
+  mutations = genotypes_to_mutations(genotypes)  
+
+.. _`get-encoding-table`:
 
 
+Get mutation encoding table
+---------------------------
+
+.. code-block:: python
+
+  from gpmap.utils import get_encoding_table
+
+  wildtype = "AA"
+  mutations = {
+      0: ["A", "B"],
+      1: ["A", "B"]
+  }
+  get_encoding_table(wildtype, mutations)
+
+.. raw:: html
+
+  <table border="1">
+    <thead>
+      <tr style="text-align: right;">
+        <th></th>
+        <th>binary_index_start</th>
+        <th>binary_index_stop</th>
+        <th>binary_repr</th>
+        <th>genotype_index</th>
+        <th>mutation_index</th>
+        <th>mutation_letter</th>
+        <th>wildtype_letter</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>0</th>
+        <td>0</td>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+        <td>NaN</td>
+        <td>A</td>
+        <td>A</td>
+      </tr>
+      <tr>
+        <th>1</th>
+        <td>0</td>
+        <td>1</td>
+        <td>1</td>
+        <td>0</td>
+        <td>1</td>
+        <td>B</td>
+        <td>A</td>
+      </tr>
+      <tr>
+        <th>2</th>
+        <td>1</td>
+        <td>2</td>
+        <td>0</td>
+        <td>1</td>
+        <td>NaN</td>
+        <td>A</td>
+        <td>A</td>
+      </tr>
+      <tr>
+        <th>3</th>
+        <td>1</td>
+        <td>2</td>
+        <td>1</td>
+        <td>1</td>
+        <td>2</td>
+        <td>B</td>
+        <td>A</td>
+      </tr>
+    </tbody>
+  </table>
 
 .. _`genotypes-to-mutations`:
 
 Get mutations from a list of genotypes
 --------------------------------------
 
-.. ipython::
+.. code-block:: python
 
-  In [1]: from gpmap.utils import mutations_to_genotypes
+  from gpmap.utils import mutations_to_genotypes
 
-  In [2]: mutations = {0: ['A', 'B'], 1: ['A', 'B'], 2: ['A', 'B']}
+  mutations = {0: ['A', 'B'], 1: ['A', 'B'], 2: ['A', 'B']}
 
-  In [3]: mutations_to_genotypes(mutations)
-  Out[3]: ['AAA', 'AAB', 'ABA', 'ABB', 'BAA', 'BAB', 'BBA', 'BBB']
+  mutations_to_genotypes(mutations)
+  # ['AAA', 'AAB', 'ABA', 'ABB', 'BAA', 'BAB', 'BBA', 'BBB']
 
 
 .. _`genotypes-to-binary`:
@@ -54,39 +129,38 @@ Get mutations from a list of genotypes
 Get binary representation of genotypes
 --------------------------------------
 
-.. ipython::
+.. code-block:: python
 
-  In [1]: from gpmap.utils import genotypes_to_binary
+  from gpmap.utils import genotypes_to_binary, get_encoding_table
 
-  In [2]: wildtype = 'AAA'
+  wildtype = 'AAA'
 
-  In [3]: genotypes = [
-     ...:     "AAA",
-     ...:     "AAB",
-     ...:     "ABA",
-     ...:     "BAA",
-     ...:     "ABB",
-     ...:     "BAB",
-     ...:     "BBA",
-     ...:     "BBB"
-     ...: ]
+  genotypes = [
+      "AAA",
+      "AAB",
+      "ABA",
+      "BAA",
+      "ABB",
+      "BAB",
+      "BBA",
+      "BBB"
+  ]
 
-  In [4]: mutations = {0: ['A', 'B'], 1: ['A', 'B'], 2: ['A', 'B']}
-
-  In [5]: genotypes_to_binary(wildtype, genotypes, mutations)
-  Out[5]: ['000', '001', '010', '100', '011', '101', '110', '111']
-
+  mutations = {0: ['A', 'B'], 1: ['A', 'B'], 2: ['A', 'B']}
+  table = get_encoding_table(wildtype, mutations)
+  binary = genotypes_to_binary(genotypes, table)
+  # ['000', '001', '010', '100', '011', '101', '110', '111']
 
 .. _`missing-genotypes`:
 
 Get a list of missing genotypes from a list of genotypes
 --------------------------------------------------------
 
-.. ipython::
+.. code-block:: python
 
-  In [1]: from gpmap.utils import get_missing_genotypes
+  from gpmap.utils import get_missing_genotypes
 
-  In [2]: genotypes = ["AAA","BBB"]
+  genotypes = ["AAA","BBB"]
 
-  In [3]: get_missing_genotypes(genotypes)
-  Out[3]: ['BBA', 'BAB', 'ABB', 'ABA', 'AAB', 'BAA']
+  get_missing_genotypes(genotypes)
+  # ['BBA', 'BAB', 'ABB', 'ABA', 'AAB', 'BAA']

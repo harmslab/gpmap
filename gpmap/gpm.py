@@ -98,7 +98,7 @@ class GenotypePhenotypeMap(object):
         self.data = pd.DataFrame(data)
         
         # Construct a lookup table for all mutations.
-        self.encoding_table = utils.get_encoding_lookup_table(
+        self.encoding_table = utils.get_encoding_table(
             self.wildtype,
             self.mutations
         )
