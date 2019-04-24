@@ -127,10 +127,20 @@ def list_binary(length):
     return np.array(["".join(seq) for seq in it.product("01", repeat=length)])
 
 
-def get_encoding_table(wildtype, mutations):
+def get_encoding_table(wildtype, mutations, site_labels=None):
     """This function constructs a lookup table (pandas.DataFrame) for mutations
     in a given mutations dictionary. This table encodes mutations with a binary representation.
     """
+
+    # Either grab or create site_labels.  Force them to be strings.
+    if site_labels is None:
+        site_labels = ["{}".format(i) for i in range(len(wildtype))]
+    else:
+        if len(site_labels) != len(wildtype):
+            err = "site_labels must be the same length as the number of sites per genotype\n"
+            raise ValueError(err)
+        site_labels = ["{}".format(x) for x in site_labels]
+
     # Initialize table
     table = []
     mutation_index_counter = 0
@@ -149,7 +159,8 @@ def get_encoding_table(wildtype, mutations):
                 binary_repr="",
                 binary_index_start=binary_index,
                 binary_index_stop=binary_index,
-                mutation_index=None
+                mutation_index=None,
+                site_label=site_labels[genotype_index]
             ))
 
         # Determine mapping for all other sites.
@@ -168,14 +179,15 @@ def get_encoding_table(wildtype, mutations):
                 binary_repr="0" * n,
                 binary_index_start=binary_index,
                 binary_index_stop=binary_index+n,
-                mutation_index=None
+                mutation_index=None,
+                site_label=site_labels[genotype_index]
             ))
 
             # Copy alphabet again to prevent indexing error.
             alphabet_ = alphabet_cp[:]
             alphabet_.remove(wt_site)
 
-            # Add all possible mutations at given site 
+            # Add all possible mutations at given site
             for j in range(n):
                 binary_repr = list("0" * n)
                 binary_repr[j] = "1"
@@ -187,12 +199,13 @@ def get_encoding_table(wildtype, mutations):
                     binary_repr=binary_repr,
                     binary_index_start=binary_index,
                     binary_index_stop=binary_index+n,
-                    mutation_index=mutation_index_counter + 1
+                    mutation_index=mutation_index_counter + 1,
+                    site_label=site_labels[genotype_index]
                 ))
                 mutation_index_counter += 1
             binary_index_counter += n
 
-    # Turn table into DataFrame.    
+    # Turn table into DataFrame.
     df = pd.DataFrame(table)
     df.genotype_index = df.genotype_index.astype('Int64')
     df.mutation_index = df.mutation_index.astype('Int64')
@@ -202,16 +215,16 @@ def get_encoding_table(wildtype, mutations):
 
 
 def genotypes_to_binary(genotypes, encoding_table):
-    """Using an encoding table (see `get_encoding_table` 
+    """Using an encoding table (see `get_encoding_table`
     function), build a set of binary genotypes.
 
     Parameters
     ----------
-    genotypes : 
+    genotypes :
         List of the genotypes to encode.
-    encoding_table : 
+    encoding_table :
         DataFrame that encodes the binary representation of
-        each mutation in the list of genotypes. (See the 
+        each mutation in the list of genotypes. (See the
         `get_encoding_table`).
     """
     # ---------- Sanity Checks ---------------
@@ -221,7 +234,7 @@ def genotypes_to_binary(genotypes, encoding_table):
 
     if len(set(length_of_genotypes)) > 1:
         raise Exception("Genotypes are not all the same length.")
-        
+
     binary = []
     # Alias for encoding table
     t = encoding_table
@@ -362,13 +375,13 @@ def get_missing_genotypes(genotypes, mutations=None):
 
 def length_to_mutations(length, alphabet=["0", "1"]):
     """Build a mutations dictionary for a given alphabet
-    
+
     Parameters
     ----------
     length : int
         length of the genotypes
 
     alphabet : list
-        List of mutations at each site.  
+        List of mutations at each site.
     """
     return {i: alphabet for i in range(length)}
