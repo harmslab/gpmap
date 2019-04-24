@@ -32,7 +32,7 @@ class GenotypePhenotypeMap(object):
 
     phenotypes : array-like
         List of phenotypes in the same order as genotypes.  If None,
-        all genotypes are assigned a phenotype = 1.0.
+        all genotypes are assigned a phenotype = np.nan.
 
     mutations : dict
         Dictionary that maps each site indice to their possible substitution
@@ -72,7 +72,8 @@ class GenotypePhenotypeMap(object):
 
         # Assign dummy phenotypes
         if phenotypes is None:
-            phenotypes = np.ones(len(genotypes),dtype=np.float)
+            phenotypes = np.zeros(len(genotypes),dtype=np.float)
+            penotypes[:] = np.nan
 
         # Set mutations; if not given, assume binary space.
         if mutations is not None:
