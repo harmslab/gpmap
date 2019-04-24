@@ -127,10 +127,19 @@ def list_binary(length):
     return np.array(["".join(seq) for seq in it.product("01", repeat=length)])
 
 
-def get_encoding_table(wildtype, mutations, site_labels):
+def get_encoding_table(wildtype, mutations, site_labels=None):
     """This function constructs a lookup table (pandas.DataFrame) for mutations
     in a given mutations dictionary. This table encodes mutations with a binary representation.
     """
+
+    # Either grab or create site_labels.  Force them to be strings.
+    if site_labels is None:
+        site_labels = ["{}".format(i) for i in range(len(wildtype))]
+    else:
+        if len(site_labels) != len(wildtype):
+            err = "site_labels must be the same length as the number of sites per genotype\n"
+            raise ValueError(err)
+        site_labels = ["{}".format(x) for x in site_labels]
 
     # Initialize table
     table = []

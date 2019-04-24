@@ -97,15 +97,6 @@ class GenotypePhenotypeMap(object):
         # Set wildtype.
         self._wildtype = wildtype
 
-        # Either grab or create site_labels.  Force them to be strings.
-        if site_labels is None:
-            self._site_labels = ["{}".format(i) for i in range(self.length)]
-        else:
-            if len(site_labels) != self.length:
-                err = "site_labels must be the same length as the number of sites per genotype\n"
-                raise ValueError(err)
-            self._site_labels = ["{}".format(x) for x in site_labels]
-
         # Store data in DataFrame
         data = dict(
             genotypes=genotypes,
@@ -119,7 +110,7 @@ class GenotypePhenotypeMap(object):
         self.encoding_table = utils.get_encoding_table(
             self.wildtype,
             self.mutations,
-            self.site_labels
+            site_labels
         )
 
         # Add binary representation
@@ -371,11 +362,6 @@ class GenotypePhenotypeMap(object):
     def n_replicates(self):
         """Return the number of replicate measurements made of the phenotype"""
         return self.data.n_replicates.values
-
-    @property
-    def site_labels(self):
-        """Return the label to apply to each site in the genotype."""
-        return self._site_labels
 
     @property
     def index(self):
