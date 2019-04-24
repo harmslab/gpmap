@@ -121,6 +121,9 @@ class GenotypePhenotypeMap(object):
 
         # Add binary representation
         self.add_binary()
+        
+        # Add number of mutations
+        self.add_n_mutations()
 
         # Construct the error maps
         self._add_error()
@@ -381,11 +384,22 @@ class GenotypePhenotypeMap(object):
 
     def add_binary(self):
         """Build a binary representation of set of genotypes.
+
+        Add as a column to the main DataFrame.
         """
         binary = utils.genotypes_to_binary(self.genotypes, self.encoding_table)
 
         # Add this as a column to the map.
         self.data['binary'] = binary
+
+    def add_n_mutations(self):
+        """Build a column with the number of mutations in each genotype.
+
+        Add as a column to the main DataFrame.
+        """
+        n_mutations = [binary.count('1') for binary in self.binary]
+        self.data['n_mutations'] = n_mutations
+
 
     def get_missing_genotypes(self):
         """Get all genotypes missing from the complete genotype-phenotype map."""
