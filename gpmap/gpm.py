@@ -28,7 +28,7 @@ class GenotypePhenotypeMap(object):
         wildtype sequence.
 
     genotypes : array-like
-        list of all genotypes in system.
+        list of all genotypes
 
     phenotypes : array-like
         List of phenotypes in the same order as genotypes.  If None,
@@ -37,6 +37,12 @@ class GenotypePhenotypeMap(object):
     mutations : dict
         Dictionary that maps each site indice to their possible substitution
         alphabet.
+
+    site_labels : array-like
+        list of labels to apply to sites.  If this is not specified, the
+        first site is assigned a label 0, the next 1, etc.  If specified, sites
+        are assigned labels in the order given.  For example, if the genotypes
+        specify mutations at positions 12 and 75, this would be a list [12,75].
 
     n_replicates : int
         number of replicate measurements comprising the mean phenotypes
@@ -62,11 +68,16 @@ class GenotypePhenotypeMap(object):
     binary : BinaryMap
         object that gives you (the user) access to the binary representation
         of the map.
+
+    encoding_table:
+        Pandas DataFrame showing how mutations map to binary representation.
     """
-    def __init__(self, wildtype, genotypes,
+    def __init__(self, wildtype,
+                 genotypes,
                  phenotypes=None,
                  stdeviations=None,
                  mutations=None,
+                 site_labels=None,
                  n_replicates=1,
                  **kwargs):
 
@@ -100,6 +111,13 @@ class GenotypePhenotypeMap(object):
             stdeviations=stdeviations
         )
         self.data = pd.DataFrame(data)
+
+        # Construct a lookup table for all mutations.
+        self.encoding_table = utils.get_encoding_table(
+            self.wildtype,
+            self.mutations,
+            site_labels
+        )
 
         # Add binary representation
         self.add_binary()
@@ -178,7 +196,14 @@ class GenotypePhenotypeMap(object):
         # Open, json load, and close a json file
         with open(filename, "r") as f:
             metadata = json.load(f)
-            data = metadata["data"]
+
+        return cls.from_dict(metadata)
+
+
+    @classmethod
+    def from_dict(cls, metadata):
+        """"""
+        data = metadata["data"]
 
         if "wildtype" in metadata:
             wildtype = metadata["wildtype"]
@@ -201,8 +226,16 @@ class GenotypePhenotypeMap(object):
         return gpm
 
     @classmethod
-    def from_dict(self, data):
-        """"""
+    def from_json(cls, json_str):
+        """Load a genotype-phenotype map directly from a json.
+        The JSON metadata must include the following attributes
+
+        Note
+        ----
+        Keyword arguments override input that is loaded from the JSON file.
+        """
+        metadata = json.loads(json_str)
+        return cls.from_dict(metadata)
 
     # ----------------------------------------------------------
     # Writing methods
@@ -349,11 +382,7 @@ class GenotypePhenotypeMap(object):
     def add_binary(self):
         """Build a binary representation of set of genotypes.
         """
-        # Construct a binary representation for each genotype
-        binary = utils.genotypes_to_binary(self.wildtype,
-            self.genotypes,
-            self.mutations
-        )
+        binary = utils.genotypes_to_binary(self.genotypes, self.encoding_table)
 
         # Add this as a column to the map.
         self.data['binary'] = binary
@@ -370,4 +399,4 @@ class GenotypePhenotypeMap(object):
         to the genotypes. Consider sorting.
         """
         # Get all genotypes.
-        return mutations_to_genotypes(self.mutations, wildtype=self.wildtype)
+        return utils.mutations_to_genotypes(self.mutations, wildtype=self.wildtype)
