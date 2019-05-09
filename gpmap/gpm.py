@@ -84,7 +84,7 @@ class GenotypePhenotypeMap(object):
         # Assign dummy phenotypes
         if phenotypes is None:
             phenotypes = np.zeros(len(genotypes),dtype=np.float)
-            penotypes[:] = np.nan
+            phenotypes[:] = np.nan
 
         # Set mutations; if not given, assume binary space.
         if mutations is not None:
