@@ -21,7 +21,7 @@ encoding : dict
 
 import itertools as it
 import numpy as np
-from scipy.misc import comb
+from scipy.special import comb
 from collections import OrderedDict
 import warnings
 import pandas as pd
