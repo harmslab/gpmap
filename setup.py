@@ -24,7 +24,7 @@ VERSION = None
 REQUIRED = [
     "numpy",
     "scipy",
-    "pandas"
+    "pandas>=0.24.2"
 ]
 
 # The rest you shouldn't have to touch too much :)
