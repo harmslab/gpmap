@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-from IPython.testing import tools
 
 from gpmap import utils
 from ..gpm import GenotypePhenotypeMap
