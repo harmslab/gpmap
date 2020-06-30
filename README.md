@@ -75,7 +75,7 @@ pytest
 
 ## Dependencies
 
-The following modules are required. Also, the examples/tutorials are written in Jupyter notebooks and require IPython to be install.
+The following modules are required. Also, the examples/tutorials are written in Jupyter notebooks and require IPython to be installed.
 
 * [Numpy](http://www.numpy.org/)
 * [Pandas](https://pandas.pydata.org/)
