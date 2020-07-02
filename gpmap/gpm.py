@@ -226,8 +226,7 @@ class GenotypePhenotypeMap(object):
             data["genotypes"],
             data["phenotypes"],
             stdeviations=data["stdeviations"],
-            n_replicates=data["n_replicates"],
-            **metadata
+            n_replicates=data["n_replicates"]
         )
         return gpm
 
