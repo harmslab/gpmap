@@ -206,7 +206,10 @@ class GenotypePhenotypeMap(object):
     @classmethod
     def from_dict(cls, metadata):
         """"""
-        data = metadata["data"]
+        try:
+            data = metadata["data"]
+        except KeyError:
+            data = metadata
 
         if "wildtype" in metadata:
             wildtype = metadata["wildtype"]
