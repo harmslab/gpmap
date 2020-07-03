@@ -57,7 +57,7 @@ pip install gpmap
 ```
 
 **Developers**
-The recommended way to install this package fro development is using `pipenv`.
+The recommended way to install this package for development is using `pipenv`.
 
 1. Clone this repository:
 ```
