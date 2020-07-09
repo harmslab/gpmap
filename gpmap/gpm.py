@@ -206,7 +206,10 @@ class GenotypePhenotypeMap(object):
     @classmethod
     def from_dict(cls, metadata):
         """"""
-        data = metadata["data"]
+        try:
+            data = metadata["data"]
+        except KeyError:
+            data = metadata
 
         if "wildtype" in metadata:
             wildtype = metadata["wildtype"]
@@ -223,8 +226,7 @@ class GenotypePhenotypeMap(object):
             data["genotypes"],
             data["phenotypes"],
             stdeviations=data["stdeviations"],
-            n_replicates=data["n_replicates"],
-            **metadata
+            n_replicates=data["n_replicates"]
         )
         return gpm
 

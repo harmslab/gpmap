@@ -2,12 +2,12 @@
 atomicwrites==1.2.1; python_version >= '2.7'
 attrs==18.2.0
 more-itertools==4.3.0
-numpy==1.15.2
-pandas==0.24.2
+numpy>=1.15.2
+pandas>=0.24.2
 pluggy==0.7.1; python_version >= '2.7'
 py==1.6.0; python_version >= '2.7'
-pytest==3.8.1
+pytest>=3.8.1
 python-dateutil==2.7.3
 pytz==2018.5
-scipy==1.1.0
+scipy>=1.1.0
 six==1.11.0

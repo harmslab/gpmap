@@ -31,6 +31,7 @@ MUTATIONS = {
     2: ["A", "B"],
 }
 
+
 def lists_are_same(list1, list2):
     """Return true if lists contain same values
     (order doesn't matter).
@@ -60,6 +61,7 @@ def dicts_are_same(dict1, dict2):
 
     return True
 
+
 def test_hamming_distance():
     """Test hamming distance function."""
     s1 = "THIS IS A TEST"
@@ -73,7 +75,7 @@ def test_find_differences():
     s1 = "THIS IS A TEST"
     s2 = "HWIS IT A TEBT"
 
-    assert utils.find_differences(s1, s2) == [0,1,6,12]
+    assert utils.find_differences(s1, s2) == [0, 1, 6, 12]
 
 
 def test_farthest_genotype():
@@ -83,9 +85,9 @@ def test_farthest_genotype():
 
 def test_list_binary():
     """test list binary function."""
-    bin = utils.list_binary(3)
+    somebin = utils.list_binary(3)
 
-    assert lists_are_same(bin, BINARY)
+    assert lists_are_same(somebin, BINARY)
 
 
 def test_mutations_to_encoding():

@@ -57,7 +57,7 @@ pip install gpmap
 ```
 
 **Developers**
-The recommended way to install this package fro development is using `pipenv`.
+The recommended way to install this package for development is using `pipenv`.
 
 1. Clone this repository:
 ```
@@ -75,7 +75,7 @@ pytest
 
 ## Dependencies
 
-The following modules are required. Also, the examples/tutorials are written in Jupyter notebooks and require IPython to be install.
+The following modules are required. Also, the examples/tutorials are written in Jupyter notebooks and require IPython to be installed.
 
 * [Numpy](http://www.numpy.org/)
 * [Pandas](https://pandas.pydata.org/)
