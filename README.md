@@ -5,6 +5,7 @@
 [![Documentation Status](https://readthedocs.org/projects/gpmap/badge/?version=latest)](http://gpmap.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/harmslab/gpmap.svg?branch=master)](https://travis-ci.org/harmslab/gpmap)
 [![nbviewer](https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/harmslab/gpmap/blob/master/examples/Introduction%20to%20Genotype-Phenotype%20Map%20Module.ipynb#)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/harmslab/gpmap/master?filepath=examples%2FIntroduction%20to%20Genotype-Phenotype%20Map%20Module.ipynb)
 
 *A Python API for managing genotype-phenotype map data*
 
