@@ -1,0 +1,9 @@
+name: gp-kernel
+channels:
+  - conda-forge
+dependencies:
+  - python == 3.6
+  - matplotlib
+  - pip
+  - pip:
+      - -r file: requirements.txt
