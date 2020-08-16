@@ -1,6 +1,7 @@
 
 # GPMap
 
+[![PyPI version](https://badge.fury.io/py/gpmap.svg)](https://badge.fury.io/py/gpmap)
 [![Join the chat at https://gitter.im/harmslab/gpmap](https://badges.gitter.im/harmslab/gpmap.svg)](https://gitter.im/harmslab/gpmap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Documentation Status](https://readthedocs.org/projects/gpmap/badge/?version=latest)](http://gpmap.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/harmslab/gpmap.svg?branch=master)](https://travis-ci.org/harmslab/gpmap)
