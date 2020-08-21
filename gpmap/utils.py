@@ -35,6 +35,7 @@ DNA = ["A", "C", "G", "T"]
 AMINO_ACIDS = ["D", "T", "S", "E", "P", "G", "A", "C", "V", "M", "I",
                "L", "Y", "F", "H", "K", "R", "W", "Q", "N"]
 
+
 # -------------------------------------------------------
 # Wrappers for methods that use optional imports
 # -------------------------------------------------------
@@ -44,6 +45,7 @@ def ipywidgets_missing(function):
     """Wrapper checks that ipython widgets are install before trying to
     render them.
     """
+
     def wrapper(*args, **kwargs):
         try:
 
@@ -58,6 +60,7 @@ def ipywidgets_missing(function):
                 ImportWarning)
 
     return wrapper
+
 
 # -------------------------------------------------------
 # Useful methods for genotype-phenotype spaces
@@ -92,6 +95,7 @@ def sample_phenotypes(phenotypes, errors, n=1):
         samples[:, i] = np.multiply(samples[:, i], errors) + phenotypes
     return samples
 
+
 # -------------------------------------------------------
 # Utilities for searching sequence space
 # -------------------------------------------------------
@@ -115,6 +119,7 @@ def farthest_genotype(reference, genotypes):
             mutations = int(differs)
             mutant = str(genotype)
     return mutant
+
 
 # -------------------------------------------------------
 # Space enumerations
@@ -178,14 +183,15 @@ def get_encoding_table(wildtype, mutations, site_labels=None):
                 mutation_letter=wt_site,
                 binary_repr="0" * n,
                 binary_index_start=binary_index,
-                binary_index_stop=binary_index+n,
+                binary_index_stop=binary_index + n,
                 mutation_index=None,
                 site_label=site_labels[genotype_index]
             ))
 
             # Copy alphabet again to prevent indexing error.
             alphabet_ = alphabet_cp[:]
-            alphabet_.remove(wt_site)
+            if wt_site in alphabet_:
+                alphabet_.remove(wt_site)
 
             # Add all possible mutations at given site
             for j in range(n):
@@ -198,7 +204,7 @@ def get_encoding_table(wildtype, mutations, site_labels=None):
                     mutation_letter=alphabet_[j],
                     binary_repr=binary_repr,
                     binary_index_start=binary_index,
-                    binary_index_stop=binary_index+n,
+                    binary_index_stop=binary_index + n,
                     mutation_index=mutation_index_counter + 1,
                     site_label=site_labels[genotype_index]
                 ))
@@ -372,6 +378,7 @@ def get_missing_genotypes(genotypes, mutations=None):
     # Find genotypes not found in genotypes list.
     missing_genotypes = set(all_genotypes).difference(set(genotypes))
     return list(missing_genotypes)
+
 
 def length_to_mutations(length, alphabet=["0", "1"]):
     """Build a mutations dictionary for a given alphabet

@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import time
 
 from gpmap import utils
 from ..gpm import GenotypePhenotypeMap
@@ -47,11 +48,32 @@ def tmp_gpm_file():
 
 def test_read_json(tmp_gpm_file):
     """Test reading from json"""
-    read_gpm = GenotypePhenotypeMap.read_json("gpmap/tests/data/test_data.json")
+    read_gpm = GenotypePhenotypeMap.read_json("data/test_data.json")
     # Test instance was created
     assert isinstance(read_gpm, GenotypePhenotypeMap)
     # Test elements align
     np.testing.assert_array_equal(tmp_gpm_file.genotypes, read_gpm.genotypes)
+
+
+def test_read_csv():
+    """Test reading from csv"""
+    read_gpm = GenotypePhenotypeMap.read_csv(fname="data/test_data.csv", wildtype='AAA')
+    # Test instance was created
+    assert isinstance(read_gpm, GenotypePhenotypeMap)
+
+
+def test_data_integrity_csv(tmp_gpm_file):
+    # Export tmp_gpm_file to csv, give it time to generate file, and then check integrity
+    # of the data read by "read_csv". This is necessary because phenotypes are randomly generated.
+    tmp_gpm_file.to_csv(filename="data/test_data.csv")
+    time.sleep(1)
+    read_gpm = GenotypePhenotypeMap.read_csv(fname="data/test_data.csv", wildtype='AAA')
+    # Test elements align
+    np.testing.assert_array_equal(tmp_gpm_file.genotypes, read_gpm.genotypes)
+    np.testing.assert_array_equal(tmp_gpm_file.phenotypes, read_gpm.phenotypes)
+    np.testing.assert_array_equal(tmp_gpm_file.mutations, read_gpm.mutations)
+    np.testing.assert_array_equal(tmp_gpm_file.binary, read_gpm.data.binary)
+
 
 def test_length(tmp_gpm_file):
     """Test genotype length."""
