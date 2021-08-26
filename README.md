@@ -12,7 +12,7 @@
 
 GPMap defines a flexible object for managing genotype-phenotype (GP) map data. At it's core,
 it stores all data in Pandas DataFrames and thus, interacts seamlessly with the
-PyData egosystem.
+PyData ecosystem.
 
 To visualize genotype-phenotype objects created by GPMap, checkout [GPGraph](https://github.com/Zsailer/gpgraph).
 

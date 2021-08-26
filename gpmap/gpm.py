@@ -416,3 +416,30 @@ class GenotypePhenotypeMap(object):
         """
         # Get all genotypes.
         return utils.mutations_to_genotypes(self.mutations, wildtype=self.wildtype)
+
+    def get_missing_binary(self):
+        """Get all binary representations of genotypes missing from the complete
+        genotype-phenotype map.
+        """
+    
+        geno = self.get_missing_genotypes()
+        binary = utils.genotypes_to_binary(self.wildtype,
+            geno,
+            self.mutations
+        )
+
+        return binary 
+
+    def get_all_possible_binary(self):
+        """Get the complete set of binary genotypes possible. There is no
+        particular order to the genotypes. Consider sorting.
+        """
+
+        # Get all genotypes.
+        geno = self.get_all_possible_genotypes()
+        binary = utils.genotypes_to_binary(self.wildtype,
+            geno,
+            self.mutations
+        )
+
+        return binary 
