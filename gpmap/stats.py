@@ -65,7 +65,7 @@ def unbiased_std(x, axis=None):
         n_samples = x.shape[axis]
 
     # If only 1 sample is given, just return numpy's normal standard deviation
-    if n_samples is 1:
+    if n_samples == 1:
         return np.std(x, axis=axis)
 
     # Calculate the correction scalar
