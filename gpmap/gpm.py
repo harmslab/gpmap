@@ -83,7 +83,7 @@ class GenotypePhenotypeMap(object):
 
         # Assign dummy phenotypes
         if phenotypes is None:
-            phenotypes = np.zeros(len(genotypes),dtype=np.float)
+            phenotypes = np.zeros(len(genotypes),dtype=np.float64)
             phenotypes[:] = np.nan
 
         # Set mutations; if not given, assume binary space.
@@ -121,7 +121,7 @@ class GenotypePhenotypeMap(object):
 
         # Add binary representation
         self.add_binary()
-        
+
         # Add number of mutations
         self.add_n_mutations()
 
@@ -421,14 +421,14 @@ class GenotypePhenotypeMap(object):
         """Get all binary representations of genotypes missing from the complete
         genotype-phenotype map.
         """
-    
+
         geno = self.get_missing_genotypes()
         binary = utils.genotypes_to_binary(self.wildtype,
             geno,
             self.mutations
         )
 
-        return binary 
+        return binary
 
     def get_all_possible_binary(self):
         """Get the complete set of binary genotypes possible. There is no
@@ -442,4 +442,4 @@ class GenotypePhenotypeMap(object):
             self.mutations
         )
 
-        return binary 
+        return binary

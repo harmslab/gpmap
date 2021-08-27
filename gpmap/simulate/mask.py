@@ -31,8 +31,7 @@ def mask(gpm, mask_fraction):
     # Check n_replicates datatype
     if type(gpm.n_replicates) == int:
         n_replicates = gpm.n_replicates
-    elif type(gpm.n_replicates) == pd.Series or
-    type(gpm.n_replicates) == np.ndarray:
+    elif type(gpm.n_replicates) == pd.Series or type(gpm.n_replicates) == np.ndarray:
         n_replicates = gpm.n_replicates[index].reset_index(drop=True)
     else:
         raise Exception("n_replicates are not a valid dtype.")

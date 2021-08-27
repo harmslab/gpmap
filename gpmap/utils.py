@@ -151,19 +151,20 @@ def get_encoding_table(wildtype, mutations, site_labels=None):
     mutation_index_counter = 0
     binary_index_counter = 0
     for genotype_index, alphabet in mutations.items():
-        # Type check genotype_index
+        # Ty    pe check genotype_index
         genotype_index = int(genotype_index)
 
         # Handle sites that don't mutate.
         if alphabet is None:
+
             # Create a row for the encoding lookup table.
             table.append(dict(
                 genotype_index=genotype_index,
                 wildtype_letter=wildtype[genotype_index],
                 mutation_letter=None,
                 binary_repr="",
-                binary_index_start=binary_index,
-                binary_index_stop=binary_index,
+                binary_index_start=binary_index_counter,
+                binary_index_stop=binary_index_counter,
                 mutation_index=None,
                 site_label=site_labels[genotype_index]
             ))
@@ -173,7 +174,6 @@ def get_encoding_table(wildtype, mutations, site_labels=None):
             # copy alphabet to avoid removing items in main object.
             alphabet_cp = alphabet[:]
             n = len(alphabet_cp) - 1  # number of mutation neighbors
-            binary_index = binary_index_counter
 
             # Set wildtype state at a given genotype_index.
             wt_site = wildtype[genotype_index]
@@ -182,8 +182,8 @@ def get_encoding_table(wildtype, mutations, site_labels=None):
                 wildtype_letter=wt_site,
                 mutation_letter=wt_site,
                 binary_repr="0" * n,
-                binary_index_start=binary_index,
-                binary_index_stop=binary_index + n,
+                binary_index_start=binary_index_counter,
+                binary_index_stop=binary_index_counter + n,
                 mutation_index=None,
                 site_label=site_labels[genotype_index]
             ))
@@ -203,8 +203,8 @@ def get_encoding_table(wildtype, mutations, site_labels=None):
                     wildtype_letter=wt_site,
                     mutation_letter=alphabet_[j],
                     binary_repr=binary_repr,
-                    binary_index_start=binary_index,
-                    binary_index_stop=binary_index + n,
+                    binary_index_start=binary_index_counter,
+                    binary_index_stop=binary_index_counter + n,
                     mutation_index=mutation_index_counter + 1,
                     site_label=site_labels[genotype_index]
                 ))

@@ -1,5 +1,5 @@
 # Import utils model.
-from .. import utils
+from gpmap import utils
 
 WILDTYPE = "AAA"
 

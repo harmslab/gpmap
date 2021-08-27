@@ -17,7 +17,7 @@ DESCRIPTION = 'A Python API for managing genotype-phenotype map data'
 URL = 'https://github.com/harmslab/gpmap'
 EMAIL = 'zachsailer@gmail.com'
 AUTHOR = 'Zachary R. Sailer'
-REQUIRES_PYTHON = '>=3.3.0'
+REQUIRES_PYTHON = '>=3.7.0'
 VERSION = None
 
 # What packages are required for this module to be executed?
